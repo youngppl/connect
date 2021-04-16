@@ -1,0 +1,15 @@
+{
+  "name": "connect",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:youngppl/connect.git",
+  "author": "youngppl",
+  "license": "MIT",
+  "scripts": {
+    "setup": "yarn install && yarn install --cwd client && yarn install --cwd backend",
+    "start": "concurrently \"yarn --cwd backend dev\" \"yarn --cwd client ios\""
+  },
+  "devDependencies": {
+    "concurrently": "^6.0.2"
+  }
+}
