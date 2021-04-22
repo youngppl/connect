@@ -26,7 +26,7 @@ const server = new ApolloServer({ typeDefs, resolvers });
 server.start();
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 server.applyMiddleware({ app });
 
