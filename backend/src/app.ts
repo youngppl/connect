@@ -1,8 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
-import { graphqlHTTP } from "express-graphql";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import expressPlayground from "graphql-playground-middleware-express";
+import { ApolloServer, gql } from "apollo-server-express";
 
 const prisma = new PrismaClient();
 
@@ -23,21 +21,17 @@ const resolvers = {
     },
   },
 };
-export const schema = makeExecutableSchema({
-  resolvers,
-  typeDefs,
-});
+
+const server = new ApolloServer({ typeDefs, resolvers });
+server.start();
 
 const app = express();
 const port = 5000;
 
-app.get("/playground", expressPlayground({ endpoint: "/graphql" }));
+server.applyMiddleware({ app });
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema,
-  })
+app.listen(port, () =>
+  console.log(
+    `🚀 Server ready at http://localhost:${port}${server.graphqlPath}`
+  )
 );
-
-app.listen(port, () => console.log(`Running on port ${port}`));
