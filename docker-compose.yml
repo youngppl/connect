@@ -22,5 +22,4 @@ services:
     env_file:
       - ./backend/.env
     stdin_open: true
-    tty: true
     entrypoint: npm run dev
