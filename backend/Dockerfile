@@ -1,5 +1,4 @@
 FROM node:14
-EXPOSE 5000
 EXPOSE $PORT
 RUN mkdir /backend
 WORKDIR /backend
