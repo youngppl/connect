@@ -8,7 +8,7 @@
   "scripts": {
     "setup": "yarn install && yarn install --cwd client && yarn install --cwd backend",
     "heroku_deploy": "yarn --cwd backend heroku_deploy",
-    "start": "concurrently \"yarn --cwd backend dev\" \"yarn --cwd client ios\""
+    "start": "concurrently \"docker-compose up\" \"yarn --cwd client ios\""
   },
   "devDependencies": {
     "concurrently": "^6.0.2"
