@@ -2,24 +2,21 @@ import {
   createHttpLink,
   from,
   ApolloClient,
-  split,
   InMemoryCache,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { getMainDefinition } from "@apollo/client/utilities";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {
-  BACKEND_URL,
-  HTTP_PROTOCOL,
-} from "../constants/Environment";
+import { BACKEND_URL, HTTP_PROTOCOL } from "../constants/Environment";
 
 const cache = new InMemoryCache({});
 const httpLink = createHttpLink({
   uri: HTTP_PROTOCOL + BACKEND_URL + "/graphql",
   credentials: "include",
 });
+console.log("paste");
+console.log(HTTP_PROTOCOL + BACKEND_URL + "/graphql");
 
 const authLink = setContext(async (_, { headers }) => {
   const token = await AsyncStorage.getItem("ideaHuntToken");
@@ -30,18 +27,6 @@ const authLink = setContext(async (_, { headers }) => {
     },
   };
 });
-
-
-const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === "OperationDefinition" &&
-      definition.operation === "subscription"
-    );
-  },
-  httpLink
-);
 
 const errorLink = onError((response) => {
   const { graphQLErrors, operation, networkError } = response;
@@ -63,5 +48,5 @@ const errorLink = onError((response) => {
 
 export const client = new ApolloClient({
   cache: cache,
-  link: from([authLink, errorLink, splitLink]),
+  link: from([authLink, errorLink, httpLink]),
 });

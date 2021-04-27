@@ -1,8 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
-import { ApolloServer, gql } from "apollo-server-express";
+import { ApolloServer } from "apollo-server-express";
 
 const prisma = new PrismaClient();
+
+const corsOptions = {
+  origin: true,
+  credentials: true,
+};
 
 const typeDefs = `
   type User {
@@ -28,7 +33,7 @@ server.start();
 const app = express();
 const port = process.env.PORT || 5000;
 
-server.applyMiddleware({ app });
+server.applyMiddleware({ app, cors: corsOptions });
 
 app.listen(port, () =>
   console.log(

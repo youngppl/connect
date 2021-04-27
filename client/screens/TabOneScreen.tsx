@@ -1,12 +1,28 @@
+import { gql, useQuery } from "@apollo/client";
 import * as React from "react";
-import { StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 
 import { Text, View } from "../components/Themed";
 
+const TAB_ONE_SCREEN_QUERY = gql`
+  # Write your query or mutation here
+  query TabOneScreen {
+    allUsers {
+      email
+      name
+    }
+  }
+`;
+
 export default function TabOneScreen() {
+  const { data, loading } = useQuery(TAB_ONE_SCREEN_QUERY);
+
+  if (loading) {
+    return <ActivityIndicator />;
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ITS WORKING!!!</Text>
+      <Text style={styles.title}>{JSON.stringify(data.allUsers)}</Text>
     </View>
   );
 }

@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "tsc & node .",
     "dev": "tsc -w & nodemon .",
-    "heroku_deploy": "heroku container:push web --app youngppl-connect; heroku container:release web --app youngppl-connect"
+    "heroku_deploy": "heroku container:push web --app youngppl-connect; heroku container:release web --app youngppl-connect",
+    "lint": "eslint --fix '**/*.ts*' && prettier --write '**/*.ts*'"
   },
   "dependencies": {
     "@prisma/client": "^2.21.2",
