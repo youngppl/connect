@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useSubscription } from "@apollo/client";
 import * as React from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 
@@ -14,15 +14,22 @@ const TAB_ONE_SCREEN_QUERY = gql`
   }
 `;
 
-export default function TabOneScreen() {
-  const { data, loading } = useQuery(TAB_ONE_SCREEN_QUERY);
+const greetings = gql`
+  subscription TabOne {
+    greetings
+  }
+`;
 
-  if (loading) {
+export default function TabOneScreen() {
+  // const { data, loading } = useQuery(TAB_ONE_SCREEN_QUERY);
+  const { data, loading } = useSubscription(greetings);
+  console.log(data);
+  if (loading || !data) {
     return <ActivityIndicator />;
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{JSON.stringify(data.allUsers)}</Text>
+      <Text style={styles.title}>{JSON.stringify(data)}</Text>
     </View>
   );
 }
