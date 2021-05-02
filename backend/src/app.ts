@@ -45,18 +45,7 @@ const resolvers = {
 };
 
 async function* personName() {
-  for (const hi of [
-    "Hi",
-    "Bonjour",
-    "Hola",
-    "Ciao",
-    "Zdravo",
-    "a",
-    "b",
-    "b",
-    "d",
-    "e",
-  ]) {
+  for (const hi of ["Hi", "Bonjour", "Hola", "Ciao", "Zdravo"]) {
     yield { greetings: hi };
   }
 }
