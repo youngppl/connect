@@ -3,23 +3,29 @@ import {
   from,
   ApolloClient,
   InMemoryCache,
+  split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
+import { getMainDefinition } from "@apollo/client/utilities";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { BACKEND_URL, HTTP_PROTOCOL } from "../constants/Environment";
+import {
+  BACKEND_URL,
+  HTTP_PROTOCOL,
+  WS_PROTOCOL,
+} from "../constants/Environment";
+
+import { WebSocketLink } from "./WebSocketLink";
 
 const cache = new InMemoryCache({});
 const httpLink = createHttpLink({
   uri: HTTP_PROTOCOL + BACKEND_URL + "/graphql",
   credentials: "include",
 });
-console.log("paste");
-console.log(HTTP_PROTOCOL + BACKEND_URL + "/graphql");
 
 const authLink = setContext(async (_, { headers }) => {
-  const token = await AsyncStorage.getItem("ideaHuntToken");
+  const token = await AsyncStorage.getItem("connectToken");
   return {
     headers: {
       ...headers,
@@ -27,6 +33,31 @@ const authLink = setContext(async (_, { headers }) => {
     },
   };
 });
+
+const wsLink = new WebSocketLink({
+  url: WS_PROTOCOL + BACKEND_URL + "/graphql",
+  connectionParams: async () => {
+    const token = await AsyncStorage.getItem("connectToken");
+    if (!token) {
+      return {};
+    }
+    return {
+      Authorization: `Bearer ${token}`,
+    };
+  },
+});
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  httpLink
+);
 
 const errorLink = onError((response) => {
   const { graphQLErrors, operation, networkError } = response;
@@ -41,12 +72,12 @@ const errorLink = onError((response) => {
   if (networkError) {
     console.log(`${operationName} [Network error]: ${networkError}`);
     // Remove token and reload page. Need a better fix later
-    // AsyncStorage.removeItem("ideaHuntToken");
+    // AsyncStorage.removeItem("connectToken");
     // location.reload();
   }
 });
 
 export const client = new ApolloClient({
   cache: cache,
-  link: from([authLink, errorLink, httpLink]),
+  link: from([authLink, errorLink, splitLink]),
 });
