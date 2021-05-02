@@ -1,18 +1,18 @@
-import { gql, useQuery, useSubscription } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
 import * as React from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 
 import { Text, View } from "../components/Themed";
 
-const TAB_ONE_SCREEN_QUERY = gql`
-  # Write your query or mutation here
-  query TabOneScreen {
-    allUsers {
-      email
-      name
-    }
-  }
-`;
+// const TAB_ONE_SCREEN_QUERY = gql`
+//   # Write your query or mutation here
+//   query TabOneScreen {
+//     allUsers {
+//       email
+//       name
+//     }
+//   }
+// `;
 
 const greetings = gql`
   subscription TabOne {

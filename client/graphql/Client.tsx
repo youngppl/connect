@@ -9,7 +9,6 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createClient } from "graphql-ws";
 
 import {
   BACKEND_URL,
@@ -18,10 +17,6 @@ import {
 } from "../constants/Environment";
 
 import { WebSocketLink } from "./WebSocketLink";
-
-const wsClient = createClient({
-  url: WS_PROTOCOL + BACKEND_URL + "/graphql",
-});
 
 const cache = new InMemoryCache({});
 const httpLink = createHttpLink({
