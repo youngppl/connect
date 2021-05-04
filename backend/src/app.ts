@@ -5,8 +5,23 @@ import { ApolloServer } from "apollo-server-express";
 import ws from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { buildSchema } from "graphql";
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import Redis from "ioredis";
+
+const options = {
+  host: "redis",
+  port: 6379,
+  retryStrategy: (times: number) => {
+    // reconnect after
+    return Math.min(times * 50, 2000);
+  },
+};
 
 const prisma = new PrismaClient();
+const pubsub = new RedisPubSub({
+  publisher: new Redis(options),
+  subscriber: new Redis(options),
+});
 
 const corsOptions = {
   origin: true,
@@ -18,12 +33,19 @@ const typeDefs = `
     email: String!
     name: String
   }
+  type Chat {
+    message: String!
+  }
   type Query {
     allUsers: [User!]!
     hello: String
   }
+  type Mutation {
+    createChat(message: String!): Chat
+  }
   type Subscription {
     greetings: String
+    chat: String
   }
 `;
 const schema = buildSchema(typeDefs);
@@ -37,9 +59,18 @@ const resolvers = {
       return "swag";
     },
   },
+  Mutation: {
+    createChat: async (parent, { message }, context, info) => {
+      await pubsub.publish("chat", { chat: message });
+      return { message };
+    },
+  },
   Subscription: {
     greetings: {
       subscribe: personName,
+    },
+    chat: {
+      subscribe: () => pubsub.asyncIterator("chat"),
     },
   },
 };

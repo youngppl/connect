@@ -24,3 +24,7 @@ services:
       PORT: 5000
     stdin_open: true
     entrypoint: npm run dev
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

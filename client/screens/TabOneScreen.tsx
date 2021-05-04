@@ -16,7 +16,7 @@ import { Text, View } from "../components/Themed";
 
 const greetings = gql`
   subscription TabOne {
-    greetings
+    chat
   }
 `;
 
