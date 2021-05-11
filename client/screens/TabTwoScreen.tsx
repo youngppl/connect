@@ -1,29 +1,22 @@
 import * as React from "react";
-import { StyleSheet } from "react-native";
+import styled from 'styled-components/native'
 
-import { Text, View } from "../components/Themed";
+const Container = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`
+
+const StyledText = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+`
 
 export default function TabTwoScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>yoooo</Text>
-    </View>
+    <Container>
+      <StyledText>yoooo</StyledText>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-});
