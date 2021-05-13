@@ -10,6 +10,8 @@ export default {
   prefixes: [Linking.makeUrl("/")],
   config: {
     screens: {
+      Landing: "/",
+      CreateProfileScreen: "/create-profile",
       Root: {
         screens: {
           TabOne: {

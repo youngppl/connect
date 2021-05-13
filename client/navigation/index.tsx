@@ -12,6 +12,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
 
+import CreateProfileScreen from "../screens/CreateProfileScreen";
+import Landing from "../screens/Landing";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { RootStackParamList } from "../types";
 
@@ -40,6 +42,8 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Landing" component={Landing} />
+      <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
       <Stack.Screen name="Root" component={BottomTabNavigator} />
       <Stack.Screen
         name="NotFound"
