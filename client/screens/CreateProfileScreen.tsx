@@ -1,11 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
-
 import styled from "styled-components/native";
 
 import { LeftChatBubble, RightChatBubble } from "../components/ChatBubbles";
-import { Text, View } from "../components/Themed";
 import { RootStackParamList } from "../types";
 
 const Container = styled.View`

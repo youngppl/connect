@@ -35,6 +35,7 @@ const ButtonContainer = styled.TouchableOpacity`
 `;
 
 const ButtonText = styled.Text`
+  font-family: Quicksand;
   font-size: 24px;
   font-weight: bold;
   color: #371463;

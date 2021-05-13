@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import styled from "styled-components/native";
 
 const WhiteChatText = styled.Text`
@@ -62,7 +61,12 @@ const RightChatBubbleContainer = styled.View`
   flex: 3;
 `;
 
-export const LeftChatBubble = ({ name, message }) => {
+interface ChatBubbleProps {
+  name?: string;
+  message: string;
+}
+
+export const LeftChatBubble = ({ name, message }: ChatBubbleProps) => {
   return (
     <ChatContainer>
       <ChatBubbleContainer>
@@ -84,7 +88,7 @@ export const LeftChatBubble = ({ name, message }) => {
   );
 };
 
-export const RightChatBubble = ({ name, message }) => {
+export const RightChatBubble = ({ name, message }: ChatBubbleProps) => {
   return (
     <ChatBubbleContainer>
       <Space />
