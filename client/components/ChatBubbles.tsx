@@ -7,14 +7,23 @@ const WhiteChatText = styled.Text`
   font-weight: 500;
   font-size: 16px;
   color: #ffffff;
+  flex-wrap: wrap;
+  flex-shrink: 1;
 `;
 
-const BlackChatText = styled(WhiteChatText)`
+export const BlackChatText = styled(WhiteChatText)`
   color: #371463;
 `;
 
 const NameText = styled(WhiteChatText)`
   font-size: 14px;
+`;
+
+const ProfileImage = styled.View`
+  background-color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
 `;
 
 const Space = styled.View`
@@ -38,6 +47,7 @@ const NameContainer = styled.View`
   flex: 8;
   margin: 0;
   padding: 0;
+  align-self: flex-end;
 `;
 
 const LeftChatBubbleContainer = styled.View`
@@ -46,6 +56,7 @@ const LeftChatBubbleContainer = styled.View`
   border-radius: 30px;
   border-top-left-radius: 4px;
   padding-vertical: 20px;
+  padding-right: 10px;
   flex-direction: row;
   flex: 8;
 `;
@@ -57,25 +68,33 @@ const RightChatBubbleContainer = styled.View`
   border-top-right-radius: 4px;
   padding-horizontal: 20px;
   padding-vertical: 20px;
-  margin-right: 14px;
   flex: 3;
 `;
 
 interface ChatBubbleProps {
-  name?: string;
-  message: string;
+  author?: string;
+  message?: string;
+  isFirstInChain: boolean;
 }
 
-export const LeftChatBubble = ({ name, message }: ChatBubbleProps) => {
+export const LeftChatBubble = ({
+  author,
+  message,
+  isFirstInChain,
+}: ChatBubbleProps) => {
   return (
     <ChatContainer>
-      <ChatBubbleContainer>
-        <Space />
-        <NameContainer>
-          <NameText>{name}</NameText>
-        </NameContainer>
-        <Space />
-      </ChatBubbleContainer>
+      {isFirstInChain && (
+        <ChatBubbleContainer>
+          <Space style={{ alignItems: "center", top: 18 }}>
+            <ProfileImage />
+          </Space>
+          <NameContainer>
+            <NameText>{author}</NameText>
+          </NameContainer>
+          <Space />
+        </ChatBubbleContainer>
+      )}
       <ChatBubbleContainer>
         <Space />
         <LeftChatBubbleContainer>
@@ -88,13 +107,25 @@ export const LeftChatBubble = ({ name, message }: ChatBubbleProps) => {
   );
 };
 
-export const RightChatBubble = ({ name, message }: ChatBubbleProps) => {
+export const RightChatBubble = ({
+  message,
+  isFirstInChain,
+  children,
+}: ChatBubbleProps & { children?: React.ReactElement }) => {
   return (
-    <ChatBubbleContainer>
-      <Space />
-      <RightChatBubbleContainer>
-        <BlackChatText>{message}</BlackChatText>
-      </RightChatBubbleContainer>
-    </ChatBubbleContainer>
+    <ChatContainer>
+      {/* {isFirstInChain && (
+        <ChatBubbleContainer>
+          <Space />
+          <NameContainer>
+            <NameText style={{ textAlign: "right" }}>You</NameText>
+          </NameContainer>
+        </ChatBubbleContainer>
+      )} */}
+      <ChatBubbleContainer>
+        <Space />
+        <RightChatBubbleContainer>{children}</RightChatBubbleContainer>
+      </ChatBubbleContainer>
+    </ChatContainer>
   );
 };
