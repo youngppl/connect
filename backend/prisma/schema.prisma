@@ -11,9 +11,16 @@ generator client {
   binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
+enum Pronouns {
+  THEY_THEM
+  HE_HIS
+  SHE_HER
+}
+
 model User {
   id       Int    @id @default(autoincrement())
-  email    String @unique
+  email    String? @unique
+  birthday DateTime
+  pronouns Pronouns
   name     String
-  password String
 }

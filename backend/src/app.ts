@@ -1,4 +1,5 @@
 import { addResolversToSchema } from "@graphql-tools/schema";
+import { IResolvers } from "graphql-tools";
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
@@ -38,6 +39,7 @@ const typeDefs = `
   }
   type Profile {
     message: String!
+    id: ID!
   }
   type Query {
     allUsers: [User!]!
@@ -54,7 +56,7 @@ const typeDefs = `
 `;
 const schema = buildSchema(typeDefs);
 
-const resolvers = {
+const resolvers: IResolvers = {
   Query: {
     allUsers: () => {
       return prisma.user.findMany();
@@ -68,9 +70,11 @@ const resolvers = {
       await pubsub.publish("chat", { chat: message });
       return { message };
     },
-    createProfile: (parent, profile, context, info) => {
-      console.log(profile);
-      return { message: "Profile made" };
+    createProfile: async (parent, data, context, info) => {
+      const user = await prisma.user.create({
+        data,
+      });
+      return { message: "Profile made", id: user.id };
     },
   },
   Subscription: {
