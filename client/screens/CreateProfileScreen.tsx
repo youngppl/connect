@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
@@ -10,6 +11,7 @@ import {
   LeftChatBubble,
   RightChatBubble,
 } from "../components/ChatBubbles";
+import Space from "../components/Space";
 import { RootStackParamList } from "../types";
 
 const Container = styled.View`
@@ -71,6 +73,54 @@ const GetStartedText = styled.Text`
   color: #ffffff;
 `;
 
+const prompts = [
+  [
+    {
+      id: 4,
+      author: "jufa",
+      message:
+        "Sweet! What is your name by the way? I want to make sure I correctly share to others what to call you! ",
+      isFirstInChain: true,
+    },
+    {
+      id: 5,
+      author: "you",
+      fieldName: "name",
+      defaultValue: "Type name here.",
+    },
+  ],
+  [
+    {
+      id: 7,
+      author: "you",
+      fieldName: "pronouns",
+      defaultValue: "Pronouns",
+    },
+  ],
+  [
+    {
+      id: 8,
+      author: "jufa",
+      isFirstInChain: true,
+
+      message:
+        "Great! I think we are ready to get started. If you need to edit anything just click your response and we will fix it right away for you. Otherwise, we will get right into it!",
+    },
+  ],
+];
+
+const CreateProfileScreenMutation = gql`
+  mutation CreateProfile(
+    $name: String!
+    $birthday: String!
+    $pronouns: String!
+  ) {
+    createProfile(name: $name, birthday: $birthday, pronouns: $pronouns) {
+      message
+    }
+  }
+`;
+
 type CreateProfileScreenProps = StackScreenProps<
   RootStackParamList,
   "CreateProfile"
@@ -83,9 +133,9 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
-  const messagesViewRef = React.useRef<ScrollView>(null);
-
+  const [createProfile, { data }] = useMutation(CreateProfileScreenMutation);
+  const [step, setStep] = React.useState(0);
+  const messagesViewRef = React.useRef(null);
   const [messages, setMessages] = React.useState<any[]>([
     {
       id: 1,
@@ -109,70 +159,47 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
     },
   ]);
 
-  const [step, setStep] = React.useState(0);
-
-  const prompts = [
-    [
-      {
-        id: 4,
-        author: "jufa",
-        message:
-          "Sweet! What is your name by the way? I want to make sure I correctly share to others what to call you! ",
-        isFirstInChain: true,
-      },
-      {
-        id: 5,
-        author: "you",
-        fieldName: "name",
-        defaultValue: "Type name here.",
-      },
-    ],
-    [
-      {
-        id: 7,
-        author: "you",
-        fieldName: "pronouns",
-        defaultValue: "Pronouns",
-      },
-    ],
-    [
-      {
-        id: 8,
-        author: "jufa",
-        isFirstInChain: true,
-
-        message:
-          "Great! I think we are ready to get started. If you need to edit anything just click your response and we will fix it right away for you. Otherwise, we will get right into it!",
-      },
-    ],
-  ];
-
   const processNextStep = React.useCallback(() => {
-    switch (step) {
-      case 1:
-        setMessages([
-          ...messages,
-          {
-            id: 6,
-            author: "jufa",
-            message: `Hey ${getValues("name")}! What are your pronouns?`,
-            isFirstInChain: true,
-          },
-          ...prompts[step],
-        ]);
-        break;
-      default:
-        setMessages([...messages, ...prompts[step]]);
+    const fieldNames = ["birthday", "name", "pronouns"];
+    if (!getValues(fieldNames[step])) {
+      return;
     }
     if (step < prompts.length) {
+      switch (step) {
+        case 1:
+          setMessages([
+            ...messages,
+            {
+              id: 6,
+              author: "jufa",
+              message: `Hey ${getValues("name")}! What are your pronouns?`,
+              isFirstInChain: true,
+            },
+            ...prompts[step],
+          ]);
+          break;
+        default:
+          setMessages([...messages, ...prompts[step]]);
+      }
       setStep(step + 1);
     }
   }, [step]);
 
+  const onSubmit = (data: Record<string, any>) => {
+    createProfile({ variables: data });
+  };
+
+  const scrollToLastMessage = () =>
+    ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
+      animated: true,
+    });
+
   React.useEffect(() => {
     Keyboard.addListener("keyboardDidHide", processNextStep);
+    Keyboard.addListener("keyboardDidShow", scrollToLastMessage);
     return () => {
       Keyboard.removeListener("keyboardDidHide", processNextStep);
+      Keyboard.removeListener("keyboardDidShow", scrollToLastMessage);
     };
   }, [step]);
 
@@ -197,9 +224,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
       >
         <MessagesContainer
           ref={messagesViewRef}
-          onContentSizeChange={() =>
-            messagesViewRef.current?.scrollToEnd({ animated: true })
-          }
+          onContentSizeChange={scrollToLastMessage}
         >
           {messages.map((message) => {
             if (message.author === "you")
@@ -246,10 +271,11 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
             );
           })}
           {step === prompts.length && (
-            <GetStartedButtonContainer>
+            <GetStartedButtonContainer onPress={handleSubmit(onSubmit)}>
               <GetStartedText>Get Started</GetStartedText>
             </GetStartedButtonContainer>
           )}
+          <Space height={30} />
         </MessagesContainer>
       </KeyboardAvoidingView>
     </Container>

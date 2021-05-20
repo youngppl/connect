@@ -36,12 +36,16 @@ const typeDefs = `
   type Chat {
     message: String!
   }
+  type Profile {
+    message: String!
+  }
   type Query {
     allUsers: [User!]!
     hello: String
   }
   type Mutation {
     createChat(message: String!): Chat
+    createProfile(name: String!, pronouns: String!, birthday: String!): Profile
   }
   type Subscription {
     greetings: String
@@ -63,6 +67,10 @@ const resolvers = {
     createChat: async (parent, { message }, context, info) => {
       await pubsub.publish("chat", { chat: message });
       return { message };
+    },
+    createProfile: (parent, profile, context, info) => {
+      console.log(profile);
+      return { message: "Profile made" };
     },
   },
   Subscription: {
