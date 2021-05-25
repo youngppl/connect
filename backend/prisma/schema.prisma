@@ -18,8 +18,8 @@ enum Pronouns {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String? @unique
+  id       Int      @id @default(autoincrement())
+  email    String?  @unique
   birthday DateTime
   pronouns Pronouns
   name     String

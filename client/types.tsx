@@ -6,7 +6,8 @@
 export type RootStackParamList = {
   Root: undefined;
   NotFound: undefined;
-  CreateProfile: undefined;
+  CreateProfileScreen: undefined;
+  HomeScreen: undefined;
   Landing: undefined;
 };
 

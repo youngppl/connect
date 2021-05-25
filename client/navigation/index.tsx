@@ -13,6 +13,7 @@ import * as React from "react";
 import { ColorSchemeName } from "react-native";
 
 import CreateProfileScreen from "../screens/CreateProfileScreen";
+import { HomeScreen } from "../screens/HomeScreen";
 import Landing from "../screens/Landing";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { RootStackParamList } from "../types";
@@ -42,8 +43,12 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="Landing" component={Landing} />
-      <Stack.Screen name="CreateProfile" component={CreateProfileScreen} />
+      <Stack.Screen
+        name="CreateProfileScreen"
+        component={CreateProfileScreen}
+      />
       <Stack.Screen name="Root" component={BottomTabNavigator} />
       <Stack.Screen
         name="NotFound"

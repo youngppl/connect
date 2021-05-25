@@ -1,5 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -77,7 +78,7 @@ const prompts = [
   [
     {
       id: 4,
-      author: "jufa",
+      author: "faju",
       message:
         "Sweet! What is your name by the way? I want to make sure I correctly share to others what to call you! ",
       isFirstInChain: true,
@@ -100,7 +101,7 @@ const prompts = [
   [
     {
       id: 8,
-      author: "jufa",
+      author: "faju",
       isFirstInChain: true,
 
       message:
@@ -123,30 +124,30 @@ const CreateProfileScreenMutation = gql`
 
 type CreateProfileScreenProps = StackScreenProps<
   RootStackParamList,
-  "CreateProfile"
+  "CreateProfileScreen"
 >;
 
 const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
-  const {
-    control,
-    getValues,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  const [createProfile, { data }] = useMutation(CreateProfileScreenMutation);
+  const { control, getValues, handleSubmit } = useForm();
+  const [createProfile] = useMutation(CreateProfileScreenMutation, {
+    onCompleted: (data) => {
+      AsyncStorage.setItem("connectId", data.id);
+      navigation.replace("HomeScreen");
+    },
+  });
   const [step, setStep] = React.useState(0);
   const messagesViewRef = React.useRef(null);
   const [messages, setMessages] = React.useState<any[]>([
     {
       id: 1,
-      author: "jufa",
+      author: "faju",
       message:
-        "Hey I’m jufa! Before you get right into chatting with new people. I want to make sure I introduce you to people I feel like you’d enjoy talking with. ",
+        "Hey I’m faju! Before you get right into chatting with new people. I want to make sure I introduce you to people I feel like you’d enjoy talking with. ",
       isFirstInChain: true,
     },
     {
       id: 2,
-      author: "jufa",
+      author: "faju",
       message:
         "First off, when is your birthday? We only allow people who are 18+ to join this app.",
     },
@@ -171,7 +172,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
             ...messages,
             {
               id: 6,
-              author: "jufa",
+              author: "faju",
               message: `Hey ${getValues("name")}! What are your pronouns?`,
               isFirstInChain: true,
             },
@@ -231,7 +232,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
               return (
                 <Controller
                   control={control}
-                  render={({ field: { onChange, onBlur, value } }) => (
+                  render={({ field: { onChange, value } }) => (
                     <RightChatBubble
                       author={message.author}
                       key={message.id}

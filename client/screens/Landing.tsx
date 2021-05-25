@@ -1,9 +1,7 @@
-import * as React from "react";
 import { StackScreenProps } from "@react-navigation/stack";
-
+import * as React from "react";
 import styled from "styled-components/native";
 
-import { Text, View } from "../components/Themed";
 import { RootStackParamList } from "../types";
 
 const Container = styled.View`
@@ -49,7 +47,7 @@ const Landing = ({ navigation }: LandingProps) => {
       <Space />
       <Title>Jufa</Title>
       <Space />
-      <ButtonContainer onPress={() => navigation.push("CreateProfile")}>
+      <ButtonContainer onPress={() => navigation.push("CreateProfileScreen")}>
         <ButtonText>Get Started</ButtonText>
       </ButtonContainer>
       <Space />

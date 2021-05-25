@@ -108,8 +108,6 @@ export const LeftChatBubble = ({
 };
 
 export const RightChatBubble = ({
-  message,
-  isFirstInChain,
   children,
 }: ChatBubbleProps & { children?: React.ReactElement }) => {
   return (

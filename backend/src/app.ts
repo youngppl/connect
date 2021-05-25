@@ -1,6 +1,6 @@
 import { addResolversToSchema } from "@graphql-tools/schema";
 import { IResolvers } from "graphql-tools";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Pronouns } from "@prisma/client";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import ws from "ws";
@@ -71,8 +71,13 @@ const resolvers: IResolvers = {
       return { message };
     },
     createProfile: async (parent, data, context, info) => {
+      const {name} = data;
       const user = await prisma.user.create({
-        data,
+        data: {
+          name,
+          birthday: new Date(),
+          pronouns: Pronouns.HE_HIS,
+        }
       });
       return { message: "Profile made", id: user.id };
     },

@@ -12,6 +12,7 @@ export default {
     screens: {
       Landing: "/",
       CreateProfileScreen: "/create-profile",
+      HomeScreen: "/home",
       Root: {
         screens: {
           TabOne: {
