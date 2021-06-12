@@ -43,12 +43,12 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Landing" component={Landing} />
       <Stack.Screen
         name="CreateProfileScreen"
         component={CreateProfileScreen}
       />
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      <Stack.Screen name="Landing" component={Landing} />
       <Stack.Screen name="Root" component={BottomTabNavigator} />
       <Stack.Screen
         name="NotFound"

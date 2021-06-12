@@ -245,7 +245,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
               )}. Let me show you around!`,
             },
           ]);
-          return;
+          break;
         default:
           setMessages([...messages, ...prompts[step]]);
       }
@@ -256,6 +256,10 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   const onSubmit = (data: Record<string, any>) => {
     console.log(data);
     createProfile({ variables: data });
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "HomeScreen" }],
+    });
   };
 
   const scrollToLastMessage = () =>

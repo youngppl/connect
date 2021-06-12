@@ -2,24 +2,23 @@ import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import styled from "styled-components/native";
 
+import LandingBackground from "../components/LandingBackground";
 import { RootStackParamList } from "../types";
 
 const Container = styled.View`
   background-color: #371463;
   flex: 1;
   align-items: center;
+  justify-content: space-around;
 `;
 
-const Space = styled.View`
-  flex: 1;
-`;
-
-const Title = styled.Text`
-  font-family: Quicksand;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 48px;
-  color: #ffffff;
+const Background = styled(LandingBackground)`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
 `;
 
 const ButtonContainer = styled.TouchableOpacity`
@@ -30,6 +29,8 @@ const ButtonContainer = styled.TouchableOpacity`
   border-radius: 32px;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  top: 70%;
 `;
 
 const ButtonText = styled.Text`
@@ -44,13 +45,10 @@ type LandingProps = StackScreenProps<RootStackParamList, "Landing">;
 const Landing = ({ navigation }: LandingProps) => {
   return (
     <Container>
-      <Space />
-      <Title>Jufa</Title>
-      <Space />
+      <Background />
       <ButtonContainer onPress={() => navigation.push("CreateProfileScreen")}>
         <ButtonText>Get Started</ButtonText>
       </ButtonContainer>
-      <Space />
     </Container>
   );
 };
