@@ -5,6 +5,8 @@ import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Keyboard, KeyboardAvoidingView, ScrollView } from "react-native";
+import { TextInputMask } from "react-native-masked-text";
+import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 import {
@@ -15,7 +17,7 @@ import {
 import Space from "../components/Space";
 import { RootStackParamList } from "../types";
 
-const Container = styled.View`
+const Container = styled(SafeAreaView)`
   background-color: #371463;
   flex: 1;
   padding-horizontal: 10px;
@@ -25,7 +27,7 @@ const HeaderContainer = styled.View`
   align-items: center;
   justify-content: center;
   flex-direction: row;
-  margin-vertical: 40px;
+  height: 30px;
   z-index: 5;
 `;
 
@@ -53,6 +55,8 @@ const HeaderTitle = styled.Text`
 `;
 
 const Input = styled.TextInput`
+  font-family: Quicksand;
+  font-size: 16px;
   color: #371463;
 `;
 
@@ -77,37 +81,17 @@ const GetStartedText = styled.Text`
 const prompts = [
   [
     {
-      id: 4,
-      author: "faju",
-      message:
-        "Sweet! What is your name by the way? I want to make sure I correctly share to others what to call you! ",
-      isFirstInChain: true,
+      author: "Faju",
+      message: "When were you born?",
     },
     {
-      id: 5,
       author: "you",
-      fieldName: "name",
-      defaultValue: "Type name here.",
+      fieldName: "birthday",
+      defaultValue: "MM/DD/YYYY",
     },
   ],
-  [
-    {
-      id: 7,
-      author: "you",
-      fieldName: "pronouns",
-      defaultValue: "Pronouns",
-    },
-  ],
-  [
-    {
-      id: 8,
-      author: "faju",
-      isFirstInChain: true,
-
-      message:
-        "Great! I think we are ready to get started. If you need to edit anything just click your response and we will fix it right away for you. Otherwise, we will get right into it!",
-    },
-  ],
+  [],
+  [],
 ];
 
 const CreateProfileScreenMutation = gql`
@@ -128,7 +112,7 @@ type CreateProfileScreenProps = StackScreenProps<
 >;
 
 const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
-  const { control, getValues, handleSubmit } = useForm();
+  const { control, getValues, setValue, handleSubmit } = useForm();
   const [createProfile] = useMutation(CreateProfileScreenMutation, {
     onCompleted: (data) => {
       AsyncStorage.setItem("connectId", data.id);
@@ -139,46 +123,129 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   const messagesViewRef = React.useRef(null);
   const [messages, setMessages] = React.useState<any[]>([
     {
-      id: 1,
-      author: "faju",
-      message:
-        "Hey I’m faju! Before you get right into chatting with new people. I want to make sure I introduce you to people I feel like you’d enjoy talking with. ",
+      author: "Faju",
+      message: "Oh, you’re new 🤔",
       isFirstInChain: true,
     },
     {
-      id: 2,
-      author: "faju",
-      message:
-        "First off, when is your birthday? We only allow people who are 18+ to join this app.",
+      author: "Faju",
+      message: "What’s your name?",
     },
     {
-      id: 3,
       author: "you",
-      message: "hello",
-      fieldName: "birthday",
-      defaultValue: "00/00/0000",
+      fieldName: "name",
+      defaultValue: "Type name here.",
     },
   ]);
 
   const processNextStep = React.useCallback(() => {
-    const fieldNames = ["birthday", "name", "pronouns"];
+    const fieldNames = ["name", "birthday", "pronouns"];
     if (!getValues(fieldNames[step])) {
       return;
     }
     if (step < prompts.length) {
       switch (step) {
-        case 1:
+        case 0:
           setMessages([
             ...messages,
             {
-              id: 6,
-              author: "faju",
-              message: `Hey ${getValues("name")}! What are your pronouns?`,
+              author: "Faju",
+              message: `Nice to meet you, ${getValues("name")}. I’m Faju`,
               isFirstInChain: true,
             },
             ...prompts[step],
           ]);
           break;
+        case 1: {
+          // Birthday step
+          const timestamp = Date.parse(getValues("birthday"));
+          if (isNaN(timestamp)) {
+            // bad date?
+            setMessages([
+              ...messages,
+              {
+                author: "Faju",
+                message:
+                  "Are you sure that's your birthday? You might have entered it wrong.",
+                isFirstInChain: true,
+              },
+            ]);
+            return;
+          }
+          const birthday = new Date(timestamp);
+          const today = new Date();
+          const minDateCutoff = new Date();
+          minDateCutoff.setFullYear(today.getFullYear() - 18);
+          if (birthday > today) {
+            // born in the future???
+            setMessages([
+              ...messages,
+              {
+                author: "Faju",
+                message: "You from the future or something?",
+                isFirstInChain: true,
+              },
+            ]);
+            return;
+          } else if (birthday > minDateCutoff) {
+            // must be 18+
+            setMessages([
+              ...messages,
+              {
+                author: "Faju",
+                message:
+                  "Sorry bud, this is 18+ only. Come back on your 18th birthday. We’ll celebrate ya 🎊",
+                isFirstInChain: true,
+              },
+            ]);
+            return;
+          } else {
+            // init pronouns step
+            const handlePronounSelection = ({
+              value,
+            }: Record<string, string | number | undefined>) => {
+              setValue("pronouns", value); // manually set pronoun value in form
+              // TODO: somehow trigger processNextStep. problem is cannot directly call processNextStep.
+            };
+            setMessages([
+              ...messages,
+              {
+                author: "Faju",
+                message: "Oh, that’s great! 😁 We welcome 18+.",
+                isFirstInChain: true,
+              },
+              {
+                author: "Faju",
+                message:
+                  "What’s your pronouns? I wanna make sure we all refer to you right (including everyone in jufa).",
+                options: [
+                  { text: "They / Them" },
+                  { text: "She / Her" },
+                  { text: "He / His" },
+                  { text: "I'd prefer not to say" },
+                ],
+                onOptionSelect: handlePronounSelection,
+              },
+            ]);
+          }
+          break;
+        }
+        case 2:
+          setMessages([
+            ...messages,
+            {
+              author: "you",
+              message: getValues("pronouns"),
+            },
+            {
+              author: "Faju",
+              isFirstInChain: true,
+              message: `Welcome to jufa, ${getValues(
+                "name"
+              )}. Let me show you around!`,
+            },
+          ]);
+          return;
         default:
           setMessages([...messages, ...prompts[step]]);
       }
@@ -187,6 +254,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   }, [step]);
 
   const onSubmit = (data: Record<string, any>) => {
+    console.log(data);
     createProfile({ variables: data });
   };
 
@@ -205,7 +273,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   }, [step]);
 
   return (
-    <Container>
+    <Container edges={["top"]}>
       <HeaderContainer>
         <BackButtonContainer onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={24} color="black" />
@@ -224,56 +292,78 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
         enabled
       >
         <MessagesContainer
+          showsVerticalScrollIndicator={false}
           ref={messagesViewRef}
           onContentSizeChange={scrollToLastMessage}
         >
-          {messages.map((message) => {
-            if (message.author === "you")
+          {messages.map((message, index) => {
+            if (message.author === "you" && message.defaultValue)
               return (
                 <Controller
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <RightChatBubble
                       author={message.author}
-                      key={message.id}
+                      key={index}
                       isFirstInChain={message.isFirstInChain}
                     >
-                      {value !== null ? (
+                      {message.fieldName === "birthday" ? (
+                        <TextInputMask
+                          type={"datetime"}
+                          value={value}
+                          options={{
+                            format: "MM/DD/YYYY",
+                          }}
+                          onChangeText={onChange}
+                          customTextInput={Input}
+                          customTextInputProps={{
+                            keyboardType: "number-pad",
+                          }}
+                          placeholder={message.defaultValue}
+                          returnKeyType={"done"}
+                        />
+                      ) : (
                         <Input
                           value={value}
                           onChangeText={onChange}
-                          keyboardType={
-                            message.fieldName === "birthday"
-                              ? "number-pad"
-                              : "default"
-                          }
+                          autoCorrect={false}
                           returnKeyType={"done"}
                           placeholder={message.defaultValue}
                           multiline={true}
                           blurOnSubmit={true}
                         />
-                      ) : (
-                        <BlackChatText>{message.message}</BlackChatText>
                       )}
                     </RightChatBubble>
                   )}
                   name={message.fieldName}
-                  key={message.id}
+                  key={index}
                   rules={{ required: true }}
                 />
+              );
+            else if (message.author === "you")
+              return (
+                <RightChatBubble
+                  author={message.author}
+                  key={index}
+                  isFirstInChain={message.isFirstInChain}
+                >
+                  <BlackChatText>{message.message}</BlackChatText>
+                </RightChatBubble>
               );
             return (
               <LeftChatBubble
                 author={message.author}
                 message={message.message}
-                key={message.id}
+                key={index}
                 isFirstInChain={message.isFirstInChain}
+                options={message.options}
+                onOptionSelect={message.onOptionSelect}
               />
             );
           })}
           {step === prompts.length && (
             <GetStartedButtonContainer onPress={handleSubmit(onSubmit)}>
-              <GetStartedText>Get Started</GetStartedText>
+              <GetStartedText>Let&apos;s Go!</GetStartedText>
             </GetStartedButtonContainer>
           )}
           <Space height={30} />

@@ -71,13 +71,13 @@ const resolvers: IResolvers = {
       return { message };
     },
     createProfile: async (parent, data, context, info) => {
-      const {name} = data;
+      const { name } = data;
       const user = await prisma.user.create({
         data: {
           name,
           birthday: new Date(),
           pronouns: Pronouns.HE_HIS,
-        }
+        },
       });
       return { message: "Profile made", id: user.id };
     },

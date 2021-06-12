@@ -71,17 +71,82 @@ const RightChatBubbleContainer = styled.View`
   flex: 3;
 `;
 
+interface Option {
+  text: string;
+  value?: string | number | undefined;
+  selectedValue: string | number | undefined;
+  setValue: (value: Record<string, string | number | undefined>) => void;
+}
+
+const SelectionOptionsContainer = styled.View`
+  flex: 10;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 8px 0;
+`;
+
+const SelectionOptionContainer = styled.TouchableOpacity`
+  padding: 10px;
+  height: 42px;
+  border: 1px solid #ffffff;
+  border-radius: 48px;
+  align-items: center;
+  align-self: flex-start;
+  justify-content: center;
+  background: ${(props: { selected: boolean }) =>
+    props.selected ? "white" : "transparent"};
+  margin-right: 8px;
+  margin-bottom: 8px;
+`;
+
+const SelectionOptionText = styled(WhiteChatText)`
+  font-size: 16px;
+  color: ${(props: { selected: boolean }) =>
+    props.selected ? "#371463" : "#ffffff"};
+`;
+
+const SelectionOption = ({ text, value, selectedValue, setValue }: Option) => {
+  const selected = (text || value) === selectedValue;
+
+  const handleSelect = () => {
+    setValue({ text, value: text || value });
+  };
+
+  return (
+    <SelectionOptionContainer selected={selected} onPress={handleSelect}>
+      <SelectionOptionText selected={selected}>{text}</SelectionOptionText>
+    </SelectionOptionContainer>
+  );
+};
+
 interface ChatBubbleProps {
   author?: string;
   message?: string;
   isFirstInChain: boolean;
+  options?: Option[];
+  optionValue?: string | number | undefined;
+  onOptionSelect?: (value: Record<string, string | number | undefined>) => void;
 }
 
 export const LeftChatBubble = ({
   author,
   message,
   isFirstInChain,
+  options,
+  optionValue,
+  onOptionSelect,
 }: ChatBubbleProps) => {
+  const [optionSelection, setOptionSelection] = React.useState(optionValue);
+
+  const handleSelection = (
+    option: Record<string, string | number | undefined>
+  ) => {
+    setOptionSelection(option.value);
+    if (onOptionSelect) {
+      onOptionSelect(option);
+    }
+  };
+
   return (
     <ChatContainer>
       {isFirstInChain && (
@@ -103,6 +168,23 @@ export const LeftChatBubble = ({
         </LeftChatBubbleContainer>
         <Space />
       </ChatBubbleContainer>
+      {options && options.length > 0 && (
+        <ChatBubbleContainer>
+          <Space />
+          <SelectionOptionsContainer>
+            {options.map((option, index) => {
+              return (
+                <SelectionOption
+                  {...option}
+                  key={index}
+                  selectedValue={optionSelection}
+                  setValue={(option) => handleSelection(option)}
+                />
+              );
+            })}
+          </SelectionOptionsContainer>
+        </ChatBubbleContainer>
+      )}
     </ChatContainer>
   );
 };
