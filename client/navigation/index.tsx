@@ -1,8 +1,3 @@
-/**
- * If you are not familiar with React Navigation, check out the "Fundamentals" guide:
- * https://reactnavigation.org/docs/getting-started
- *
- */
 import {
   NavigationContainer,
   DefaultTheme,
@@ -13,7 +8,6 @@ import * as React from "react";
 import { ColorSchemeName } from "react-native";
 
 import CreateProfileScreen from "../screens/CreateProfileScreen";
-import { HomeScreen } from "../screens/HomeScreen";
 import Landing from "../screens/Landing";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { RootStackParamList } from "../types";
@@ -43,12 +37,12 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Landing" component={Landing} />
       <Stack.Screen name="MainTabs" component={Tabs} />
       <Stack.Screen
         name="CreateProfileScreen"
         component={CreateProfileScreen}
       />
-      <Stack.Screen name="Landing" component={Landing} />
       <Stack.Screen
         name="NotFound"
         component={NotFoundScreen}

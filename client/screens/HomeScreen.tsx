@@ -1,17 +1,24 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
+import { View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
+import BottomSheet, {
+  BottomSheetButton,
+  BottomSheetHeading,
+} from "../components/BottomSheet";
 import Column from "../components/Column";
+import AllEmotionsIcon from "../components/emotions/All";
 import OkayIcon from "../components/emotions/Okay";
 import Background from "../components/PlanetBackground";
 import ProfileImage from "../components/ProfileImage";
 import Row from "../components/Row";
+import Slider from "../components/Slider";
 import Space from "../components/Space";
 import Squiggly from "../components/Squiggly";
 import { RootStackParamList } from "../types";
@@ -386,19 +393,75 @@ const FeelingText = styled.Text`
   margin-left: 4px;
 `;
 
-const Feeling = () => {
+const FeelingSheet = ({
+  visible,
+  setVisible,
+}: {
+  visible: boolean;
+  setVisible: any;
+}) => {
+  const [mood, setMood] = React.useState(3);
+
+  const label = React.useMemo(() => {
+    switch (mood) {
+      case 1:
+        return "No";
+      case 2:
+        return "Eh";
+      case 3:
+        return "Alright";
+      case 4:
+        return "Good";
+      default:
+        return "Great!";
+    }
+  }, [mood]);
+
+  const handleDone = () => {
+    setVisible(false);
+  };
+
   return (
-    <FeelingContainer>
-      <Column>
-        <FeelingLabel>{`i'm feeling...`}</FeelingLabel>
-        <Space height={8} />
-        <Row>
-          <OkayIcon />
-          <FeelingText>Happy</FeelingText>
-        </Row>
-      </Column>
-      <Ionicons name="chevron-forward" size={24} color="white" />
-    </FeelingContainer>
+    <BottomSheet visible={visible} setVisible={setVisible}>
+      <BottomSheetHeading>
+        Hey Nicole, how are you feeling right now?
+      </BottomSheetHeading>
+      <Space height={44} />
+      <AllEmotionsIcon />
+      <View style={{ alignItems: "center" }}>
+        <Slider
+          value={mood}
+          label={label}
+          width={320}
+          onSlidingComplete={setMood}
+          minimumValue={1}
+          maximumValue={5}
+        />
+      </View>
+      <Space height={40} />
+      <BottomSheetButton onPress={handleDone}>Done</BottomSheetButton>
+    </BottomSheet>
+  );
+};
+
+const Feeling = () => {
+  const [showModal, setShowModal] = React.useState(false);
+
+  return (
+    <>
+      <FeelingContainer onPress={() => setShowModal(true)}>
+        <Column>
+          <FeelingLabel>{`i'm feeling...`}</FeelingLabel>
+          <Space height={8} />
+          <Row>
+            <OkayIcon />
+            <FeelingText>Happy</FeelingText>
+          </Row>
+        </Column>
+        <Ionicons name="chevron-forward" size={24} color="white" />
+      </FeelingContainer>
+      <FeelingSheet visible={showModal} setVisible={setShowModal} />
+    </>
   );
 };
 
@@ -407,7 +470,6 @@ export const HomeScreen = () => {
     <Container edges={["top"]}>
       <CurrentUsers />
       <Space height={130} />
-
       <Feeling />
       <Space height={32} />
       <ChatLog />

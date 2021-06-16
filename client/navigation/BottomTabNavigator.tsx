@@ -39,7 +39,7 @@ const ChatButtonContainer = styled.TouchableOpacity`
   box-shadow: 0px 0px 4px #ff98d5;
   align-items: center;
   justify-content: center;
-  left: 60%;
+  left: 62%;
   top: -10px;
 `;
 
