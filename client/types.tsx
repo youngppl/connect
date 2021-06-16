@@ -9,17 +9,18 @@ export type RootStackParamList = {
   CreateProfileScreen: undefined;
   HomeScreen: undefined;
   Landing: undefined;
+  MainTabs: undefined;
 };
 
 export type BottomTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
+  HomeTab: undefined;
+  ProfileTab: undefined;
 };
 
-export type TabOneParamList = {
-  TabOneScreen: undefined;
+export type HomeTabParamList = {
+  HomeScreen: undefined;
 };
 
-export type TabTwoParamList = {
-  TabTwoScreen: undefined;
+export type ProfileTabParamList = {
+  ProfileScreen: undefined;
 };

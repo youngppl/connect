@@ -1,6 +1,8 @@
 import * as React from "react";
 import styled from "styled-components/native";
 
+import ProfileImage from "../components/ProfileImage";
+
 const WhiteChatText = styled.Text`
   font-family: Quicksand;
   font-style: normal;
@@ -17,13 +19,6 @@ export const BlackChatText = styled(WhiteChatText)`
 
 const NameText = styled(WhiteChatText)`
   font-size: 14px;
-`;
-
-const ProfileImage = styled.View`
-  background-color: #ffffff;
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
 `;
 
 const Space = styled.View`

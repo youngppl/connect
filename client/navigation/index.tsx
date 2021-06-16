@@ -18,7 +18,7 @@ import Landing from "../screens/Landing";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { RootStackParamList } from "../types";
 
-import BottomTabNavigator from "./BottomTabNavigator";
+import Tabs from "./BottomTabNavigator";
 import LinkingConfiguration from "./LinkingConfiguration";
 
 export default function Navigation({
@@ -43,13 +43,12 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Landing" component={Landing} />
+      <Stack.Screen name="MainTabs" component={Tabs} />
       <Stack.Screen
         name="CreateProfileScreen"
         component={CreateProfileScreen}
       />
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      <Stack.Screen name="Root" component={BottomTabNavigator} />
+      <Stack.Screen name="Landing" component={Landing} />
       <Stack.Screen
         name="NotFound"
         component={NotFoundScreen}

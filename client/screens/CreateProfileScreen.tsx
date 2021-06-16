@@ -116,7 +116,6 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   const [createProfile] = useMutation(CreateProfileScreenMutation, {
     onCompleted: (data) => {
       AsyncStorage.setItem("connectId", data.id);
-      navigation.replace("HomeScreen");
     },
   });
   const [step, setStep] = React.useState(0);
@@ -258,7 +257,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
     createProfile({ variables: data });
     navigation.reset({
       index: 0,
-      routes: [{ name: "HomeScreen" }],
+      routes: [{ name: "MainTabs" }],
     });
   };
 
