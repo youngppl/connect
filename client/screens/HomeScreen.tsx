@@ -1,10 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
-import PlanetBackground from "../components/PlanetBackground";
+import Column from "../components/Column";
+import OkayIcon from "../components/emotions/Okay";
+import Background from "../components/PlanetBackground";
+import ProfileImage from "../components/ProfileImage";
+import Row from "../components/Row";
 import Space from "../components/Space";
 import Squiggly from "../components/Squiggly";
 import { RootStackParamList } from "../types";
@@ -14,7 +21,7 @@ type HomeScreenProps = StackScreenProps<RootStackParamList, "HomeScreen">;
 const Container = styled(SafeAreaView)`
   background-color: #371463;
   flex: 1;
-  padding-horizontal: 10px;
+  padding-horizontal: 18px;
 `;
 
 const Filler = styled.View`
@@ -22,13 +29,41 @@ const Filler = styled.View`
 `;
 
 const SpaceBackgroundContainer = styled.View`
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  top: ${(props: { top: number }) => props.top}px;
+  left: 0;
 `;
 
-const SpaceBackground = () => {
+const PlanetBackground = styled(Background)`
+  position: absolute;
+`;
+
+const SpeechBubble = styled.View`
+  position: relative;
+  width: 274px;
+  top: 5px;
+  left: 80px;
+  background: #ffffff;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+  border-bottom-left-radius: 4px;
+  z-index: 2;
+  padding: 12px;
+  padding-left: 18px;
+`;
+
+const SpeechText = styled.Text`
+  font-family: Quicksand;
+`;
+
+const CurrentUsers = () => {
+  const insets = useSafeAreaInsets();
+
   return (
-    <SpaceBackgroundContainer>
+    <SpaceBackgroundContainer top={insets.top}>
+      <SpeechBubble>
+        <SpeechText>147 people are having deep convos right now</SpeechText>
+      </SpeechBubble>
       <PlanetBackground />
     </SpaceBackgroundContainer>
   );
@@ -198,16 +233,14 @@ const SquigglyContainer = styled.View`
   align-items: center;
 `;
 
-const ChatContainer = styled.View`
-  padding-horizontal: 20px;
-`;
+const ChatContainer = styled.View``;
 
 const ChatLogHeader = styled.Text`
   color: #ffffff;
   font-family: Quicksand;
   font-style: normal;
   font-weight: bold;
-  font-size: 19px;
+  font-size: 24px;
 `;
 
 const ChatLogText = styled.Text`
@@ -236,32 +269,147 @@ const ChatButtonText = styled.Text`
   font-size: 16px;
 `;
 
+const OldChatContainer = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+  padding-vertical: 24px;
+`;
+
+const NameText = styled.Text`
+  font-family: Quicksand;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 19px;
+  color: #ffffff;
+`;
+
+const LastMessageText = styled(NameText)`
+  font-size: 14px;
+`;
+
+const UnreadsContainer = styled.View`
+  width: 16px;
+  height: 16px;
+  background: #f29efe;
+  align-self: flex-end;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+`;
+
+const UnreadsText = styled.Text`
+  font-family: Quicksand;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  color: #371463;
+`;
+
+const Unreads = () => {
+  return (
+    <UnreadsContainer>
+      <UnreadsText>10</UnreadsText>
+    </UnreadsContainer>
+  );
+};
+
+const OldChat = () => {
+  return (
+    <OldChatContainer>
+      <Column>
+        <Row>
+          <Column style={{ justifyContent: "center" }}>
+            <ProfileImage />
+          </Column>
+          <Space width={10} />
+          <Column>
+            <NameText>Naomi • 2 🔥</NameText>
+            <LastMessageText>hello</LastMessageText>
+          </Column>
+        </Row>
+      </Column>
+      <Column>
+        <LastMessageText>12m</LastMessageText>
+        <Space height={8} />
+        <Unreads />
+      </Column>
+    </OldChatContainer>
+  );
+};
+
 const ChatLog = () => {
   return (
     <ChatContainer>
-      <ChatLogHeader>Chat log</ChatLogHeader>
+      <ChatLogHeader>Chat</ChatLogHeader>
       <Space height={18} />
-      <ChatLogText>{`You haven't chatted with anyone yet today`}</ChatLogText>
-      <Space height={10} />
-      <ChatButtonContainer>
-        <ChatButtonText>Meet someone</ChatButtonText>
-      </ChatButtonContainer>
+      <OldChat />
+      <OldChat />
+      {false && (
+        <>
+          <ChatLogText>{`You haven't chatted with anyone yet today`}</ChatLogText>
+          <Space height={10} />
+          <ChatButtonContainer>
+            <ChatButtonText>Meet someone</ChatButtonText>
+          </ChatButtonContainer>
+        </>
+      )}
     </ChatContainer>
+  );
+};
+
+const FeelingContainer = styled.TouchableOpacity`
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  flex-direction: row;
+`;
+
+const FeelingLabel = styled.Text`
+  font-family: Quicksand;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+`;
+
+const FeelingText = styled.Text`
+  font-family: Quicksand;
+  font-style: normal;
+  font-size: 19px;
+  color: #ffffff;
+  margin-left: 4px;
+`;
+
+const Feeling = () => {
+  return (
+    <FeelingContainer>
+      <Column>
+        <FeelingLabel>{`i'm feeling...`}</FeelingLabel>
+        <Space height={8} />
+        <Row>
+          <OkayIcon />
+          <FeelingText>Happy</FeelingText>
+        </Row>
+      </Column>
+      <Ionicons name="chevron-forward" size={24} color="white" />
+    </FeelingContainer>
   );
 };
 
 export const HomeScreen = () => {
   return (
-    <Container>
-      <SpaceBackground />
-      <CalendarWeek />
-      <Space height={24} />
-      <CalendarDay />
-      <Space height={34} />
-      <SquigglyContainer>
-        <Squiggly />
-      </SquigglyContainer>
-      <Space height={30} />
+    <Container edges={["top"]}>
+      <CurrentUsers />
+      <Space height={130} />
+
+      <Feeling />
+      <Space height={32} />
       <ChatLog />
     </Container>
   );
