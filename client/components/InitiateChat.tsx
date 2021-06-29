@@ -9,6 +9,7 @@ import BottomSheet, {
 
 import Checkbox from "./Checkbox";
 import Column from "./Column";
+import Row from "./Row";
 import SaturnIcon from "./SaturnIcon";
 import Space from "./Space";
 
@@ -101,11 +102,6 @@ const ChatTypeSheet = (
     "Small talk": false,
   });
 
-  const allowContinue = React.useMemo(
-    () => !Object.values(chatSelections).some((value) => value),
-    [chatSelections]
-  );
-
   return (
     <BottomSheet {...props}>
       <BottomSheetHeading>
@@ -127,23 +123,73 @@ const ChatTypeSheet = (
         />
       ))}
       <Space height={24} />
-      <BottomSheetButton onPress={null} disabled={allowContinue}>
+      <BottomSheetButton
+        onPress={props.onContinue}
+        disabled={!Object.values(chatSelections).some((value) => value)}
+      >
         Continue
       </BottomSheetButton>
     </BottomSheet>
   );
 };
 
+// AgreementsSheet
+
+const AgreementContainer = styled(Row)`
+  padding: 0 10px;
+  padding-right: 50px;
+  margin-vertical: 10px;
+`;
+
+const AGREEMENTS = {
+  "Commit 10 minutes to talk":
+    "We want you to have a real full conversation. So, no multi-tasking.",
+  "Be kind and respectful": "We’re not all friends and we’re not enemies.",
+  "Share within your comfort":
+    "We are here for connection, so authenticity and honesty are key! No fake information ",
+};
+
 const AgreementsSheet = (
   props: BottomSheetModalProps & { onContinue: () => void }
 ) => {
+  const [agreements, setAgreements] = React.useState([false, false, false]);
+
   return (
     <BottomSheet {...props}>
-      <BottomSheetHeading>
-        Hey Nicole, how are you feeling right now?
-      </BottomSheetHeading>
-
-      <BottomSheetButton onPress={null}>Done</BottomSheetButton>
+      <BottomSheetHeading>I agree to:</BottomSheetHeading>
+      <Space height={24} />
+      {Object.entries(AGREEMENTS).map(([heading, subheading], index) => (
+        <AgreementContainer key={index}>
+          <Column style={{ justifyContent: "flex-start" }}>
+            <Checkbox
+              selected={agreements[index]}
+              onSelect={(value) => {
+                setAgreements((old) => {
+                  const updated = [...old];
+                  updated[index] = value;
+                  return updated;
+                });
+              }}
+            />
+          </Column>
+          <Space width={8} />
+          <Column>
+            <ChatOptionHeading style={{ fontSize: 19 }}>
+              {heading}
+            </ChatOptionHeading>
+            <ChatOptionSubheading style={{ fontSize: 12 }}>
+              {subheading}
+            </ChatOptionSubheading>
+          </Column>
+        </AgreementContainer>
+      ))}
+      <Space height={30} />
+      <BottomSheetButton
+        onPress={props.onContinue}
+        disabled={!agreements.every((agreed) => agreed)}
+      >
+        Blast off 🚀
+      </BottomSheetButton>
     </BottomSheet>
   );
 };
@@ -160,6 +206,17 @@ const ChatButton = () => {
       <ChatTypeSheet
         visible={showChatTypeSheet}
         setVisible={setShowChatTypeSheet}
+        onContinue={() => {
+          setShowAgreementSheet(true);
+          setShowChatTypeSheet(false);
+        }}
+      />
+      <AgreementsSheet
+        visible={showAgreementSheet}
+        setVisible={setShowAgreementSheet}
+        onContinue={() => {
+          setShowAgreementSheet(false);
+        }}
       />
     </>
   );
