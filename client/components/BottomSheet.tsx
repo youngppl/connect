@@ -22,7 +22,8 @@ const BottomSheetButtonContainer = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   height: 68px;
-  background: #371463;
+  background: ${(props) =>
+    props.disabled ? "rgba(55, 20, 99, 0.25)" : "#371463"};
   box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
   border-radius: 32px;
 `;
@@ -45,7 +46,7 @@ export const BottomSheetButton = (props: any) => {
 
 const BottomSheet = (props: BottomSheetModalProps) => {
   return (
-    <View>
+    <View style={{ position: "absolute" }}>
       <Modal animationType="fade" transparent {...props}>
         <BlurView
           tint={"dark"}

@@ -4,8 +4,8 @@ import * as React from "react";
 import { TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 
+import ChatButton from "../components/InitiateChat";
 import Row from "../components/Row";
-import SaturnIcon from "../components/SaturnIcon";
 import HomeTabIcon from "../components/tabIcon/Home";
 import ProfileTabIcon from "../components/tabIcon/Profile";
 import Colors from "../constants/Colors";
@@ -29,27 +29,6 @@ const TabContainer = styled(Row)`
   padding-horizontal: 64px;
   position: relative;
 `;
-
-const ChatButtonContainer = styled.TouchableOpacity`
-  position: absolute;
-  width: 74px;
-  height: 74px;
-  border-radius: 37px;
-  background: #ff97d5;
-  box-shadow: 0px 0px 4px #ff98d5;
-  align-items: center;
-  justify-content: center;
-  left: 62%;
-  top: -10px;
-`;
-
-const ChatButton = () => {
-  return (
-    <ChatButtonContainer>
-      <SaturnIcon />
-    </ChatButtonContainer>
-  );
-};
 
 const CustomTab = ({ state, descriptors, navigation }: any) => {
   const focusedOptions = descriptors[state.routes[state.index].key].options;
