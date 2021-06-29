@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import * as React from "react";
 import styled from "styled-components/native";
 
@@ -197,6 +198,7 @@ const AgreementsSheet = (
 const ChatButton = () => {
   const [showChatTypeSheet, setShowChatTypeSheet] = React.useState(false);
   const [showAgreementSheet, setShowAgreementSheet] = React.useState(false);
+  const navigation = useNavigation();
 
   return (
     <>
@@ -216,6 +218,7 @@ const ChatButton = () => {
         setVisible={setShowAgreementSheet}
         onContinue={() => {
           setShowAgreementSheet(false);
+          navigation.replace("WaitingScreen");
         }}
       />
     </>

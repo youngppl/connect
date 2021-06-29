@@ -10,6 +10,8 @@ export type RootStackParamList = {
   HomeScreen: undefined;
   Landing: undefined;
   MainTabs: undefined;
+  ChatScreen: undefined;
+  WaitingScreen: undefined;
 };
 
 export type BottomTabParamList = {

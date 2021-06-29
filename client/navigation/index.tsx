@@ -7,9 +7,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
 
+import ChatScreen from "../screens/ChatScreen";
 import CreateProfileScreen from "../screens/CreateProfileScreen";
 import Landing from "../screens/Landing";
 import NotFoundScreen from "../screens/NotFoundScreen";
+import WaitingScreen from "../screens/WaitingScreen";
 import { RootStackParamList } from "../types";
 
 import Tabs from "./BottomTabNavigator";
@@ -37,7 +39,17 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="ChatScreen"
+        component={ChatScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="MainTabs" component={Tabs} />
+      <Stack.Screen
+        name="WaitingScreen"
+        component={WaitingScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="Landing" component={Landing} />
       <Stack.Screen
         name="CreateProfileScreen"
