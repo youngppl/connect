@@ -1,8 +1,13 @@
+import { gql, useSubscription } from "@apollo/client";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
+import { TouchableOpacityProps, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
+import Column from "../components/Column";
 import OuterSpaceBackground from "../components/OuterSpaceBackground";
+import Space from "../components/Space";
+import UserInfoCard from "../components/UserInfoCard";
 import { RootStackParamList } from "../types";
 
 const Container = styled.View`
@@ -18,12 +23,142 @@ const Background = styled(OuterSpaceBackground)`
   aspect-ratio: 1;
 `;
 
+const ContentContainer = styled(Column)`
+  position: absolute;
+  top: -30px;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+`;
+
+const BannerText = styled.Text`
+  font-family: Quicksand;
+  font-weight: bold;
+  font-size: 24px;
+  color: #ffffff;
+  text-align: center;
+  width: 80%;
+`;
+
+const TalkTypeText = styled(BannerText)`
+  color: #f39fff;
+`;
+
+const ButtonContainer = styled.TouchableOpacity`
+  background: rgba(255, 255, 255, 0.1);
+  border: 3px solid #ffffff;
+  border-radius: 32px;
+  justify-content: center;
+  align-items: center;
+  padding-horizontal: 56px;
+  padding-vertical: 12px;
+`;
+
+const ButtonText = styled.Text`
+  color: #ffffff;
+  font-family: Quicksand;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+`;
+
+const CancelText = styled(ButtonText)`
+  color: #f39fff;
+`;
+
+const CancelButton = (props: TouchableOpacityProps) => {
+  return (
+    <TouchableOpacity {...props}>
+      <CancelText>Cancel</CancelText>
+    </TouchableOpacity>
+  );
+};
+
 type WaitingScreenProps = StackScreenProps<RootStackParamList, "WaitingScreen">;
 
+const waitingRoomSubscription = gql`
+  subscription WaitingScreen($userId: ID!) {
+    waitingRoom(userId: $userId) {
+      message
+      users
+      channel
+    }
+  }
+`;
+
 const WaitingScreen = ({ navigation }: WaitingScreenProps) => {
+  const userId = "1";
+  const { data } = useSubscription(waitingRoomSubscription, {
+    variables: { userId },
+  });
+  const [state, setState] = React.useState("waiting");
+
+  React.useEffect(() => {
+    console.log(data);
+    if (data) {
+      const {
+        waitingRoom: { users, channel, message },
+      } = data;
+      if (users.includes(userId)) {
+        setState("matched");
+        console.log("sub to this channel: ", channel);
+      }
+    }
+  }, [data]);
+
   return (
     <Container>
       <Background />
+      <ContentContainer>
+        {state === "waiting" && (
+          <BannerText>One sec. We’re finding someone for you...</BannerText>
+        )}
+        {state === "matched" && (
+          <>
+            <BannerText>
+              You’ve been matched to have a{" "}
+              <TalkTypeText>deep talk</TalkTypeText>
+            </BannerText>
+            <Space height={24} />
+            <UserInfoCard />
+            <Space height={70} />
+            <ButtonContainer onPress={() => navigation.replace("ChatScreen")}>
+              <ButtonText>Talk to Naomi</ButtonText>
+            </ButtonContainer>
+          </>
+        )}
+
+        {state === "no match" && (
+          <>
+            <BannerText>
+              Uh oh! There isn’t anyone online for a deep talk.
+            </BannerText>
+            <Space height={36} />
+            <ButtonContainer>
+              <ButtonText>Adjust type of conversation</ButtonText>
+            </ButtonContainer>
+            <Space height={18} />
+            <CancelButton />
+          </>
+        )}
+
+        {state === "user left" && (
+          <>
+            <BannerText>
+              Uh oh! Looks like someone just got lost in space.
+            </BannerText>
+            <Space height={36} />
+            <ButtonContainer>
+              <ButtonText>Find someone else for me</ButtonText>
+            </ButtonContainer>
+            <Space height={18} />
+            <CancelButton />
+          </>
+        )}
+      </ContentContainer>
     </Container>
   );
 };

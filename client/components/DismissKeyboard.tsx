@@ -12,10 +12,16 @@ const DismissKeyboard = ({ children }: { children: any }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS == "ios" ? "padding" : "height"}
-      style={{ height: "100%" }}
+      style={{
+        flex: 1,
+        height: "100%",
+        flexDirection: "column",
+        justifyContent: "center",
+        width: "100%",
+      }}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={{ height: "100%" }}>{children}</View>
+        <View style={{ flex: 1 }}>{children}</View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );

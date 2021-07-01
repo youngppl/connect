@@ -41,6 +41,12 @@ const typeDefs = `
     message: String!
     id: ID!
   }
+  type Match {
+    message: String!
+    users: [ID!]!
+    channel: String!
+  }
+
   type Query {
     allUsers: [User!]!
     hello: String
@@ -52,6 +58,7 @@ const typeDefs = `
   type Subscription {
     greetings: String
     chat: String
+    waitingRoom(userId: ID!): Match
   }
 `;
 const schema = buildSchema(typeDefs);
@@ -89,7 +96,41 @@ const resolvers: IResolvers = {
     chat: {
       subscribe: () => pubsub.asyncIterator("chat"),
     },
+    waitingRoom: {
+      subscribe: (parent, data, context, info) => {
+        console.log("matching", data);
+        // add user id/matching preferences to pool
+        runMatchingAlgo();
+        return pubsub.asyncIterator("WaitingRoom");
+      },
+    },
   },
+};
+
+const runMatchingAlgo = () => {
+  // TODO: matching algo goes here
+  setTimeout(
+    () =>
+      pubsub.publish("WaitingRoom", {
+        waitingRoom: {
+          message: "matched",
+          users: [4, 5],
+          channel: "some redis channel",
+        },
+      }),
+    1000
+  ); // sim a match of others after 2 secs. client should ignore this
+  setTimeout(
+    () =>
+      pubsub.publish("WaitingRoom", {
+        waitingRoom: {
+          message: "matched",
+          users: [1, 2],
+          channel: "some redis channel",
+        },
+      }),
+    3000
+  ); // sim a match after 2 secs
 };
 
 async function* personName() {
