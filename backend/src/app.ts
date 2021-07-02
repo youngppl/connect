@@ -112,6 +112,17 @@ const resolvers: IResolvers = {
   },
 };
 
+interface StringMapProps {
+  [key: string]: string;
+}
+
+// TODO: Duplicated from client, might want to add it to graphql types for 1 source of truth
+const CHAT_OPTIONS: StringMapProps = {
+  DEEP_TALK: "DEEP_TALK",
+  LIGHT_TALK: "LIGHT_TALK",
+  SMALL_TALK: "SMALL_TALK",
+};
+
 const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
   let matchData;
   // Match by chat type
@@ -127,12 +138,14 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
           channel: `chat-${nanoid(15)}`,
         };
         // remove both users from all other lists they may be in (ugly af)
-        await redis.lrem("Deep talk", 0, matchedUser);
-        await redis.lrem("Deep talk", 0, userId);
-        await redis.lrem("Light talk", 0, matchedUser);
-        await redis.lrem("Light talk", 0, userId);
-        await redis.lrem("Small talk", 0, matchedUser);
-        await redis.lrem("Small talk", 0, userId);
+        await Promise.all([
+          redis.lrem(CHAT_OPTIONS.DEEP_TALK, 0, matchedUser),
+          redis.lrem(CHAT_OPTIONS.DEEP_TALK, 0, userId),
+          redis.lrem(CHAT_OPTIONS.LIGHT_TALK, 0, matchedUser),
+          redis.lrem(CHAT_OPTIONS.LIGHT_TALK, 0, userId),
+          redis.lrem(CHAT_OPTIONS.SMALL_TALK, 0, matchedUser),
+          redis.lrem(CHAT_OPTIONS.SMALL_TALK, 0, userId),
+        ]);
         break;
       }
     } else {

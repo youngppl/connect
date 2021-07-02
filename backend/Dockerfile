@@ -5,6 +5,6 @@ WORKDIR /backend
 COPY package.json ./
 RUN yarn install
 COPY . .
-RUN yarn run build
 RUN npx prisma generate
+RUN yarn run build
 CMD [ "node", "." ]

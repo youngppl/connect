@@ -64,6 +64,10 @@ interface ChatOptionProps {
   onSelect: (value: boolean) => void;
 }
 
+interface StringMapProps {
+  [key: string]: string;
+}
+
 const ChatOption = ({
   heading,
   subheading,
@@ -86,10 +90,22 @@ const ChatOption = ({
   );
 };
 
-const CHAT_OPTIONS = {
-  "Deep talk": "let’s talk life or current events",
-  "Light talk": "I’m bored, help me smile & laugh",
-  "Small talk": "let’s talk irrelevant stuff",
+const CHAT_OPTIONS: StringMapProps = {
+  DEEP_TALK: "DEEP_TALK",
+  LIGHT_TALK: "LIGHT_TALK",
+  SMALL_TALK: "SMALL_TALK",
+};
+
+const CHAT_SUBHEADINGS = {
+  [CHAT_OPTIONS.DEEP_TALK]: "let’s talk life or current events",
+  [CHAT_OPTIONS.LIGHT_TALK]: "I’m bored, help me smile & laugh",
+  [CHAT_OPTIONS.SMALL_TALK]: "let’s talk irrelevant stuff",
+};
+
+const CHAT_HEADINGS: StringMapProps = {
+  [CHAT_OPTIONS.DEEP_TALK]: "Deep talk",
+  [CHAT_OPTIONS.LIGHT_TALK]: "Light talk",
+  [CHAT_OPTIONS.SMALL_TALK]: "Small talk",
 };
 
 const ChatTypeSheet = (
@@ -100,9 +116,9 @@ const ChatTypeSheet = (
   const [chatSelections, setChatSelections] = React.useState<
     Record<string, boolean>
   >({
-    "Deep talk": false,
-    "Light talk": false,
-    "Small talk": false,
+    [CHAT_OPTIONS.DEEP_TALK]: false,
+    [CHAT_OPTIONS.LIGHT_TALK]: false,
+    [CHAT_OPTIONS.SMALL_TALK]: false,
   });
 
   return (
@@ -111,16 +127,16 @@ const ChatTypeSheet = (
         What kind of conversation are you looking to have?
       </BottomSheetHeading>
       <Space height={24} />
-      {Object.entries(CHAT_OPTIONS).map(([heading, subheading]) => (
+      {Object.keys(CHAT_OPTIONS).map((option) => (
         <ChatOption
-          heading={heading}
-          subheading={subheading}
-          key={heading}
-          selected={chatSelections[heading]}
+          heading={CHAT_HEADINGS[option]}
+          subheading={CHAT_SUBHEADINGS[option]}
+          key={option}
+          selected={chatSelections[option]}
           onSelect={(value) =>
             setChatSelections((oldSelections) => ({
               ...oldSelections,
-              [heading]: value,
+              [option]: value,
             }))
           }
         />
