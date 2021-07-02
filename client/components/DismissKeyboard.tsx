@@ -21,7 +21,7 @@ const DismissKeyboard = ({ children }: { children: any }) => {
       }}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={{ flex: 1 }}>{children}</View>
+        <>{children}</>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );

@@ -1,3 +1,4 @@
+import { gql, useMutation, useSubscription } from "@apollo/client";
 import { Feather } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
@@ -33,6 +34,7 @@ const HeaderContainer = styled.View`
 const MessagesContainer = styled.ScrollView`
   padding: 10px;
   flex: 1;
+  width: 100%;
 `;
 
 const FlagButtonContainer = styled.TouchableOpacity`
@@ -106,11 +108,45 @@ const MessageInput = styled.TextInput`
 
 type ChatScreenProps = StackScreenProps<RootStackParamList, "ChatScreen">;
 
-const ChatScreen = ({ navigation }: ChatScreenProps) => {
+const chatSubscription = gql`
+  subscription ChatScreen($channel: String!) {
+    chat(channel: $channel) {
+      message
+      author
+    }
+  }
+`;
+
+const createChatMutation = gql`
+  mutation createChat($channel: String!, $message: String!, $author: ID!) {
+    createChat(channel: $channel, message: $message, author: $author) {
+      message
+    }
+  }
+`;
+
+const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
+  const userId = "1"; // !MOCK USER ID
+  const {
+    params: { channel },
+  } = route;
+  console.log("subbing to this channel: ", channel);
+  const { data } = useSubscription(chatSubscription, {
+    variables: { channel },
+  });
+  const [createChat] = useMutation(createChatMutation);
   const [messages, setMessages] = React.useState<Record<string, any>[]>([]);
   const [messageText, setMessageText] = React.useState<string | undefined>();
   const messagesViewRef = React.useRef(null);
   const [showUserInfo, setShowUserInfo] = React.useState(false);
+
+  React.useEffect(() => {
+    console.log("incoming message", data);
+    if (data) {
+      const { chat } = data;
+      setMessages((prev) => [...prev, chat]);
+    }
+  }, [data]);
 
   const scrollToLastMessage = () =>
     ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
@@ -119,7 +155,7 @@ const ChatScreen = ({ navigation }: ChatScreenProps) => {
 
   const onSendMessage = (message: string) => {
     if (message) {
-      setMessages((messages) => [...messages, { author: "you", message }]);
+      createChat({ variables: { message, author: userId, channel } });
       setMessageText(undefined);
     }
   };
@@ -156,7 +192,7 @@ const ChatScreen = ({ navigation }: ChatScreenProps) => {
           onContentSizeChange={scrollToLastMessage}
         >
           {messages.map((message, index) => {
-            if (message.author === "you")
+            if (message.author === userId)
               return (
                 <RightChatBubble
                   author={message.author}
@@ -171,7 +207,7 @@ const ChatScreen = ({ navigation }: ChatScreenProps) => {
                 author={message.author}
                 message={message.message}
                 key={index}
-                isFirstInChain={message.isFirstInChain}
+                isFirstInChain={messages[index - 1].author !== message.author}
                 options={message.options}
                 onOptionSelect={message.onOptionSelect}
               />

@@ -102,6 +102,7 @@ const CreateProfileScreenMutation = gql`
   ) {
     createProfile(name: $name, birthday: $birthday, pronouns: $pronouns) {
       message
+      id
     }
   }
 `;

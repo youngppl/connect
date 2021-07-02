@@ -80,8 +80,8 @@ const CancelButton = (props: TouchableOpacityProps) => {
 type WaitingScreenProps = StackScreenProps<RootStackParamList, "WaitingScreen">;
 
 const waitingRoomSubscription = gql`
-  subscription WaitingScreen($userId: ID!) {
-    waitingRoom(userId: $userId) {
+  subscription WaitingScreen($userId: ID!, $chatTypes: [String!]!) {
+    waitingRoom(userId: $userId, chatTypes: $chatTypes) {
       message
       users
       channel
@@ -89,12 +89,17 @@ const waitingRoomSubscription = gql`
   }
 `;
 
-const WaitingScreen = ({ navigation }: WaitingScreenProps) => {
+const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
   const userId = "1";
+  const {
+    params: { chatTypes },
+  } = route;
+  console.log(chatTypes);
   const { data } = useSubscription(waitingRoomSubscription, {
-    variables: { userId },
+    variables: { userId, chatTypes },
   });
   const [state, setState] = React.useState("waiting");
+  const [channel, setChannel] = React.useState("");
 
   React.useEffect(() => {
     console.log(data);
@@ -104,7 +109,7 @@ const WaitingScreen = ({ navigation }: WaitingScreenProps) => {
       } = data;
       if (users.includes(userId)) {
         setState("matched");
-        console.log("sub to this channel: ", channel);
+        setChannel(channel);
       }
     }
   }, [data]);
@@ -125,7 +130,9 @@ const WaitingScreen = ({ navigation }: WaitingScreenProps) => {
             <Space height={24} />
             <UserInfoCard />
             <Space height={70} />
-            <ButtonContainer onPress={() => navigation.replace("ChatScreen")}>
+            <ButtonContainer
+              onPress={() => navigation.replace("ChatScreen", { channel })}
+            >
               <ButtonText>Talk to Naomi</ButtonText>
             </ButtonContainer>
           </>

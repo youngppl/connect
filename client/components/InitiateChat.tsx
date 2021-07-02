@@ -93,7 +93,9 @@ const CHAT_OPTIONS = {
 };
 
 const ChatTypeSheet = (
-  props: BottomSheetModalProps & { onContinue: () => void }
+  props: BottomSheetModalProps & {
+    onContinue: (preferredChatType: string[]) => void;
+  }
 ) => {
   const [chatSelections, setChatSelections] = React.useState<
     Record<string, boolean>
@@ -125,7 +127,13 @@ const ChatTypeSheet = (
       ))}
       <Space height={24} />
       <BottomSheetButton
-        onPress={props.onContinue}
+        onPress={() =>
+          props.onContinue(
+            Object.keys(chatSelections).filter(
+              (key) => chatSelections[key]
+            ) as string[]
+          )
+        }
         disabled={!Object.values(chatSelections).some((value) => value)}
       >
         Continue
@@ -198,6 +206,7 @@ const AgreementsSheet = (
 const ChatButton = () => {
   const [showChatTypeSheet, setShowChatTypeSheet] = React.useState(false);
   const [showAgreementSheet, setShowAgreementSheet] = React.useState(false);
+  const [chatTypes, setChatTypes] = React.useState<string[]>();
   const navigation = useNavigation();
 
   return (
@@ -208,9 +217,10 @@ const ChatButton = () => {
       <ChatTypeSheet
         visible={showChatTypeSheet}
         setVisible={setShowChatTypeSheet}
-        onContinue={() => {
+        onContinue={(chatTypes) => {
           setShowAgreementSheet(true);
           setShowChatTypeSheet(false);
+          setChatTypes(chatTypes);
         }}
       />
       <AgreementsSheet
@@ -218,7 +228,7 @@ const ChatButton = () => {
         setVisible={setShowAgreementSheet}
         onContinue={() => {
           setShowAgreementSheet(false);
-          navigation.replace("WaitingScreen");
+          navigation.replace("WaitingScreen", { chatTypes });
         }}
       />
     </>
