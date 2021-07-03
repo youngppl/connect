@@ -14,6 +14,7 @@ export type RootStackParamList = {
   WaitingScreen: {
     chatTypes: string[];
   };
+  TimesUpScreen: undefined;
 };
 
 export type BottomTabParamList = {

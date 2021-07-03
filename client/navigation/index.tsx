@@ -11,6 +11,7 @@ import ChatScreen from "../screens/ChatScreen";
 import CreateProfileScreen from "../screens/CreateProfileScreen";
 import Landing from "../screens/Landing";
 import NotFoundScreen from "../screens/NotFoundScreen";
+import TimesUpScreen from "../screens/TimesUpScreen";
 import WaitingScreen from "../screens/WaitingScreen";
 import { RootStackParamList } from "../types";
 
@@ -43,6 +44,11 @@ function RootNavigator() {
       <Stack.Screen
         name="WaitingScreen"
         component={WaitingScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TimesUpScreen"
+        component={TimesUpScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

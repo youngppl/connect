@@ -148,6 +148,12 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
     }
   }, [data]);
 
+  React.useEffect(() => {
+    setTimeout(() => {
+      navigation.replace("TimesUpScreen");
+    }, 2000);
+  }, []);
+
   const scrollToLastMessage = () =>
     ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
       animated: true,

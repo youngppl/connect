@@ -105,7 +105,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
     console.log(data);
     if (data) {
       const {
-        waitingRoom: { users, channel, message },
+        waitingRoom: { users, channel },
       } = data;
       if (users.includes(userId)) {
         setState("matched");
@@ -124,7 +124,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
         {state === "matched" && (
           <>
             <BannerText>
-              You’ve been matched to have a{" "}
+              {"You’ve been matched to have a "}
               <TalkTypeText>deep talk</TalkTypeText>
             </BannerText>
             <Space height={24} />
