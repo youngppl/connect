@@ -8,6 +8,7 @@ import Column from "../components/Column";
 import OuterSpaceBackground from "../components/OuterSpaceBackground";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
+import { UserContext } from "../providers/UserProvider";
 import { RootStackParamList } from "../types";
 
 const Container = styled.View`
@@ -90,7 +91,7 @@ const waitingRoomSubscription = gql`
 `;
 
 const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
-  const userId = "1";
+  const { id: userId } = React.useContext(UserContext);
   const {
     params: { chatTypes },
   } = route;

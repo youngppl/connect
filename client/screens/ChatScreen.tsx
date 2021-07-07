@@ -14,6 +14,7 @@ import {
 import DismissKeyboard from "../components/DismissKeyboard";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
+import { UserContext } from "../providers/UserProvider";
 import { RootStackParamList } from "../types";
 
 const Container = styled(SafeAreaView)`
@@ -117,24 +118,24 @@ const chatSubscription = gql`
   }
 `;
 
-const createChatMutation = gql`
-  mutation createChat($channel: String!, $message: String!, $author: ID!) {
-    createChat(channel: $channel, message: $message, author: $author) {
+const createMessageMutation = gql`
+  mutation createMessage($channel: String!, $message: String!, $author: ID!) {
+    createMessage(channel: $channel, message: $message, author: $author) {
       message
     }
   }
 `;
 
 const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
-  const userId = "1"; // !MOCK USER ID
   const {
     params: { channel },
   } = route;
+  const { id: userId } = React.useContext(UserContext);
   console.log("subbing to this channel: ", channel);
   const { data } = useSubscription(chatSubscription, {
     variables: { channel },
   });
-  const [createChat] = useMutation(createChatMutation);
+  const [createMessage] = useMutation(createMessageMutation);
   const [messages, setMessages] = React.useState<Record<string, any>[]>([]);
   const [messageText, setMessageText] = React.useState<string | undefined>();
   const messagesViewRef = React.useRef(null);
@@ -148,11 +149,11 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
     }
   }, [data]);
 
-  React.useEffect(() => {
-    setTimeout(() => {
-      navigation.replace("TimesUpScreen");
-    }, 2000);
-  }, []);
+  // React.useEffect(() => {
+  //   setTimeout(() => {
+  //     navigation.replace("TimesUpScreen");
+  //   }, 2000);
+  // }, []);
 
   const scrollToLastMessage = () =>
     ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
@@ -161,7 +162,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
 
   const onSendMessage = (message: string) => {
     if (message) {
-      createChat({ variables: { message, author: userId, channel } });
+      createMessage({ variables: { message, author: userId, channel } });
       setMessageText(undefined);
     }
   };
@@ -213,7 +214,9 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
                 author={message.author}
                 message={message.message}
                 key={index}
-                isFirstInChain={messages[index - 1].author !== message.author}
+                isFirstInChain={
+                  index === 0 || messages[index - 1].author !== message.author
+                }
                 options={message.options}
                 onOptionSelect={message.onOptionSelect}
               />

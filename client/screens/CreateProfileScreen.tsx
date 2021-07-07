@@ -15,6 +15,7 @@ import {
   RightChatBubble,
 } from "../components/ChatBubbles";
 import Space from "../components/Space";
+import { UserContext } from "../providers/UserProvider";
 import { RootStackParamList } from "../types";
 
 const Container = styled(SafeAreaView)`
@@ -139,7 +140,7 @@ const processNextStep = (state, action) => {
         if (isNaN(timestamp)) {
           // bad date?
           return {
-            step: state.step + 1,
+            ...state,
             messages: [
               ...state.messages,
               {
@@ -158,8 +159,7 @@ const processNextStep = (state, action) => {
         if (birthday > today) {
           // born in the future???
           return {
-            step: state.step + 1,
-
+            ...state,
             messages: [
               ...state.messages,
               {
@@ -172,7 +172,7 @@ const processNextStep = (state, action) => {
         } else if (birthday > minDateCutoff) {
           // must be 18+
           return {
-            step: state.step + 1,
+            ...state,
             messages: [
               ...state.messages,
               {
@@ -240,9 +240,10 @@ const processNextStep = (state, action) => {
 };
 const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   const { control, getValues, setValue, handleSubmit } = useForm();
+  const { setId } = React.useContext(UserContext);
   const [createProfile] = useMutation(CreateProfileScreenMutation, {
     onCompleted: (data) => {
-      AsyncStorage.setItem("connectId", data.id);
+      setId(data.createProfile.id);
     },
   });
 

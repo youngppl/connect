@@ -55,7 +55,7 @@ const typeDefs = `
     hello: String
   }
   type Mutation {
-    createChat(channel: String!, message: String!, author: ID!): Chat
+    createMessage(channel: String!, message: String!, author: ID!): Chat
     createProfile(name: String!, pronouns: String!, birthday: String!): Profile
   }
   type Subscription {
@@ -75,7 +75,12 @@ const resolvers: IResolvers = {
     },
   },
   Mutation: {
-    createChat: async (parent, { channel, author, message }, context, info) => {
+    createMessage: async (
+      parent,
+      { channel, author, message },
+      context,
+      info
+    ) => {
       const chat = { message, author };
       console.log("sending", chat, "to", channel);
       await pubsub.publish(channel, { chat });
@@ -158,28 +163,28 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
     });
 
   // * MOCK Matching methods for solo testing
-  setTimeout(
-    () =>
-      pubsub.publish("WaitingRoom", {
-        waitingRoom: {
-          message: "matched",
-          users: [4, 5],
-          channel: `chat-${nanoid(15)}`,
-        },
-      }),
-    1000
-  ); // sim a match of others after 2 secs. client should ignore this
-  setTimeout(
-    () =>
-      pubsub.publish("WaitingRoom", {
-        waitingRoom: {
-          message: "matched",
-          users: [1, 2],
-          channel: `chat-${nanoid(15)}`,
-        },
-      }),
-    3000
-  ); // sim a match after 2 secs
+  // setTimeout(
+  //   () =>
+  //     pubsub.publish("WaitingRoom", {
+  //       waitingRoom: {
+  //         message: "matched",
+  //         users: [4, 5],
+  //         channel: `chat-${nanoid(15)}`,
+  //       },
+  //     }),
+  //   1000
+  // ); // sim a match of others after 2 secs. client should ignore this
+  // setTimeout(
+  //   () =>
+  //     pubsub.publish("WaitingRoom", {
+  //       waitingRoom: {
+  //         message: "matched",
+  //         users: [1, 2],
+  //         channel: `chat-${nanoid(15)}`,
+  //       },
+  //     }),
+  //   3000
+  // ); // sim a match after 2 secs
 };
 
 const schemaWithResolvers = addResolversToSchema({
