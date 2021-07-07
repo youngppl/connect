@@ -40,6 +40,11 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="CreateProfileScreen"
+        component={CreateProfileScreen}
+      />
+      <Stack.Screen name="Landing" component={Landing} />
       <Stack.Screen name="MainTabs" component={Tabs} />
       <Stack.Screen
         name="WaitingScreen"
@@ -55,11 +60,6 @@ function RootNavigator() {
         name="ChatScreen"
         component={ChatScreen}
         options={{ headerShown: false }}
-      />
-      <Stack.Screen name="Landing" component={Landing} />
-      <Stack.Screen
-        name="CreateProfileScreen"
-        component={CreateProfileScreen}
       />
       <Stack.Screen
         name="NotFound"

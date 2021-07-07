@@ -112,103 +112,88 @@ type CreateProfileScreenProps = StackScreenProps<
   "CreateProfileScreen"
 >;
 
-const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
-  const { control, getValues, setValue, handleSubmit } = useForm();
-  const [createProfile] = useMutation(CreateProfileScreenMutation, {
-    onCompleted: (data) => {
-      AsyncStorage.setItem("connectId", data.id);
-    },
-  });
-  const [step, setStep] = React.useState(0);
-  const messagesViewRef = React.useRef(null);
-  const [messages, setMessages] = React.useState<any[]>([
-    {
-      author: "Faju",
-      message: "Oh, you’re new 🤔",
-      isFirstInChain: true,
-    },
-    {
-      author: "Faju",
-      message: "What’s your name?",
-    },
-    {
-      author: "you",
-      fieldName: "name",
-      defaultValue: "Type name here.",
-    },
-  ]);
-
-  const processNextStep = React.useCallback(() => {
-    const fieldNames = ["name", "birthday", "pronouns"];
-    if (!getValues(fieldNames[step])) {
-      return;
-    }
-    if (step < prompts.length) {
-      switch (step) {
-        case 0:
-          setMessages([
-            ...messages,
+const processNextStep = (state, action) => {
+  const { getValues, setValue } = action.payload;
+  const fieldNames = ["name", "birthday", "pronouns"];
+  if (!getValues(fieldNames[state.step])) {
+    return;
+  }
+  if (state.step < prompts.length) {
+    switch (state.step) {
+      case 0:
+        return {
+          step: state.step + 1,
+          messages: [
+            ...state.messages,
             {
               author: "Faju",
               message: `Nice to meet you, ${getValues("name")}. I’m Faju`,
               isFirstInChain: true,
             },
-            ...prompts[step],
-          ]);
-          break;
-        case 1: {
-          // Birthday step
-          const timestamp = Date.parse(getValues("birthday"));
-          if (isNaN(timestamp)) {
-            // bad date?
-            setMessages([
-              ...messages,
+            ...prompts[state.step],
+          ],
+        };
+      case 1: {
+        // Birthday step
+        const timestamp = Date.parse(getValues("birthday"));
+        if (isNaN(timestamp)) {
+          // bad date?
+          return {
+            step: state.step + 1,
+            messages: [
+              ...state.messages,
               {
                 author: "Faju",
                 message:
                   "Are you sure that's your birthday? You might have entered it wrong.",
                 isFirstInChain: true,
               },
-            ]);
-            return;
-          }
-          const birthday = new Date(timestamp);
-          const today = new Date();
-          const minDateCutoff = new Date();
-          minDateCutoff.setFullYear(today.getFullYear() - 18);
-          if (birthday > today) {
-            // born in the future???
-            setMessages([
-              ...messages,
+            ],
+          };
+        }
+        const birthday = new Date(timestamp);
+        const today = new Date();
+        const minDateCutoff = new Date();
+        minDateCutoff.setFullYear(today.getFullYear() - 18);
+        if (birthday > today) {
+          // born in the future???
+          return {
+            step: state.step + 1,
+
+            messages: [
+              ...state.messages,
               {
                 author: "Faju",
                 message: "You from the future or something?",
                 isFirstInChain: true,
               },
-            ]);
-            return;
-          } else if (birthday > minDateCutoff) {
-            // must be 18+
-            setMessages([
-              ...messages,
+            ],
+          };
+        } else if (birthday > minDateCutoff) {
+          // must be 18+
+          return {
+            step: state.step + 1,
+            messages: [
+              ...state.messages,
               {
                 author: "Faju",
                 message:
                   "Sorry bud, this is 18+ only. Come back on your 18th birthday. We’ll celebrate ya 🎊",
                 isFirstInChain: true,
               },
-            ]);
-            return;
-          } else {
-            // init pronouns step
-            const handlePronounSelection = ({
-              value,
-            }: Record<string, string | number | undefined>) => {
-              setValue("pronouns", value); // manually set pronoun value in form
-              // TODO: somehow trigger processNextStep. problem is cannot directly call processNextStep.
-            };
-            setMessages([
-              ...messages,
+            ],
+          };
+        } else {
+          // init pronouns step
+          const handlePronounSelection = ({
+            value,
+          }: Record<string, string | number | undefined>) => {
+            setValue("pronouns", value); // manually set pronoun value in form
+          };
+          return {
+            step: state.step + 1,
+            messages: [
+              ...state.messages,
               {
                 author: "Faju",
                 message: "Oh, that’s great! 😁 We welcome 18+.",
@@ -226,13 +211,15 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
                 ],
                 onOptionSelect: handlePronounSelection,
               },
-            ]);
-          }
-          break;
+            ],
+          };
         }
-        case 2:
-          setMessages([
-            ...messages,
+      }
+      case 2:
+        return {
+          step: state.step + 1,
+          messages: [
+            ...state.messages,
             {
               author: "you",
               message: getValues("pronouns"),
@@ -244,14 +231,42 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
                 "name"
               )}. Let me show you around!`,
             },
-          ]);
-          break;
-        default:
-          setMessages([...messages, ...prompts[step]]);
-      }
-      setStep(step + 1);
+          ],
+        };
+      default:
+        return state;
     }
-  }, [step]);
+  }
+};
+const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
+  const { control, getValues, setValue, handleSubmit } = useForm();
+  const [createProfile] = useMutation(CreateProfileScreenMutation, {
+    onCompleted: (data) => {
+      AsyncStorage.setItem("connectId", data.id);
+    },
+  });
+
+  const messagesViewRef = React.useRef(null);
+
+  const [state, dispatch] = React.useReducer(processNextStep, {
+    step: 0,
+    messages: [
+      {
+        author: "Faju",
+        message: "Oh, you’re new 🤔",
+        isFirstInChain: true,
+      },
+      {
+        author: "Faju",
+        message: "What’s your name?",
+      },
+      {
+        author: "you",
+        fieldName: "name",
+        defaultValue: "Type name here.",
+      },
+    ],
+  });
 
   const onSubmit = (data: Record<string, any>) => {
     console.log(data);
@@ -267,14 +282,18 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
       animated: true,
     });
 
+  const nextStep = () => {
+    dispatch({ type: "NEXT_STEP", payload: { getValues, setValue } });
+  };
+
   React.useEffect(() => {
-    Keyboard.addListener("keyboardDidHide", processNextStep);
+    Keyboard.addListener("keyboardDidHide", nextStep);
     Keyboard.addListener("keyboardDidShow", scrollToLastMessage);
     return () => {
-      Keyboard.removeListener("keyboardDidHide", processNextStep);
+      Keyboard.removeListener("keyboardDidHide", nextStep);
       Keyboard.removeListener("keyboardDidShow", scrollToLastMessage);
     };
-  }, [step]);
+  }, []);
 
   return (
     <Container edges={["top"]}>
@@ -300,7 +319,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
           ref={messagesViewRef}
           onContentSizeChange={scrollToLastMessage}
         >
-          {messages.map((message, index) => {
+          {state?.messages.map((message, index) => {
             if (message.author === "you" && message.defaultValue)
               return (
                 <Controller
@@ -361,11 +380,14 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
                 key={index}
                 isFirstInChain={message.isFirstInChain}
                 options={message.options}
-                onOptionSelect={message.onOptionSelect}
+                onOptionSelect={(value) => {
+                  message.onOptionSelect(value);
+                  nextStep();
+                }}
               />
             );
           })}
-          {step === prompts.length && (
+          {state?.step === prompts.length && (
             <GetStartedButtonContainer onPress={handleSubmit(onSubmit)}>
               <GetStartedText>Let&apos;s Go!</GetStartedText>
             </GetStartedButtonContainer>
