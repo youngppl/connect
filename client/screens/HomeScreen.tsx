@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as React from "react";
-import { View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -12,12 +11,11 @@ import BottomSheet, {
   BottomSheetHeading,
 } from "../components/BottomSheet";
 import Column from "../components/Column";
-import AllEmotionsIcon from "../components/emotions/All";
 import OkayIcon from "../components/emotions/Okay";
+import FeelingSlider from "../components/FeelingSlider";
 import Background from "../components/PlanetBackground";
 import ProfileImage from "../components/ProfileImage";
 import Row from "../components/Row";
-import Slider from "../components/Slider";
 import Space from "../components/Space";
 
 const Container = styled(SafeAreaView)`
@@ -229,21 +227,6 @@ const FeelingSheet = ({
 }) => {
   const [mood, setMood] = React.useState(3);
 
-  const label = React.useMemo(() => {
-    switch (mood) {
-      case 1:
-        return "No";
-      case 2:
-        return "Eh";
-      case 3:
-        return "Alright";
-      case 4:
-        return "Good";
-      default:
-        return "Great!";
-    }
-  }, [mood]);
-
   const handleDone = () => {
     setVisible(false);
   };
@@ -254,17 +237,7 @@ const FeelingSheet = ({
         Hey Nicole, how are you feeling right now?
       </BottomSheetHeading>
       <Space height={44} />
-      <AllEmotionsIcon />
-      <View style={{ alignItems: "center" }}>
-        <Slider
-          value={mood}
-          label={label}
-          width={320}
-          onSlidingComplete={setMood}
-          minimumValue={1}
-          maximumValue={5}
-        />
-      </View>
+      <FeelingSlider mood={mood} setMood={setMood} />
       <Space height={40} />
       <BottomSheetButton onPress={handleDone}>Done</BottomSheetButton>
     </BottomSheet>

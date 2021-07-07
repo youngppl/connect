@@ -163,28 +163,28 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
     });
 
   // * MOCK Matching methods for solo testing
-  // setTimeout(
-  //   () =>
-  //     pubsub.publish("WaitingRoom", {
-  //       waitingRoom: {
-  //         message: "matched",
-  //         users: [4, 5],
-  //         channel: `chat-${nanoid(15)}`,
-  //       },
-  //     }),
-  //   1000
-  // ); // sim a match of others after 2 secs. client should ignore this
-  // setTimeout(
-  //   () =>
-  //     pubsub.publish("WaitingRoom", {
-  //       waitingRoom: {
-  //         message: "matched",
-  //         users: [1, 2],
-  //         channel: `chat-${nanoid(15)}`,
-  //       },
-  //     }),
-  //   3000
-  // ); // sim a match after 2 secs
+  setTimeout(
+    () =>
+      pubsub.publish("WaitingRoom", {
+        waitingRoom: {
+          message: "matched",
+          users: [4, 5],
+          channel: `chat-${nanoid(15)}`,
+        },
+      }),
+    1000
+  );
+  setTimeout(
+    () =>
+      pubsub.publish("WaitingRoom", {
+        waitingRoom: {
+          message: "matched",
+          users: [1, 2],
+          channel: `chat-${nanoid(15)}`,
+        },
+      }),
+    3000
+  );
 };
 
 const schemaWithResolvers = addResolversToSchema({

@@ -60,7 +60,8 @@ const Name = styled.Text`
 const TimerContainer = styled.View`
   position: absolute;
   right: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: ${(props: { secondsLeft: number }) =>
+    props.secondsLeft > 60 ? "rgba(255, 255, 255, 0.1)" : "#FF97D5"};
   border-radius: 8px;
   padding: 10px;
 `;
@@ -69,7 +70,8 @@ const TimerText = styled.Text`
   font-family: Quicksand;
   font-weight: 500;
   font-size: 14px;
-  color: white;
+  color: ${(props: { secondsLeft: number }) =>
+    props.secondsLeft > 60 ? "white" : "#371463"};
 `;
 
 const UserInfoContainer = styled.View`
@@ -140,6 +142,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
   const [messageText, setMessageText] = React.useState<string | undefined>();
   const messagesViewRef = React.useRef(null);
   const [showUserInfo, setShowUserInfo] = React.useState(false);
+  const [secondsLeft, setSecondsLeft] = React.useState(5);
 
   React.useEffect(() => {
     console.log("incoming message", data);
@@ -149,11 +152,22 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
     }
   }, [data]);
 
-  // React.useEffect(() => {
-  //   setTimeout(() => {
-  //     navigation.replace("TimesUpScreen");
-  //   }, 2000);
-  // }, []);
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      setSecondsLeft((seconds) => seconds - 1);
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const formatTimeLeft = React.useMemo(() => {
+    if (secondsLeft === 0) navigation.replace("TimesUpScreen", { channel });
+    if (secondsLeft > 60) {
+      const minutesLeft = Math.floor(secondsLeft / 60);
+      return `${minutesLeft} min left`;
+    } else {
+      return `${secondsLeft}s left`;
+    }
+  }, [secondsLeft]);
 
   const scrollToLastMessage = () =>
     ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
@@ -181,8 +195,8 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
             color="white"
           />
         </UserInfoButton>
-        <TimerContainer>
-          <TimerText>10 minutes</TimerText>
+        <TimerContainer secondsLeft={secondsLeft}>
+          <TimerText secondsLeft={secondsLeft}>{formatTimeLeft}</TimerText>
         </TimerContainer>
       </HeaderContainer>
 

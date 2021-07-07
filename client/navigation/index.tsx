@@ -9,6 +9,7 @@ import { ColorSchemeName } from "react-native";
 
 import ChatScreen from "../screens/ChatScreen";
 import CreateProfileScreen from "../screens/CreateProfileScreen";
+import EndChatScreen from "../screens/EndChatScreen";
 import Landing from "../screens/Landing";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import TimesUpScreen from "../screens/TimesUpScreen";
@@ -41,26 +42,15 @@ function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={Tabs} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+      <Stack.Screen name="TimesUpScreen" component={TimesUpScreen} />
+      <Stack.Screen name="EndChatScreen" component={EndChatScreen} />
       <Stack.Screen
         name="CreateProfileScreen"
         component={CreateProfileScreen}
       />
       <Stack.Screen name="Landing" component={Landing} />
-      <Stack.Screen
-        name="WaitingScreen"
-        component={WaitingScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="TimesUpScreen"
-        component={TimesUpScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ChatScreen"
-        component={ChatScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="WaitingScreen" component={WaitingScreen} />
       <Stack.Screen
         name="NotFound"
         component={NotFoundScreen}

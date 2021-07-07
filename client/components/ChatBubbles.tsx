@@ -1,7 +1,11 @@
 import * as React from "react";
+import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 import ProfileImage from "../components/ProfileImage";
+import Star from "../components/Star";
+
+import Row from "./Row";
 
 const WhiteChatText = styled.Text`
   font-family: Quicksand;
@@ -114,6 +118,33 @@ const SelectionOption = ({ text, value, selectedValue, setValue }: Option) => {
   );
 };
 
+const RatingContainer = styled(Row)`
+  margin-top: 12px;
+  flex: 8;
+  justify-content: flex-start;
+`;
+
+const Rating = ({ onOptionSelect }) => {
+  const [rating, setRating] = React.useState(-1);
+  const handleSelection = (rating: number) => {
+    onOptionSelect({ value: rating + 1 });
+    setRating(rating);
+  };
+
+  return (
+    <RatingContainer>
+      {[...Array(5).keys()].map((index) => (
+        <>
+          <TouchableOpacity onPress={() => handleSelection(index)} key={index}>
+            <Star filled={index <= rating} />
+          </TouchableOpacity>
+          <Space />
+        </>
+      ))}
+    </RatingContainer>
+  );
+};
+
 interface ChatBubbleProps {
   author?: string;
   message?: string;
@@ -121,6 +152,7 @@ interface ChatBubbleProps {
   options?: Option[];
   optionValue?: string | number | undefined;
   onOptionSelect?: (value: Record<string, string | number | undefined>) => void;
+  showRating?: boolean;
 }
 
 export const LeftChatBubble = ({
@@ -130,6 +162,7 @@ export const LeftChatBubble = ({
   options,
   optionValue,
   onOptionSelect,
+  showRating,
 }: ChatBubbleProps) => {
   const [optionSelection, setOptionSelection] = React.useState(optionValue);
 
@@ -180,6 +213,11 @@ export const LeftChatBubble = ({
           </SelectionOptionsContainer>
         </ChatBubbleContainer>
       )}
+      <ChatBubbleContainer>
+        <Space />
+        {showRating && <Rating onOptionSelect={onOptionSelect} />}
+        <Space />
+      </ChatBubbleContainer>
     </ChatContainer>
   );
 };

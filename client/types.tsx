@@ -11,10 +11,11 @@ export type RootStackParamList = {
   Landing: undefined;
   MainTabs: undefined;
   ChatScreen: { channel: string };
+  EndChatScreen: { channel: string };
   WaitingScreen: {
     chatTypes: string[];
   };
-  TimesUpScreen: undefined;
+  TimesUpScreen: { channel: string };
 };
 
 export type BottomTabParamList = {

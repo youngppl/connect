@@ -1,5 +1,4 @@
 import { gql, useMutation } from "@apollo/client";
-import { Ionicons } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -13,8 +12,8 @@ import {
   LeftChatBubble,
   RightChatBubble,
 } from "../components/ChatBubbles";
+import FeelingSlider from "../components/FeelingSlider";
 import Space from "../components/Space";
-import { UserContext } from "../providers/UserProvider";
 import { RootStackParamList } from "../types";
 
 const Container = styled(SafeAreaView)`
@@ -35,17 +34,6 @@ const MessagesContainer = styled.ScrollView`
   height: 100%;
 `;
 
-const BackButtonContainer = styled.TouchableOpacity`
-  width: 32px;
-  height: 32px;
-  border-radius: 16px;
-  background-color: #f8f8f8;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  left: 16px;
-`;
-
 const HeaderTitle = styled.Text`
   color: white;
   font-family: Quicksand;
@@ -60,7 +48,7 @@ const Input = styled.TextInput`
   color: #371463;
 `;
 
-const GetStartedButtonContainer = styled.TouchableOpacity`
+const DoneButtonContainer = styled.TouchableOpacity`
   width: 271px;
   background: rgba(255, 255, 255, 0.2);
   border: 3px solid #ffffff;
@@ -71,30 +59,14 @@ const GetStartedButtonContainer = styled.TouchableOpacity`
   align-self: center;
 `;
 
-const GetStartedText = styled.Text`
+const DoneText = styled.Text`
   font-family: Quicksand;
   font-weight: bold;
   font-size: 16px;
   color: #ffffff;
 `;
 
-const prompts = [
-  [
-    {
-      author: "Faju",
-      message: "When were you born?",
-    },
-    {
-      author: "you",
-      fieldName: "birthday",
-      defaultValue: "MM/DD/YYYY",
-    },
-  ],
-  [],
-  [],
-];
-
-const CreateProfileScreenMutation = gql`
+const EndChatScreenMutation = gql`
   mutation CreateProfile(
     $name: String!
     $birthday: String!
@@ -107,142 +79,100 @@ const CreateProfileScreenMutation = gql`
   }
 `;
 
-type CreateProfileScreenProps = StackScreenProps<
-  RootStackParamList,
-  "CreateProfileScreen"
->;
+type OptionValue = Record<string, string | number | undefined>;
+
+type EndChatScreenProps = StackScreenProps<RootStackParamList, "EndChatScreen">;
 
 const processNextStep = (state, action) => {
   const { getValues, setValue } = action.payload;
-  const fieldNames = ["name", "birthday", "pronouns"];
-  if (!getValues(fieldNames[state.step])) {
-    return;
-  }
-  if (state.step < prompts.length) {
-    switch (state.step) {
-      case 0:
-        return {
-          step: state.step + 1,
-          messages: [
-            ...state.messages,
-            {
-              author: "Faju",
-              message: `Nice to meet you, ${getValues("name")}. I’m Faju`,
-              isFirstInChain: true,
-            },
-            ...prompts[state.step],
-          ],
-        };
-      case 1: {
-        // Birthday step
-        const timestamp = Date.parse(getValues("birthday"));
-        if (isNaN(timestamp)) {
-          // bad date?
-          return {
-            ...state,
-            messages: [
-              ...state.messages,
-              {
-                author: "Faju",
-                message:
-                  "Are you sure that's your birthday? You might have entered it wrong.",
-                isFirstInChain: true,
-              },
-            ],
-          };
-        }
-        const birthday = new Date(timestamp);
-        const today = new Date();
-        const minDateCutoff = new Date();
-        minDateCutoff.setFullYear(today.getFullYear() - 18);
-        if (birthday > today) {
-          // born in the future???
-          return {
-            ...state,
-            messages: [
-              ...state.messages,
-              {
-                author: "Faju",
-                message: "You from the future or something?",
-                isFirstInChain: true,
-              },
-            ],
-          };
-        } else if (birthday > minDateCutoff) {
-          // must be 18+
-          return {
-            ...state,
-            messages: [
-              ...state.messages,
-              {
-                author: "Faju",
-                message:
-                  "Sorry bud, this is 18+ only. Come back on your 18th birthday. We’ll celebrate ya 🎊",
-                isFirstInChain: true,
-              },
-            ],
-          };
-        } else {
-          // init pronouns step
-          const handlePronounSelection = ({
-            value,
-          }: Record<string, string | number | undefined>) => {
-            setValue("pronouns", value); // manually set pronoun value in form
-          };
-          return {
-            step: state.step + 1,
-            messages: [
-              ...state.messages,
-              {
-                author: "Faju",
-                message: "Oh, that’s great! 😁 We welcome 18+.",
-                isFirstInChain: true,
-              },
-              {
-                author: "Faju",
-                message:
-                  "What’s your pronouns? I wanna make sure we all refer to you right (including everyone in jufa).",
-                options: [
-                  { text: "They / Them" },
-                  { text: "She / Her" },
-                  { text: "He / His" },
-                  { text: "I'd prefer not to say" },
-                ],
-                onOptionSelect: handlePronounSelection,
-              },
-            ],
-          };
-        }
-      }
-      case 2:
-        return {
-          step: state.step + 1,
-          messages: [
-            ...state.messages,
-            {
-              author: "you",
-              message: getValues("pronouns"),
-            },
-            {
-              author: "Faju",
-              isFirstInChain: true,
-              message: `Welcome to jufa, ${getValues(
-                "name"
-              )}. Let me show you around!`,
-            },
-          ],
-        };
-      default:
-        return state;
-    }
+
+  switch (state.step) {
+    case 0:
+      // Smile or laugh?
+      return {
+        step: state.step + 1,
+        messages: [
+          ...state.messages,
+          {
+            author: "you",
+            message: getValues("smile"),
+          },
+          {
+            author: "Faju",
+            message: `Great to hear! Please fill in the statement: I feel ____ than when I started this conversation`,
+            isFirstInChain: true,
+            options: [{ text: "Better" }, { text: "Same" }, { text: "Worse" }],
+            onOptionSelect: ({ value }: OptionValue) =>
+              setValue("howFeelingAfter", value),
+          },
+        ],
+      };
+    case 1:
+      // How feeling after chat?
+      return {
+        step: state.step + 1,
+        messages: [
+          ...state.messages,
+          {
+            author: "you",
+            message: getValues("howFeelingAfter"),
+          },
+          {
+            author: "Faju",
+            message: `How engaging was the conversation?`,
+            showRating: true,
+            onOptionSelect: ({ value }: OptionValue) =>
+              setValue("engagementRating", value),
+            isFirstInChain: true,
+          },
+        ],
+      };
+    case 2:
+      return {
+        step: state.step + 1,
+        messages: [
+          ...state.messages,
+          {
+            author: "you",
+            message: getValues("engagementRating"),
+          },
+          {
+            author: "Faju",
+            message: `That’s awesome! Would you ever talk to them again?`,
+            options: [{ text: "Yes" }, { text: "No" }],
+            onOptionSelect: ({ value }: OptionValue) =>
+              setValue("talkAgain", value),
+            isFirstInChain: true,
+          },
+        ],
+      };
+    case 3:
+      return {
+        step: state.step + 1,
+        messages: [
+          ...state.messages,
+          {
+            author: "you",
+            message: getValues("talkAgain"),
+          },
+          {
+            author: "Faju",
+            message: `Last thing! Just want to check in to see any upates with your mood. How do you feel right now?`,
+            isFirstInChain: true,
+          },
+        ],
+      };
+    default:
+      return state;
   }
 };
-const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
+const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
+  const { channel } = route.params;
   const { control, getValues, setValue, handleSubmit } = useForm();
-  const { setId } = React.useContext(UserContext);
-  const [createProfile] = useMutation(CreateProfileScreenMutation, {
+  const [mood, setMood] = React.useState(3);
+  const [submitChatFeedback] = useMutation(EndChatScreenMutation, {
     onCompleted: (data) => {
-      setId(data.createProfile.id);
+      return;
     },
   });
 
@@ -253,28 +183,27 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
     messages: [
       {
         author: "Faju",
-        message: "Oh, you’re new 🤔",
+        message:
+          "Faju again! Let me know how your chat with __ was, so we can do better in connecting you next time!",
         isFirstInChain: true,
       },
       {
         author: "Faju",
-        message: "What’s your name?",
-      },
-      {
-        author: "you",
-        fieldName: "name",
-        defaultValue: "Type name here.",
+        message:
+          "Did you genuinely smile and/or laugh during your conversation with her?",
+        options: [{ text: "Yes" }, { text: "No" }],
+        onOptionSelect: ({ value }: OptionValue) => setValue("smile", value),
       },
     ],
   });
 
   const onSubmit = (data: Record<string, any>) => {
-    console.log(data);
-    createProfile({ variables: data });
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "MainTabs" }],
-    });
+    console.log({ ...data, mood, channel }); // send this data to mutation
+    // createProfile({ variables: data });
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: "MainTabs" }],
+    // });
   };
 
   const scrollToLastMessage = () =>
@@ -298,10 +227,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   return (
     <Container edges={["top"]}>
       <HeaderContainer>
-        <BackButtonContainer onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={24} color="black" />
-        </BackButtonContainer>
-        <HeaderTitle>Get Started</HeaderTitle>
+        <HeaderTitle>Chat Feedback</HeaderTitle>
       </HeaderContainer>
       <KeyboardAvoidingView
         style={{
@@ -380,6 +306,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
                 key={index}
                 isFirstInChain={message.isFirstInChain}
                 options={message.options}
+                showRating={message.showRating}
                 onOptionSelect={(value) => {
                   message.onOptionSelect(value);
                   nextStep();
@@ -387,10 +314,13 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
               />
             );
           })}
-          {state?.step === prompts.length && (
-            <GetStartedButtonContainer onPress={handleSubmit(onSubmit)}>
-              <GetStartedText>Let&apos;s Go!</GetStartedText>
-            </GetStartedButtonContainer>
+          {state?.step === 4 && (
+            <>
+              <FeelingSlider mood={mood} setMood={setMood} textColor="white" />
+              <DoneButtonContainer onPress={handleSubmit(onSubmit)}>
+                <DoneText>Done</DoneText>
+              </DoneButtonContainer>
+            </>
           )}
           <Space height={30} />
         </MessagesContainer>
@@ -399,4 +329,4 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   );
 };
 
-export default CreateProfileScreen;
+export default EndChatScreen;

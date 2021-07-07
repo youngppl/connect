@@ -18,6 +18,11 @@ const SliderThumb = styled.View`
 const SliderThumbContainer = styled.View`
   position: relative;
 `;
+interface SliderProps extends DefaultSliderProps {
+  width?: number;
+  label?: string;
+  textColor?: string;
+}
 
 const SliderThumbLabel = styled.Text`
   position: absolute;
@@ -28,14 +33,10 @@ const SliderThumbLabel = styled.Text`
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
-  color: #371463;
+  color: ${(props: SliderProps) =>
+    props.textColor ? props.textColor : "#371463"};
   text-align: center;
 `;
-
-interface SliderProps extends DefaultSliderProps {
-  width?: number;
-  label?: string;
-}
 
 const Slider = (props: SliderProps) => {
   const SliderContainer = styled.View`
@@ -52,7 +53,9 @@ const Slider = (props: SliderProps) => {
           thumbProps={{
             children: (
               <SliderThumbContainer>
-                <SliderThumbLabel>{props.label}</SliderThumbLabel>
+                <SliderThumbLabel textColor={props.textColor}>
+                  {props.label}
+                </SliderThumbLabel>
                 <SliderThumb />
               </SliderThumbContainer>
             ),
