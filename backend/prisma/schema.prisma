@@ -26,4 +26,5 @@ model User {
   birthday  DateTime
   pronouns  Pronouns
   name      String
+  interests String[] // List of User interests
 }
