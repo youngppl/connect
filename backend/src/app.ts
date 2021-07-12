@@ -61,6 +61,7 @@ const typeDefs = `
   type Mutation {
     createMessage(channel: String!, message: String!, author: ID!): Chat
     createProfile(name: String!, pronouns: String, birthday: String!): Profile
+    createChatFeedback(author: ID!, channel: String!, engagementRating: Int!, howFeelingAfter: String!, mood: Int!, smile: String!, talkAgain: String!): String
   }
   type Subscription {
     chat(channel: String!): Chat
@@ -110,6 +111,10 @@ const resolvers: IResolvers = {
         },
       });
       return { message: "Profile made", id: user.id };
+    },
+    createChatFeedback: async (parent, data, context, info) => {
+      console.log(data);
+      return "done";
     },
   },
   Subscription: {

@@ -133,7 +133,6 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
     params: { channel, otherUser },
   } = route;
   const { id: userId } = React.useContext(UserContext);
-  console.log("subbing to this channel: ", channel);
   const { data } = useSubscription(chatSubscription, {
     variables: { channel },
   });

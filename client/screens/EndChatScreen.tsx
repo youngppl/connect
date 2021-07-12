@@ -14,6 +14,7 @@ import {
 } from "../components/ChatBubbles";
 import FeelingSlider from "../components/FeelingSlider";
 import Space from "../components/Space";
+import { UserContext } from "../providers/UserProvider";
 import { RootStackParamList } from "../types";
 
 const Container = styled(SafeAreaView)`
@@ -67,15 +68,24 @@ const DoneText = styled.Text`
 `;
 
 const EndChatScreenMutation = gql`
-  mutation CreateProfile(
-    $name: String!
-    $birthday: String!
-    $pronouns: String!
+  mutation ChatFeedback(
+    $author: ID!
+    $channel: String!
+    $engagementRating: Int!
+    $howFeelingAfter: String!
+    $mood: Int!
+    $smile: String!
+    $talkAgain: String!
   ) {
-    createProfile(name: $name, birthday: $birthday, pronouns: $pronouns) {
-      message
-      id
-    }
+    createChatFeedback(
+      author: $author
+      channel: $channel
+      engagementRating: $engagementRating
+      howFeelingAfter: $howFeelingAfter
+      mood: $mood
+      smile: $smile
+      talkAgain: $talkAgain
+    )
   }
 `;
 
@@ -168,13 +178,10 @@ const processNextStep = (state, action) => {
 };
 const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
   const { channel } = route.params;
+  const { id: userId } = React.useContext(UserContext);
   const { control, getValues, setValue, handleSubmit } = useForm();
   const [mood, setMood] = React.useState(3);
-  const [submitChatFeedback] = useMutation(EndChatScreenMutation, {
-    onCompleted: (data) => {
-      return;
-    },
-  });
+  const [submitChatFeedback] = useMutation(EndChatScreenMutation);
 
   const messagesViewRef = React.useRef(null);
 
@@ -198,12 +205,13 @@ const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
   });
 
   const onSubmit = (data: Record<string, any>) => {
-    console.log({ ...data, mood, channel }); // send this data to mutation
-    // createProfile({ variables: data });
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: "MainTabs" }],
-    // });
+    submitChatFeedback({
+      variables: { ...data, mood, channel, author: userId },
+    });
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "MainTabs" }],
+    });
   };
 
   const scrollToLastMessage = () =>
