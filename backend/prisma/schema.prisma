@@ -19,10 +19,11 @@ enum Pronouns {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String?  @unique
-  birthday DateTime
-  joined DateTime   @default(now())
-  pronouns Pronouns
-  name     String
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String?  @unique
+  birthday  DateTime
+  pronouns  Pronouns
+  name      String
 }

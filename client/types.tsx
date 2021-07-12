@@ -35,7 +35,7 @@ export type User = {
   id: string;
   pronouns: string;
   birthday: string;
-  joined: string;
+  createdAt: string;
   name: string;
   interests: string[];
 };

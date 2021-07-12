@@ -35,7 +35,7 @@ const typeDefs = `
   type User {
     email: String!
     name: String
-    joined: String
+    createdAt: String
     birthday: String
     pronouns: String
   }
@@ -80,9 +80,9 @@ const resolvers: IResolvers = {
       let pronouns = user.pronouns.split("_").join("/").toLowerCase();
       pronouns = pronouns.charAt(0).toUpperCase() + pronouns.slice(1);
       const joined =
-        user.joined.toLocaleString("default", { month: "long" }) +
+        user.createdAt.toLocaleString("default", { month: "long" }) +
         " " +
-        user.joined.getFullYear();
+        user.createdAt.getFullYear();
       const birthday = user.birthday.toLocaleDateString();
       return { ...user, pronouns, joined, birthday };
     },

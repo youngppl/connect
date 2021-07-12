@@ -57,7 +57,7 @@ const UserInfoCard = ({ user }: { user: User }) => {
           <UserInfoText>Feeling Happy </UserInfoText>
           <OkayIcon />
         </Row>
-        <UserInfoText>Joined in {user.joined}</UserInfoText>
+        <UserInfoText>Joined in {user.createdAt}</UserInfoText>
         <UserInfoText>Interested in {user.interests}</UserInfoText>
       </Column>
     </UserInfoCardContainer>
