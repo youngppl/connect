@@ -97,7 +97,7 @@ const getUserQuery = gql`
     getUser(id: $id) {
       name
       pronouns
-      joined
+      createdAt
       birthday
     }
   }

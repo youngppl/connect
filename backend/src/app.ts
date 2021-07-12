@@ -79,12 +79,12 @@ const resolvers: IResolvers = {
       const user = await prisma.user.findFirst({ where: { id: parseInt(id) } });
       let pronouns = user.pronouns.split("_").join("/").toLowerCase();
       pronouns = pronouns.charAt(0).toUpperCase() + pronouns.slice(1);
-      const joined =
+      const createdAt =
         user.createdAt.toLocaleString("default", { month: "long" }) +
         " " +
         user.createdAt.getFullYear();
       const birthday = user.birthday.toLocaleDateString();
-      return { ...user, pronouns, joined, birthday };
+      return { ...user, pronouns, createdAt, birthday };
     },
   },
   Mutation: {
@@ -106,7 +106,7 @@ const resolvers: IResolvers = {
         data: {
           name,
           birthday: new Date(birthday),
-          joined: new Date(),
+          createdAt: new Date(),
           pronouns,
         },
       });
