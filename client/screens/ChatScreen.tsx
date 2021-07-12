@@ -130,7 +130,7 @@ const createMessageMutation = gql`
 
 const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
   const {
-    params: { channel },
+    params: { channel, otherUser },
   } = route;
   const { id: userId } = React.useContext(UserContext);
   console.log("subbing to this channel: ", channel);
@@ -142,7 +142,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
   const [messageText, setMessageText] = React.useState<string | undefined>();
   const messagesViewRef = React.useRef(null);
   const [showUserInfo, setShowUserInfo] = React.useState(false);
-  const [secondsLeft, setSecondsLeft] = React.useState(5);
+  const [secondsLeft, setSecondsLeft] = React.useState(60);
 
   React.useEffect(() => {
     console.log("incoming message", data);
@@ -188,7 +188,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
           <Feather name="flag" size={24} color="white" />
         </FlagButtonContainer>
         <UserInfoButton onPress={() => setShowUserInfo((show) => !show)}>
-          <Name>Naomi</Name>
+          <Name>{otherUser.name}</Name>
           <Feather
             name={showUserInfo ? "chevron-up" : "chevron-down"}
             size={24}
@@ -202,7 +202,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
 
       {showUserInfo && (
         <UserInfoContainer>
-          <UserInfoCard />
+          <UserInfoCard user={otherUser} />
         </UserInfoContainer>
       )}
 
@@ -225,7 +225,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
               );
             return (
               <LeftChatBubble
-                author={message.author}
+                author={otherUser.name}
                 message={message.message}
                 key={index}
                 isFirstInChain={
@@ -240,7 +240,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
         </MessagesContainer>
         <MessageInputContainer>
           <MessageInput
-            placeholder={"Message Naomi..."}
+            placeholder={`Message ${otherUser.name}...`}
             placeholderTextColor={"white"}
             returnKeyType="send"
             value={messageText}

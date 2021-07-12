@@ -1,4 +1,5 @@
 import { gql, useLazyQuery, useSubscription } from "@apollo/client";
+import { createIconSetFromFontello } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { TouchableOpacityProps, TouchableOpacity } from "react-native";
@@ -86,6 +87,7 @@ const waitingRoomSubscription = gql`
       message
       users
       channel
+      chatType
     }
   }
 `;
@@ -115,18 +117,20 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
 
   const [state, setState] = React.useState("waiting");
   const [channel, setChannel] = React.useState("");
+  const [matchedChatType, setMatchedChatType] = React.useState("");
 
   React.useEffect(() => {
     console.log(matchData);
     if (matchData) {
       const {
-        waitingRoom: { users, channel },
+        waitingRoom: { users, channel, chatType },
       } = matchData;
       if (users.includes(userId)) {
         setState("matched");
-        setChannel(channel);
         const id = users.filter((id: string) => id !== userId)[0];
         getMatchedUser({ variables: { id } });
+        setMatchedChatType(chatType.toLowerCase().split("_").join(" "));
+        setChannel(channel);
       }
     }
   }, [matchData]);
@@ -142,13 +146,18 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
           <>
             <BannerText>
               {"You’ve been matched to have a "}
-              <TalkTypeText>{matchData.waitingRoom.chatType}</TalkTypeText>
+              <TalkTypeText>{matchedChatType}</TalkTypeText>
             </BannerText>
             <Space height={24} />
             <UserInfoCard user={matchedUserData.getUser} />
             <Space height={70} />
             <ButtonContainer
-              onPress={() => navigation.replace("ChatScreen", { channel })}
+              onPress={() =>
+                navigation.replace("ChatScreen", {
+                  channel,
+                  otherUser: matchedUserData.getUser,
+                })
+              }
             >
               <ButtonText>Talk to {matchedUserData.getUser.name}</ButtonText>
             </ButtonContainer>

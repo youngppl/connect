@@ -51,6 +51,7 @@ const typeDefs = `
     message: String!
     users: [ID!]!
     channel: String!
+    chatType: String!
   }
 
   type Query {
