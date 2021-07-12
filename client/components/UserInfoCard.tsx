@@ -6,6 +6,7 @@ import OkayIcon from "../components/emotions/Okay";
 import ProfileImage from "../components/ProfileImage";
 import Row from "../components/Row";
 import Space from "../components/Space";
+import { User } from "../types";
 
 const UserInfoCardContainer = styled.View`
   background: rgba(255, 255, 255, 0.1);
@@ -38,7 +39,7 @@ const UserInfoText = styled(UserInfoTitle)`
   font-size: 14px;
   padding-bottom: 10px;
 `;
-const UserInfoCard = () => {
+const UserInfoCard = ({ user }: { user: User }) => {
   return (
     <UserInfoCardContainer>
       <UserInfoHeading>
@@ -47,8 +48,8 @@ const UserInfoCard = () => {
         </Column>
         <Space width={10} />
         <Column>
-          <UserInfoTitle>Naomi</UserInfoTitle>
-          <UserInfoSubtitle>She/her</UserInfoSubtitle>
+          <UserInfoTitle>{user.name}</UserInfoTitle>
+          <UserInfoSubtitle>{user.pronouns}</UserInfoSubtitle>
         </Column>
       </UserInfoHeading>
       <Column>
@@ -56,8 +57,8 @@ const UserInfoCard = () => {
           <UserInfoText>Feeling Happy </UserInfoText>
           <OkayIcon />
         </Row>
-        <UserInfoText>Joined in July 2021</UserInfoText>
-        <UserInfoText>Interested in Basketball, Marvel, and Art</UserInfoText>
+        <UserInfoText>Joined in {user.joined}</UserInfoText>
+        <UserInfoText>Interested in {user.interests}</UserInfoText>
       </Column>
     </UserInfoCardContainer>
   );

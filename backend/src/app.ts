@@ -35,6 +35,9 @@ const typeDefs = `
   type User {
     email: String!
     name: String
+    joined: String
+    birthday: String
+    pronouns: String
   }
   type Chat {
     message: String!
@@ -52,11 +55,11 @@ const typeDefs = `
 
   type Query {
     allUsers: [User!]!
-    hello: String
+    getUser(id: ID!): User
   }
   type Mutation {
     createMessage(channel: String!, message: String!, author: ID!): Chat
-    createProfile(name: String!, pronouns: String!, birthday: String!): Profile
+    createProfile(name: String!, pronouns: String, birthday: String!): Profile
   }
   type Subscription {
     chat(channel: String!): Chat
@@ -70,8 +73,16 @@ const resolvers: IResolvers = {
     allUsers: () => {
       return prisma.user.findMany();
     },
-    hello: () => {
-      return "swag";
+    getUser: async (parent, { id }, context, info) => {
+      const user = await prisma.user.findFirst({ where: { id: parseInt(id) } });
+      let pronouns = user.pronouns.split("_").join("/").toLowerCase();
+      pronouns = pronouns.charAt(0).toUpperCase() + pronouns.slice(1);
+      const joined =
+        user.joined.toLocaleString("default", { month: "long" }) +
+        " " +
+        user.joined.getFullYear();
+      const birthday = user.birthday.toLocaleDateString();
+      return { ...user, pronouns, joined, birthday };
     },
   },
   Mutation: {
@@ -87,12 +98,14 @@ const resolvers: IResolvers = {
       return chat;
     },
     createProfile: async (parent, data, context, info) => {
-      const { name } = data;
+      const { name, birthday, pronouns } = data;
+      console.log(data);
       const user = await prisma.user.create({
         data: {
           name,
-          birthday: new Date(),
-          pronouns: Pronouns.HE_HIS,
+          birthday: new Date(birthday),
+          joined: new Date(),
+          pronouns,
         },
       });
       return { message: "Profile made", id: user.id };
@@ -141,6 +154,7 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
           message: "matched",
           users: [matchedUser, userId],
           channel: `chat-${nanoid(15)}`,
+          chatType,
         };
         // remove both users from all other lists they may be in (ugly af)
         await Promise.all([
@@ -170,6 +184,7 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
           message: "matched",
           users: [4, 5],
           channel: `chat-${nanoid(15)}`,
+          chatType: CHAT_OPTIONS.DEEP_TALK,
         },
       }),
     1000
@@ -181,6 +196,7 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
           message: "matched",
           users: [1, 2],
           channel: `chat-${nanoid(15)}`,
+          chatType: CHAT_OPTIONS.SMALL_TALK,
         },
       }),
     3000

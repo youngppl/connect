@@ -105,10 +105,10 @@ const SelectionOptionText = styled(WhiteChatText)`
 `;
 
 const SelectionOption = ({ text, value, selectedValue, setValue }: Option) => {
-  const selected = (text || value) === selectedValue;
+  const selected = (value || text) === selectedValue;
 
   const handleSelect = () => {
-    setValue({ text, value: text || value });
+    setValue({ text, value: value || text });
   };
 
   return (

@@ -42,13 +42,13 @@ function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={Tabs} />
-      <Stack.Screen name="ChatScreen" component={ChatScreen} />
-      <Stack.Screen name="TimesUpScreen" component={TimesUpScreen} />
-      <Stack.Screen name="EndChatScreen" component={EndChatScreen} />
       <Stack.Screen
         name="CreateProfileScreen"
         component={CreateProfileScreen}
       />
+      <Stack.Screen name="EndChatScreen" component={EndChatScreen} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+      <Stack.Screen name="TimesUpScreen" component={TimesUpScreen} />
       <Stack.Screen name="Landing" component={Landing} />
       <Stack.Screen name="WaitingScreen" component={WaitingScreen} />
       <Stack.Screen

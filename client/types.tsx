@@ -30,3 +30,12 @@ export type HomeTabParamList = {
 export type ProfileTabParamList = {
   ProfileScreen: undefined;
 };
+
+export type User = {
+  id: string;
+  pronouns: string;
+  birthday: string;
+  joined: string;
+  name: string;
+  interests: string[];
+};

@@ -15,12 +15,14 @@ enum Pronouns {
   THEY_THEM
   HE_HIS
   SHE_HER
+  NONE
 }
 
 model User {
   id       Int      @id @default(autoincrement())
   email    String?  @unique
   birthday DateTime
+  joined DateTime   @default(now())
   pronouns Pronouns
   name     String
 }

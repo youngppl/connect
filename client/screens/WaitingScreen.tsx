@@ -1,4 +1,4 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useLazyQuery, useSubscription } from "@apollo/client";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { TouchableOpacityProps, TouchableOpacity } from "react-native";
@@ -90,30 +90,46 @@ const waitingRoomSubscription = gql`
   }
 `;
 
+const getUserQuery = gql`
+  query getUserQuery($id: ID!) {
+    getUser(id: $id) {
+      name
+      pronouns
+      joined
+      birthday
+    }
+  }
+`;
+
 const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
   const { id: userId } = React.useContext(UserContext);
   const {
     params: { chatTypes },
   } = route;
-  console.log(chatTypes);
-  const { data } = useSubscription(waitingRoomSubscription, {
+  const { data: matchData } = useSubscription(waitingRoomSubscription, {
     variables: { userId, chatTypes },
   });
+  const [getMatchedUser, { loading, data: matchedUserData }] = useLazyQuery(
+    getUserQuery
+  );
+
   const [state, setState] = React.useState("waiting");
   const [channel, setChannel] = React.useState("");
 
   React.useEffect(() => {
-    console.log(data);
-    if (data) {
+    console.log(matchData);
+    if (matchData) {
       const {
         waitingRoom: { users, channel },
-      } = data;
+      } = matchData;
       if (users.includes(userId)) {
         setState("matched");
         setChannel(channel);
+        const id = users.filter((id: string) => id !== userId)[0];
+        getMatchedUser({ variables: { id } });
       }
     }
-  }, [data]);
+  }, [matchData]);
 
   return (
     <Container>
@@ -122,19 +138,19 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
         {state === "waiting" && (
           <BannerText>One sec. We’re finding someone for you...</BannerText>
         )}
-        {state === "matched" && (
+        {state === "matched" && matchedUserData && (
           <>
             <BannerText>
               {"You’ve been matched to have a "}
-              <TalkTypeText>deep talk</TalkTypeText>
+              <TalkTypeText>{matchData.waitingRoom.chatType}</TalkTypeText>
             </BannerText>
             <Space height={24} />
-            <UserInfoCard />
+            <UserInfoCard user={matchedUserData.getUser} />
             <Space height={70} />
             <ButtonContainer
               onPress={() => navigation.replace("ChatScreen", { channel })}
             >
-              <ButtonText>Talk to Naomi</ButtonText>
+              <ButtonText>Talk to {matchedUserData.getUser.name}</ButtonText>
             </ButtonContainer>
           </>
         )}

@@ -118,6 +118,7 @@ const processNextStep = (state, action) => {
   if (!getValues(fieldNames[state.step])) {
     return;
   }
+  console.log(state);
   if (state.step < prompts.length) {
     switch (state.step) {
       case 0:
@@ -185,9 +186,9 @@ const processNextStep = (state, action) => {
         } else {
           // init pronouns step
           const handlePronounSelection = ({
-            value,
+            text,
           }: Record<string, string | number | undefined>) => {
-            setValue("pronouns", value); // manually set pronoun value in form
+            setValue("pronouns", text); // manually set pronoun value in form
           };
           return {
             step: state.step + 1,
@@ -203,10 +204,10 @@ const processNextStep = (state, action) => {
                 message:
                   "What’s your pronouns? I wanna make sure we all refer to you right (including everyone in jufa).",
                 options: [
-                  { text: "They / Them" },
-                  { text: "She / Her" },
-                  { text: "He / His" },
-                  { text: "I'd prefer not to say" },
+                  { text: "They / Them", value: "THEY_THEM" },
+                  { text: "She / Her", value: "SHE_HER" },
+                  { text: "He / His", value: "HE_HIS" },
+                  { text: "I'd prefer not to say", value: "NONE" },
                 ],
                 onOptionSelect: handlePronounSelection,
               },
@@ -269,7 +270,13 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   });
 
   const onSubmit = (data: Record<string, any>) => {
-    console.log(data);
+    const PRONOUNS: Record<string, string> = {
+      "They / Them": "THEY_THEM",
+      "She / Her": "SHE_HER",
+      "He / His": "HE_HIS",
+      "I'd prefer not to say": "NONE",
+    };
+    data.pronouns = PRONOUNS[data.pronouns];
     createProfile({ variables: data });
     navigation.reset({
       index: 0,
