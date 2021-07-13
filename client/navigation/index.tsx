@@ -41,11 +41,11 @@ const Stack = createStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MainTabs" component={Tabs} />
       <Stack.Screen
         name="CreateProfileScreen"
         component={CreateProfileScreen}
       />
+      <Stack.Screen name="MainTabs" component={Tabs} />
       <Stack.Screen name="EndChatScreen" component={EndChatScreen} />
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="TimesUpScreen" component={TimesUpScreen} />

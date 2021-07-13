@@ -1,6 +1,6 @@
 import { addResolversToSchema } from "@graphql-tools/schema";
 import { IResolvers } from "graphql-tools";
-import { PrismaClient, Pronouns } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import ws from "ws";
@@ -10,21 +10,12 @@ import { RedisPubSub } from "graphql-redis-subscriptions";
 import Redis from "ioredis";
 import { nanoid } from "nanoid";
 
-const options = {
-  host: "redis",
-  port: 6379,
-  retryStrategy: (times: number) => {
-    // reconnect after
-    return Math.min(times * 50, 2000);
-  },
-};
-
 const prisma = new PrismaClient();
 const pubsub = new RedisPubSub({
-  publisher: new Redis(options),
-  subscriber: new Redis(options),
+  publisher: new Redis(process.env.REDIS_URL),
+  subscriber: new Redis(process.env.REDIS_URL),
 });
-const redis = new Redis(options);
+const redis = new Redis(process.env.REDIS_URL);
 
 const corsOptions = {
   origin: true,
@@ -181,32 +172,6 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
     pubsub.publish("WaitingRoom", {
       waitingRoom: matchData,
     });
-
-  // * MOCK Matching methods for solo testing
-  setTimeout(
-    () =>
-      pubsub.publish("WaitingRoom", {
-        waitingRoom: {
-          message: "matched",
-          users: [4, 5],
-          channel: `chat-${nanoid(15)}`,
-          chatType: CHAT_OPTIONS.DEEP_TALK,
-        },
-      }),
-    1000
-  );
-  setTimeout(
-    () =>
-      pubsub.publish("WaitingRoom", {
-        waitingRoom: {
-          message: "matched",
-          users: [1, 2],
-          channel: `chat-${nanoid(15)}`,
-          chatType: CHAT_OPTIONS.SMALL_TALK,
-        },
-      }),
-    3000
-  );
 };
 
 const schemaWithResolvers = addResolversToSchema({
