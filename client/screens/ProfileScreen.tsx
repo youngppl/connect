@@ -1,7 +1,8 @@
-import { AntDesign } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { AntDesign, Entypo } from "@expo/vector-icons";
+import _ from "lodash";
 import * as React from "react";
-import { FlatList } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
@@ -11,6 +12,7 @@ import BottomSheet, {
   BottomSheetHeading,
 } from "../components/BottomSheet";
 import Space from "../components/Space";
+import { UserContext } from "../providers/UserProvider";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -92,6 +94,7 @@ interface InterestOptionProps {
   item: InterestOptionItemProp;
   setInterests: (value: any) => void;
   selected: boolean;
+  disabled: boolean;
 }
 
 const WhiteChatText = styled.Text`
@@ -128,12 +131,14 @@ const InterestOption = ({
   item,
   setInterests,
   selected,
+  disabled,
 }: InterestOptionProps) => {
   return (
     <SelectionOptionContainer
+      disabled={disabled}
       selected={selected}
       onPress={() =>
-        setInterests((oldInterests) => ({
+        setInterests((oldInterests: StringBooleanHash) => ({
           ...oldInterests,
           [item.value]: !selected,
         }))
@@ -174,7 +179,7 @@ const INTEREST_OPTIONS = [
 
 const Line = styled.View`
   border-bottom-color: rgba(55, 20, 99, 0.2);
-  border-bottom-width: 1;
+  border-bottom-width: 1px;
 `;
 
 const SuggestionText = styled.Text`
@@ -197,28 +202,52 @@ const SuggestionTextButtonText = styled.Text`
   color: #371463;
 `;
 
+const UPDATE_INTERESTS_MUTATION = gql`
+  mutation UpdateInterestsMutation($userId: ID, $interests: [String!]) {
+    updateInterests(userId: $userId, interests: $interests) {
+      interests
+    }
+  }
+`;
+
 const InterestSheet = ({
-  visible,
-  setVisible,
-  interests,
-  setInterests,
+  visibleModal,
+  setVisibleModal,
+  userId,
 }: {
-  visible: boolean;
-  setVisible: any;
-  interests: any;
-  setInterests: any;
+  visibleModal: boolean;
+  setVisibleModal: any;
+  userId: string | number | null;
 }) => {
+  const [updateInterests] = useMutation(UPDATE_INTERESTS_MUTATION);
+  const [interests, setInterests] = React.useState<StringBooleanHash>(() => {
+    const baseInterests: StringBooleanHash = {};
+    for (const option of INTEREST_OPTIONS) {
+      const key: string = option.value;
+      baseInterests[key] = false;
+    }
+    return baseInterests;
+  });
+
   const handleDone = () => {
-    setVisible(false);
+    const mutationInterests = _.keys(_.pickBy(interests, _.identity));
+    console.log(userId);
+    // updateInterests({
+    //   variables: { interests: mutationInterests, userId: userId || 1 },
+    // });
+    setVisibleModal(false);
   };
 
+  const disabledInterests =
+    _.values(interests).filter((x) => x === true).length >= 3;
+
   return (
-    <BottomSheet visible={visible} setVisible={setVisible}>
+    <BottomSheet visible={visibleModal} setVisible={setVisibleModal}>
       <BottomSheetHeading>Select up to 3 interests</BottomSheetHeading>
       <Space height={44} />
       <FlatList
         data={INTEREST_OPTIONS}
-        contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
+        contentContainerStyle={{ flexDirection: "column" }}
         numColumns={3}
         keyExtractor={(item) => item.value}
         renderItem={({ item }: { item: InterestOptionItemProp }) => (
@@ -226,6 +255,7 @@ const InterestSheet = ({
             item={item}
             setInterests={setInterests}
             selected={interests[item.value] === true}
+            disabled={disabledInterests && !interests[item.value]}
           />
         )}
       />
@@ -342,23 +372,29 @@ const BadgesPortion = () => {
     >
       <BadgeItem text={"Joymaker"} />
       <BadgeItem text={"Charming"} />
-      <BadgeItem />
+      <BadgeItem text={""} />
     </RowContainer>
   );
 };
 
-const ProfileScreen = () => {
+interface StringBooleanHash {
+  [key: string]: boolean;
+}
+
+// const ErrorText = styled.Text`
+//   color: red;
+// `;
+
+const ProfileContent = ({ userId }: { userId: string | number | null }) => {
   const [showModal, setShowModal] = React.useState(false);
-  const [interests, setInterests] = React.useState(() => {
-    const baseInterests = {};
-    for (const key of INTEREST_OPTIONS) {
-      baseInterests[key] = false;
-    }
-    return false;
-  });
+  //  const { loading, error, data } = useQuery(ProfileScreen.query, {
+  //    variables: { id: userId },
+  //  });
+  //  if (loading) return <ActivityIndicator size="large" />;
+  //  if (error) return <ErrorText>`Error! ${error.message}`</ErrorText>;
 
   return (
-    <Container>
+    <>
       <ProfilePortion />
       <Space height={10} />
       <BadgesPortion />
@@ -367,13 +403,36 @@ const ProfileScreen = () => {
         addInterestPress={setShowModal}
       ></YourInterestsSection>
       <InterestSheet
-        visible={showModal}
-        setVisible={setShowModal}
-        interests={interests}
-        setInterests={setInterests}
+        userId={userId}
+        visibleModal={showModal}
+        setVisibleModal={setShowModal}
       ></InterestSheet>
+    </>
+  );
+};
+
+const ProfileScreen = () => {
+  return (
+    <Container>
+      <UserContext.Consumer>
+        {({ id }) => {
+          return <ProfileContent userId={id || 1} />;
+        }}
+      </UserContext.Consumer>
     </Container>
   );
 };
+
+ProfileScreen.query = gql`
+  query ProfileScreen($id: ID) {
+    getUser(id: $id) {
+      email
+      name
+      createdAt
+      birthday
+      pronouns
+    }
+  }
+`;
 
 export default ProfileScreen;

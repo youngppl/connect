@@ -53,6 +53,7 @@ const typeDefs = `
     createMessage(channel: String!, message: String!, author: ID!): Chat
     createProfile(name: String!, pronouns: String, birthday: String!): Profile
     createChatFeedback(author: ID!, channel: String!, engagementRating: Int!, howFeelingAfter: String!, mood: Int!, smile: String!, talkAgain: String!): String
+    updateInterests(userId: ID!, interests: [String!]): [String!]
   }
   type Subscription {
     chat(channel: String!): Chat
@@ -106,6 +107,19 @@ const resolvers: IResolvers = {
     createChatFeedback: async (parent, data, context, info) => {
       console.log(data);
       return "done";
+    },
+    updateInterests: async (parent, data, context, info) => {
+      console.log(data);
+      const { userId, interests } = data;
+      const user = await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          interests: interests,
+        },
+      });
+      return { interests: "Interests" };
     },
   },
   Subscription: {
