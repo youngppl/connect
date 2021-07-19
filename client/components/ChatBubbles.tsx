@@ -124,7 +124,11 @@ const RatingContainer = styled(Row)`
   justify-content: flex-start;
 `;
 
-const Rating = ({ onOptionSelect }) => {
+type RatingProps = {
+  onOptionSelect: () => void;
+};
+
+const Rating = ({ onOptionSelect }: RatingProps) => {
   const [rating, setRating] = React.useState(-1);
   const handleSelection = (rating: number) => {
     onOptionSelect({ value: rating + 1 });

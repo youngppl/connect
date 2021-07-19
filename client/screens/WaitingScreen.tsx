@@ -1,5 +1,4 @@
 import { gql, useLazyQuery, useSubscription } from "@apollo/client";
-import { createIconSetFromFontello } from "@expo/vector-icons";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { TouchableOpacityProps, TouchableOpacity } from "react-native";
@@ -111,7 +110,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
   const { data: matchData } = useSubscription(waitingRoomSubscription, {
     variables: { userId, chatTypes },
   });
-  const [getMatchedUser, { loading, data: matchedUserData }] = useLazyQuery(
+  const [getMatchedUser, { data: matchedUserData }] = useLazyQuery(
     getUserQuery
   );
 

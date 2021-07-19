@@ -112,13 +112,32 @@ type CreateProfileScreenProps = StackScreenProps<
   "CreateProfileScreen"
 >;
 
+const INITIAL_CREATE_FLOW_STATE = {
+  step: 0,
+  messages: [
+    {
+      author: "Faju",
+      message: "Oh, you’re new 🤔",
+      isFirstInChain: true,
+    },
+    {
+      author: "Faju",
+      message: "What’s your name?",
+    },
+    {
+      author: "you",
+      fieldName: "name",
+      defaultValue: "Type name here.",
+    },
+  ],
+};
+
 const processNextStep = (state, action) => {
   const { getValues, setValue } = action.payload;
   const fieldNames = ["name", "birthday", "pronouns"];
   if (!getValues(fieldNames[state.step])) {
     return;
   }
-  console.log(state);
   if (state.step < prompts.length) {
     switch (state.step) {
       case 0:
@@ -238,6 +257,7 @@ const processNextStep = (state, action) => {
     }
   }
 };
+
 const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
   const { control, getValues, setValue, handleSubmit } = useForm();
   const { setId } = React.useContext(UserContext);
@@ -249,25 +269,10 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
 
   const messagesViewRef = React.useRef(null);
 
-  const [state, dispatch] = React.useReducer(processNextStep, {
-    step: 0,
-    messages: [
-      {
-        author: "Faju",
-        message: "Oh, you’re new 🤔",
-        isFirstInChain: true,
-      },
-      {
-        author: "Faju",
-        message: "What’s your name?",
-      },
-      {
-        author: "you",
-        fieldName: "name",
-        defaultValue: "Type name here.",
-      },
-    ],
-  });
+  const [state, dispatch] = React.useReducer(
+    processNextStep,
+    INITIAL_CREATE_FLOW_STATE
+  );
 
   const onSubmit = (data: Record<string, any>) => {
     const PRONOUNS: Record<string, string> = {

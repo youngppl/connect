@@ -203,18 +203,18 @@ const SuggestionTextButtonText = styled.Text`
 `;
 
 const UPDATE_INTERESTS_MUTATION = gql`
-  mutation UpdateInterestsMutation($userId: ID, $interests: [String!]) {
-    updateInterests(userId: $userId, interests: $interests) {
-      interests
-    }
+  mutation UpdateInterestsMutation($userId: ID!, $interests: [String!]) {
+    updateInterests(userId: $userId, interests: $interests)
   }
 `;
 
 const InterestSheet = ({
   visibleModal,
+  initialInterests,
   setVisibleModal,
   userId,
 }: {
+  initialInterests: string[];
   visibleModal: boolean;
   setVisibleModal: any;
   userId: string | number | null;
@@ -224,17 +224,19 @@ const InterestSheet = ({
     const baseInterests: StringBooleanHash = {};
     for (const option of INTEREST_OPTIONS) {
       const key: string = option.value;
-      baseInterests[key] = false;
+      const initialExists = _.has(key, initialInterests);
+      baseInterests[key] = initialExists;
     }
     return baseInterests;
   });
 
   const handleDone = () => {
     const mutationInterests = _.keys(_.pickBy(interests, _.identity));
-    console.log(userId);
-    // updateInterests({
-    //   variables: { interests: mutationInterests, userId: userId || 1 },
-    // });
+    console.log(interests);
+    console.log("mutation interests", mutationInterests);
+    updateInterests({
+      variables: { interests: mutationInterests, userId },
+    });
     setVisibleModal(false);
   };
 
@@ -302,7 +304,11 @@ const TalkCounter = ({ count, text }: { count: number; text: string }) => {
   );
 };
 
-const ProfilePortion = () => {
+type UserProp = {
+  name: string;
+};
+
+const ProfilePortion = ({ user }: { user: UserProp }) => {
   return (
     <ProfileSection>
       <BaseText>Profile</BaseText>
@@ -322,11 +328,11 @@ const ProfilePortion = () => {
           <Space width={8} />
           <ColumnContainer>
             <RowContainer>
-              <BaseText>Nicole</BaseText>
+              <BaseText>{user.name}</BaseText>
               <AntDesign name="star" size={24} color="#FF97D5" />
               <BaseText>4.9</BaseText>
             </RowContainer>
-            <BaseText style={{ fontSize: 16 }}>She/Her</BaseText>
+            <BaseText style={{ fontSize: 16 }}>{user.pronouns}</BaseText>
           </ColumnContainer>
           <RowContainer style={{ flex: 1 }} />
           <Entypo name="chevron-right" size={24} color="white" />
@@ -381,21 +387,22 @@ interface StringBooleanHash {
   [key: string]: boolean;
 }
 
-// const ErrorText = styled.Text`
-//   color: red;
-// `;
+const ErrorText = styled.Text`
+  color: red;
+`;
 
 const ProfileContent = ({ userId }: { userId: string | number | null }) => {
   const [showModal, setShowModal] = React.useState(false);
-  //  const { loading, error, data } = useQuery(ProfileScreen.query, {
-  //    variables: { id: userId },
-  //  });
-  //  if (loading) return <ActivityIndicator size="large" />;
-  //  if (error) return <ErrorText>`Error! ${error.message}`</ErrorText>;
+  const { loading, error, data } = useQuery(ProfileScreen.query, {
+    variables: { id: userId },
+  });
+  if (loading) return <ActivityIndicator size="large" />;
+  if (error) return <ErrorText>`Error! ${error.message}`</ErrorText>;
+  console.log(data);
 
   return (
     <>
-      <ProfilePortion />
+      <ProfilePortion user={data.getUser} />
       <Space height={10} />
       <BadgesPortion />
       <Space height={40} />
@@ -404,6 +411,7 @@ const ProfileContent = ({ userId }: { userId: string | number | null }) => {
       ></YourInterestsSection>
       <InterestSheet
         userId={userId}
+        initialInterests={data.getUser.initialInterests}
         visibleModal={showModal}
         setVisibleModal={setShowModal}
       ></InterestSheet>
@@ -416,7 +424,7 @@ const ProfileScreen = () => {
     <Container>
       <UserContext.Consumer>
         {({ id }) => {
-          return <ProfileContent userId={id || 1} />;
+          return <ProfileContent userId={id} />;
         }}
       </UserContext.Consumer>
     </Container>
@@ -424,13 +432,13 @@ const ProfileScreen = () => {
 };
 
 ProfileScreen.query = gql`
-  query ProfileScreen($id: ID) {
+  query ProfileScreen($id: ID!) {
     getUser(id: $id) {
-      email
       name
       createdAt
       birthday
       pronouns
+      interests
     }
   }
 `;

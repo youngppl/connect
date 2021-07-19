@@ -24,11 +24,12 @@ const corsOptions = {
 
 const typeDefs = `
   type User {
-    email: String!
+    email: String
     name: String
     createdAt: String
     birthday: String
     pronouns: String
+    interests: [String!]
   }
   type Chat {
     message: String!
@@ -113,13 +114,13 @@ const resolvers: IResolvers = {
       const { userId, interests } = data;
       const user = await prisma.user.update({
         where: {
-          id: userId,
+          id: parseInt(userId),
         },
         data: {
           interests: interests,
         },
       });
-      return { interests: "Interests" };
+      return interests;
     },
   },
   Subscription: {
