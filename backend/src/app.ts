@@ -52,6 +52,7 @@ const typeDefs = `
   }
   type Mutation {
     createMessage(channel: String!, message: String!, author: ID!): Chat
+    leaveWaitingRoom(userId: ID!): String
     createProfile(name: String!, pronouns: String, birthday: String!): Profile
     createChatFeedback(author: ID!, channel: String!, engagementRating: Int!, howFeelingAfter: String!, mood: Int!, smile: String!, talkAgain: String!): String
     updateInterests(userId: ID!, interests: [String!]): [String!]
@@ -91,6 +92,11 @@ const resolvers: IResolvers = {
       console.log("sending", chat, "to", channel);
       await pubsub.publish(channel, { chat });
       return chat;
+    },
+    leaveWaitingRoom: async (parent, data, context, info) => {
+      const { userId } = data;
+      await yeetUserFromAllQueues(userId);
+      return "done";
     },
     createProfile: async (parent, data, context, info) => {
       const { name, birthday, pronouns } = data;
@@ -168,15 +174,9 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
           channel: `chat-${nanoid(15)}`,
           chatType,
         };
-        // remove both users from all other lists they may be in (ugly af)
-        await Promise.all([
-          redis.lrem(CHAT_OPTIONS.DEEP_TALK, 0, matchedUser),
-          redis.lrem(CHAT_OPTIONS.DEEP_TALK, 0, userId),
-          redis.lrem(CHAT_OPTIONS.LIGHT_TALK, 0, matchedUser),
-          redis.lrem(CHAT_OPTIONS.LIGHT_TALK, 0, userId),
-          redis.lrem(CHAT_OPTIONS.SMALL_TALK, 0, matchedUser),
-          redis.lrem(CHAT_OPTIONS.SMALL_TALK, 0, userId),
-        ]);
+        // remove both users from all other lists they may be in
+        await yeetUserFromAllQueues(matchedUser);
+        await yeetUserFromAllQueues(userId);
         break;
       }
     } else {
@@ -187,6 +187,14 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
     pubsub.publish("WaitingRoom", {
       waitingRoom: matchData,
     });
+};
+
+const yeetUserFromAllQueues = async (userId: string) => {
+  await Promise.all([
+    redis.lrem(CHAT_OPTIONS.DEEP_TALK, 0, userId),
+    redis.lrem(CHAT_OPTIONS.LIGHT_TALK, 0, userId),
+    redis.lrem(CHAT_OPTIONS.SMALL_TALK, 0, userId),
+  ]);
 };
 
 const schemaWithResolvers = addResolversToSchema({

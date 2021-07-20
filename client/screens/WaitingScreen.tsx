@@ -1,4 +1,9 @@
-import { gql, useLazyQuery, useSubscription } from "@apollo/client";
+import {
+  gql,
+  useLazyQuery,
+  useMutation,
+  useSubscription,
+} from "@apollo/client";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { TouchableOpacityProps, TouchableOpacity } from "react-native";
@@ -102,6 +107,12 @@ const getUserQuery = gql`
   }
 `;
 
+const leaveWaitingRoomMutation = gql`
+  mutation($userId: ID!) {
+    leaveWaitingRoom(userId: $userId)
+  }
+`;
+
 const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
   const { id: userId } = React.useContext(UserContext);
   const { chatTypes } = route.params;
@@ -111,6 +122,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
   const [getMatchedUser, { data: matchedUserData }] = useLazyQuery(
     getUserQuery
   );
+  const [leaveWaitingRoom] = useMutation(leaveWaitingRoomMutation);
 
   const [state, setState] = React.useState("waiting");
   const [channel, setChannel] = React.useState("");
@@ -142,6 +154,11 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
       }
     }
   }, [matchData]);
+
+  const goBackToHomeScreen = (params: { initiateChat?: boolean } = {}) => {
+    leaveWaitingRoom({ variables: { userId } });
+    navigation.replace("MainTabs", params);
+  };
 
   return (
     <Container>
@@ -177,14 +194,12 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
             <BannerText>{"Uh oh! We couldn't find anyone for you."}</BannerText>
             <Space height={36} />
             <ButtonContainer
-              onPress={() =>
-                navigation.replace("MainTabs", { initiateChat: true })
-              }
+              onPress={() => goBackToHomeScreen({ initiateChat: true })}
             >
               <ButtonText>Adjust type of conversation</ButtonText>
             </ButtonContainer>
             <Space height={18} />
-            <CancelButton onPress={() => navigation.replace("MainTabs", {})} />
+            <CancelButton onPress={() => goBackToHomeScreen()} />
           </>
         )}
 
