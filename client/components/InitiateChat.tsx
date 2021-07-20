@@ -219,8 +219,10 @@ const AgreementsSheet = (
   );
 };
 
-const ChatButton = () => {
-  const [showChatTypeSheet, setShowChatTypeSheet] = React.useState(false);
+const ChatButton = ({ initiateChat = false }: { initiateChat?: boolean }) => {
+  const [showChatTypeSheet, setShowChatTypeSheet] = React.useState(
+    initiateChat
+  );
   const [showAgreementSheet, setShowAgreementSheet] = React.useState(false);
   const [chatTypes, setChatTypes] = React.useState<string[]>();
   const navigation = useNavigation();

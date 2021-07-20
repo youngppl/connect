@@ -1,5 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  StackScreenProps,
+  createStackNavigator,
+} from "@react-navigation/stack";
 import * as React from "react";
 import { TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
@@ -13,6 +16,7 @@ import useColorScheme from "../hooks/useColorScheme";
 import { HomeScreen } from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import {
+  RootStackParamList,
   BottomTabParamList,
   HomeTabParamList,
   ProfileTabParamList,
@@ -30,7 +34,7 @@ const TabContainer = styled(Row)`
   position: relative;
 `;
 
-const CustomTab = ({ state, descriptors, navigation }: any) => {
+const CustomTab = ({ state, descriptors, navigation, initiateChat }: any) => {
   const focusedOptions = descriptors[state.routes[state.index].key].options;
 
   if (focusedOptions.tabBarVisible === false) {
@@ -77,7 +81,7 @@ const CustomTab = ({ state, descriptors, navigation }: any) => {
             </TouchableOpacity>
           );
         })}
-        <ChatButton />
+        <ChatButton initiateChat={initiateChat} />
       </TabContainer>
     </View>
   );
@@ -85,12 +89,14 @@ const CustomTab = ({ state, descriptors, navigation }: any) => {
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
-export default function BottomTabNavigator() {
-  const colorScheme = useColorScheme();
+type BottomTabProps = StackScreenProps<RootStackParamList, "MainTabs">;
 
+export default function BottomTabNavigator({ route }: BottomTabProps) {
+  const colorScheme = useColorScheme();
+  const initiateChat = route.params?.initiateChat;
   return (
     <BottomTab.Navigator
-      tabBar={(props) => <CustomTab {...props} />}
+      tabBar={(props) => <CustomTab {...props} initiateChat={initiateChat} />}
       initialRouteName="HomeTab"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
     >

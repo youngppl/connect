@@ -9,7 +9,7 @@ export type RootStackParamList = {
   CreateProfileScreen: undefined;
   HomeScreen: undefined;
   Landing: undefined;
-  MainTabs: undefined;
+  MainTabs: { initiateChat?: boolean };
   ChatScreen: { channel: string; otherUser: User };
   EndChatScreen: { channel: string };
   WaitingScreen: {

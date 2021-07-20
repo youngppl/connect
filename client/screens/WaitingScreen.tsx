@@ -104,9 +104,7 @@ const getUserQuery = gql`
 
 const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
   const { id: userId } = React.useContext(UserContext);
-  const {
-    params: { chatTypes },
-  } = route;
+  const { chatTypes } = route.params;
   const { data: matchData } = useSubscription(waitingRoomSubscription, {
     variables: { userId, chatTypes },
   });
@@ -117,6 +115,16 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
   const [state, setState] = React.useState("waiting");
   const [channel, setChannel] = React.useState("");
   const [matchedChatType, setMatchedChatType] = React.useState("");
+  const [
+    matchTimeoutTimerId,
+    setMatchTimeoutTimerId,
+  ] = React.useState<number>();
+
+  React.useEffect(() => {
+    // Match timeout - quit waiting after 30 seconds
+    const timerId = setTimeout(() => setState("no match"), 30000);
+    setMatchTimeoutTimerId(timerId);
+  }, []);
 
   React.useEffect(() => {
     console.log(matchData);
@@ -125,6 +133,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
         waitingRoom: { users, channel, chatType },
       } = matchData;
       if (users.includes(userId)) {
+        clearTimeout(matchTimeoutTimerId);
         setState("matched");
         const id = users.filter((id: string) => id !== userId)[0];
         getMatchedUser({ variables: { id } });
@@ -165,15 +174,17 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
 
         {state === "no match" && (
           <>
-            <BannerText>
-              Uh oh! There isn’t anyone online for a deep talk.
-            </BannerText>
+            <BannerText>{"Uh oh! We couldn't find anyone for you."}</BannerText>
             <Space height={36} />
-            <ButtonContainer>
+            <ButtonContainer
+              onPress={() =>
+                navigation.replace("MainTabs", { initiateChat: true })
+              }
+            >
               <ButtonText>Adjust type of conversation</ButtonText>
             </ButtonContainer>
             <Space height={18} />
-            <CancelButton />
+            <CancelButton onPress={() => navigation.replace("MainTabs", {})} />
           </>
         )}
 

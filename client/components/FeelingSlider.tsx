@@ -5,10 +5,11 @@ import AllEmotionsIcon from "../components/emotions/All";
 import Slider from "../components/Slider";
 
 type FeelingSliderProps = {
-  mood: string;
-  setMood: () => void;
-  textColor: string;
+  mood: number;
+  setMood: any;
+  textColor?: string;
 };
+
 const FeelingSlider = ({ mood, setMood, textColor }: FeelingSliderProps) => {
   const label = React.useMemo(() => {
     switch (mood) {
