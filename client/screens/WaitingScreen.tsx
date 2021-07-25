@@ -91,6 +91,7 @@ const waitingRoomSubscription = gql`
       message
       users
       channel
+      icebreaker
       chatType
     }
   }
@@ -126,6 +127,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
 
   const [state, setState] = React.useState("waiting");
   const [channel, setChannel] = React.useState("");
+  const [icebreaker, setIcebreaker] = React.useState("");
   const [matchedChatType, setMatchedChatType] = React.useState("");
   const [
     matchTimeoutTimerId,
@@ -142,7 +144,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
     console.log(matchData);
     if (matchData) {
       const {
-        waitingRoom: { users, channel, chatType },
+        waitingRoom: { users, channel, icebreaker, chatType },
       } = matchData;
       if (users.includes(userId)) {
         clearTimeout(matchTimeoutTimerId);
@@ -151,6 +153,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
         getMatchedUser({ variables: { id } });
         setMatchedChatType(chatType.toLowerCase().split("_").join(" "));
         setChannel(channel);
+        setIcebreaker(icebreaker);
       }
     }
   }, [matchData]);
@@ -181,6 +184,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
                 navigation.replace("ChatScreen", {
                   channel,
                   otherUser: matchedUserData.getUser,
+                  icebreaker,
                 })
               }
             >

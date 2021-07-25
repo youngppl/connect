@@ -86,6 +86,36 @@ const UserInfoContainer = styled.View`
   width: 100%;
 `;
 
+const IcebreakerCardContainer = styled.View`
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 16px;
+`;
+const IcebreakerHeading = styled.Text`
+  font-family: Quicksand;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 10px;
+`;
+const IcebreakerText = styled.Text`
+  font-family: Quicksand;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 24px;
+  color: #ffffff;
+`;
+
+const IcebreakerCard = ({ icebreaker }: { icebreaker: string }) => (
+  <IcebreakerCardContainer>
+    <IcebreakerHeading>ICEBREAKER</IcebreakerHeading>
+    <IcebreakerText>{icebreaker}</IcebreakerText>
+  </IcebreakerCardContainer>
+);
+
 const MessageInputContainer = styled.View`
   background-color: #371463;
   padding: 22px 16px;
@@ -130,7 +160,7 @@ const createMessageMutation = gql`
 
 const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
   const {
-    params: { channel, otherUser },
+    params: { channel, otherUser, icebreaker },
   } = route;
   const { id: userId } = React.useContext(UserContext);
   const { data } = useSubscription(chatSubscription, {
@@ -168,6 +198,8 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
     }
   }, [secondsLeft]);
 
+  const showIcebreaker = React.useMemo(() => messages.length < 2, [messages]);
+
   const scrollToLastMessage = () =>
     ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
       animated: true,
@@ -204,6 +236,8 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
           <UserInfoCard user={otherUser} />
         </UserInfoContainer>
       )}
+
+      {showIcebreaker && <IcebreakerCard icebreaker={icebreaker} />}
 
       <DismissKeyboard>
         <MessagesContainer

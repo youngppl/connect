@@ -9,6 +9,7 @@ import { buildSchema } from "graphql";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import Redis from "ioredis";
 import { nanoid } from "nanoid";
+import getIcebreaker from "./helpers/Icebreakers";
 
 const prisma = new PrismaClient();
 const pubsub = new RedisPubSub({
@@ -45,6 +46,7 @@ const typeDefs = `
     users: [ID!]!
     channel: String!
     chatType: String!
+    icebreaker: String!
   }
 
   type Query {
@@ -181,6 +183,7 @@ const runMatchingAlgo = async (chatTypes: string[], userId: string) => {
           users: [matchedUser, userId],
           channel: `chat-${nanoid(15)}`,
           chatType,
+          icebreaker: getIcebreaker(chatType),
         };
         // remove both users from all other lists they may be in
         await yeetUserFromAllQueues(matchedUser);
