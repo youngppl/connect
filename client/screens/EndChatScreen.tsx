@@ -179,8 +179,7 @@ const processNextStep = (state, action) => {
 };
 
 const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
-  const channel = "dsa";
-  // const { channel } = route.params;
+  const { channel } = route.params;
   const { id: userId } = React.useContext(UserContext);
   const { control, getValues, setValue, handleSubmit } = useForm();
   const [mood, setMood] = React.useState(3);
