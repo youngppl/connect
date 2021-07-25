@@ -14,6 +14,7 @@ import {
 } from "../components/ChatBubbles";
 import FeelingSlider from "../components/FeelingSlider";
 import Space from "../components/Space";
+import { MOODS } from "../constants/Moods";
 import { UserContext } from "../providers/UserProvider";
 import { RootStackParamList } from "../types";
 
@@ -73,7 +74,7 @@ const EndChatScreenMutation = gql`
     $channel: String!
     $engagementRating: Int!
     $howFeelingAfter: String!
-    $mood: Int!
+    $mood: String!
     $smile: String!
     $talkAgain: String!
   ) {
@@ -176,8 +177,10 @@ const processNextStep = (state, action) => {
       return state;
   }
 };
+
 const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
-  const { channel } = route.params;
+  const channel = "dsa";
+  // const { channel } = route.params;
   const { id: userId } = React.useContext(UserContext);
   const { control, getValues, setValue, handleSubmit } = useForm();
   const [mood, setMood] = React.useState(3);
@@ -206,7 +209,7 @@ const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
 
   const onSubmit = (data: Record<string, any>) => {
     submitChatFeedback({
-      variables: { ...data, mood, channel, author: userId },
+      variables: { ...data, mood: MOODS[mood - 1], channel, author: userId },
     });
     navigation.reset({
       index: 0,

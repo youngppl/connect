@@ -27,8 +27,8 @@ interface SliderProps extends DefaultSliderProps {
 const SliderThumbLabel = styled.Text`
   position: absolute;
   top: -30px;
-  left: -20px;
-  width: 60px;
+  left: -30px;
+  width: 82px;
   font-family: Quicksand;
   font-style: normal;
   font-weight: 500;

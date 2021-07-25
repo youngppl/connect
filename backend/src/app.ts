@@ -30,6 +30,7 @@ const typeDefs = `
     birthday: String
     pronouns: String
     interests: [String!]
+    mood: String
   }
   type Chat {
     message: String!
@@ -54,8 +55,9 @@ const typeDefs = `
     createMessage(channel: String!, message: String!, author: ID!): Chat
     leaveWaitingRoom(userId: ID!): String
     createProfile(name: String!, pronouns: String, birthday: String!): Profile
-    createChatFeedback(author: ID!, channel: String!, engagementRating: Int!, howFeelingAfter: String!, mood: Int!, smile: String!, talkAgain: String!): String
+    createChatFeedback(author: ID!, channel: String!, engagementRating: Int!, howFeelingAfter: String!, mood: String!, smile: String!, talkAgain: String!): String
     updateInterests(userId: ID!, interests: [String!]): [String!]
+    updateMood(userId: ID!, mood: String!): String
   }
   type Subscription {
     chat(channel: String!): Chat
@@ -112,7 +114,8 @@ const resolvers: IResolvers = {
       return { message: "Profile made", id: user.id };
     },
     createChatFeedback: async (parent, data, context, info) => {
-      console.log(data);
+      const { author, mood } = data;
+      await updateMood(author, mood);
       return "done";
     },
     updateInterests: async (parent, data, context, info) => {
@@ -127,6 +130,11 @@ const resolvers: IResolvers = {
         },
       });
       return interests;
+    },
+    updateMood: async (parent, data, context, info) => {
+      const { userId, mood } = data;
+      await updateMood(userId, mood);
+      return mood;
     },
   },
   Subscription: {
@@ -195,6 +203,17 @@ const yeetUserFromAllQueues = async (userId: string) => {
     redis.lrem(CHAT_OPTIONS.LIGHT_TALK, 0, userId),
     redis.lrem(CHAT_OPTIONS.SMALL_TALK, 0, userId),
   ]);
+};
+
+const updateMood = (userId: string, mood: string) => {
+  return prisma.user.update({
+    where: {
+      id: parseInt(userId),
+    },
+    data: {
+      mood,
+    },
+  });
 };
 
 const schemaWithResolvers = addResolversToSchema({

@@ -3,6 +3,7 @@ import { View } from "react-native";
 
 import AllEmotionsIcon from "../components/emotions/All";
 import Slider from "../components/Slider";
+import { MOODS } from "../constants/Moods";
 
 type FeelingSliderProps = {
   mood: number;
@@ -11,20 +12,7 @@ type FeelingSliderProps = {
 };
 
 const FeelingSlider = ({ mood, setMood, textColor }: FeelingSliderProps) => {
-  const label = React.useMemo(() => {
-    switch (mood) {
-      case 1:
-        return "Frustrated";
-      case 2:
-        return "Upset";
-      case 3:
-        return "Calm";
-      case 4:
-        return "Content";
-      default:
-        return "Excited";
-    }
-  }, [mood]);
+  const label = React.useMemo(() => MOODS[mood - 1], [mood]);
   return (
     <>
       <AllEmotionsIcon />

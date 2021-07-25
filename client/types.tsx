@@ -38,4 +38,5 @@ export type User = {
   createdAt: string;
   name: string;
   interests: string[];
+  mood: string;
 };
