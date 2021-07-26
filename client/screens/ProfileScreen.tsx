@@ -306,6 +306,7 @@ const TalkCounter = ({ count, text }: { count: number; text: string }) => {
 
 type UserProp = {
   name: string;
+  formattedPronouns: string;
 };
 
 const ProfilePortion = ({ user }: { user: UserProp }) => {
@@ -332,7 +333,9 @@ const ProfilePortion = ({ user }: { user: UserProp }) => {
               <AntDesign name="star" size={24} color="#FF97D5" />
               <BaseText>4.9</BaseText>
             </RowContainer>
-            <BaseText style={{ fontSize: 16 }}>{user.pronouns}</BaseText>
+            <BaseText style={{ fontSize: 16 }}>
+              {user.formattedPronouns}
+            </BaseText>
           </ColumnContainer>
           <RowContainer style={{ flex: 1 }} />
           <Entypo name="chevron-right" size={24} color="white" />
@@ -437,7 +440,7 @@ ProfileScreen.query = gql`
       name
       createdAt
       birthday
-      pronouns
+      formattedPronouns
       interests
     }
   }

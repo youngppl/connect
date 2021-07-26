@@ -129,6 +129,7 @@ export type User = {
   pronouns?: Maybe<Pronouns>;
   interests?: Maybe<Array<Scalars['String']>>;
   mood?: Maybe<Scalars['String']>;
+  formattedPronouns?: Maybe<Scalars['String']>;
 };
 
 
@@ -290,6 +291,7 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
   pronouns?: Resolver<Maybe<ResolversTypes['Pronouns']>, ParentType, ContextType>;
   interests?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   mood?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  formattedPronouns?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

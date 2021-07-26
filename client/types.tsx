@@ -1,7 +1,4 @@
-/**
- * Learn more about using TypeScript with React Navigation:
- * https://reactnavigation.org/docs/typescript/
- */
+import { User } from "../backend/src/resolvers-types";
 
 export type RootStackParamList = {
   Root: undefined;
@@ -31,12 +28,4 @@ export type ProfileTabParamList = {
   ProfileScreen: undefined;
 };
 
-export type User = {
-  id: string;
-  pronouns: string;
-  birthday: string;
-  createdAt: string;
-  name: string;
-  interests: string[];
-  mood: string;
-};
+export { User };

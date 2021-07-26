@@ -17,6 +17,13 @@ export const resolvers: Resolvers = {
       return { ...user, createdAt, birthday };
     },
   },
+  User: {
+    formattedPronouns: (user) => {
+      // HE_HIS -> He/His
+      const pronouns = user.pronouns.split("_").join("/").toLowerCase();
+      return pronouns.charAt(0).toUpperCase() + pronouns.slice(1);
+    },
+  },
   Mutation: {
     createMessage: async (
       _parent,

@@ -13,6 +13,7 @@
     "lint": "eslint --fix '**/*.ts*' && prettier --write '**/*.ts*'"
   },
   "dependencies": {
+    "@graphql-codegen/typescript-operations": "^1.18.4",
     "@graphql-tools/schema": "^7.1.5",
     "@prisma/client": "^2.21.2",
     "apollo-server-express": "^2.23.0",

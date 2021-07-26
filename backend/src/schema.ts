@@ -1,6 +1,5 @@
 import { gql } from "apollo-server-core";
 import { buildSchema, print } from "graphql";
-import { Pronouns } from "@prisma/client";
 
 export const typeDefs = gql`
   enum Pronouns {
@@ -17,6 +16,9 @@ export const typeDefs = gql`
     pronouns: Pronouns
     interests: [String!]
     mood: String
+
+    # Custom
+    formattedPronouns: String
   }
   type Chat {
     message: String!

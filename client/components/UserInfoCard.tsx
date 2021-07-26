@@ -39,6 +39,7 @@ const UserInfoText = styled(UserInfoTitle)`
   font-size: 14px;
   padding-bottom: 10px;
 `;
+
 const UserInfoCard = ({ user }: { user: User }) => {
   return (
     <UserInfoCardContainer>
@@ -49,7 +50,7 @@ const UserInfoCard = ({ user }: { user: User }) => {
         <Space width={10} />
         <Column>
           <UserInfoTitle>{user.name}</UserInfoTitle>
-          <UserInfoSubtitle>{user.pronouns}</UserInfoSubtitle>
+          <UserInfoSubtitle>{user.formattedPronouns}</UserInfoSubtitle>
         </Column>
       </UserInfoHeading>
       <Column>
