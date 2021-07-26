@@ -37,6 +37,7 @@ model User {
 model Conversation {
   id        Int        @id @default(autoincrement())
   createdAt DateTime   @default(now())
+  channel   String     @unique
   people    User[]
   messages  Message[]
   feedback  Feedback[]
@@ -49,6 +50,7 @@ model Message {
   userId         Int
   conversation   Conversation @relation(fields: [conversationId], references: [id])
   conversationId Int
+  text           String
 }
 
 model Feedback {

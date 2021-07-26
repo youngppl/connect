@@ -8,6 +8,7 @@ import {
 } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
+import { Conversation } from "../../backend/src/resolvers-types";
 import BottomSheet, {
   BottomSheetButton,
   BottomSheetHeading,
@@ -153,7 +154,7 @@ const Unreads = () => {
   );
 };
 
-const OldChat = () => {
+const OldChat = ({ chat }: { chat: Conversation }) => {
   return (
     <OldChatContainer>
       <Column>
@@ -163,13 +164,13 @@ const OldChat = () => {
           </Column>
           <Space width={10} />
           <Column>
-            <NameText>Naomi • 2 🔥</NameText>
-            <LastMessageText>hello</LastMessageText>
+            <NameText>{chat?.people?.name || `Naomi`} • 2 🔥</NameText>
+            <LastMessageText>{chat?.lastMessage?.text || `hi`}</LastMessageText>
           </Column>
         </Row>
       </Column>
       <Column>
-        <LastMessageText>12m</LastMessageText>
+        <LastMessageText>{chat?.createdAt || `12m`}</LastMessageText>
         <Space height={8} />
         <Unreads />
       </Column>
@@ -177,12 +178,41 @@ const OldChat = () => {
   );
 };
 
+const CHAT_LOG_QUERY = gql`
+  query ChatLogQuery($userId: ID!) {
+    getConversations(userId: $userId) {
+      id
+      createdAt
+      lastMessage {
+        id
+        text
+      }
+      people {
+        id
+        name
+      }
+    }
+  }
+`;
+
 const ChatLog = () => {
+  const { id } = React.useContext(UserContext);
+  const { data, loading } = useQuery(CHAT_LOG_QUERY, {
+    variables: { userId: id },
+    skip: !id,
+  });
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <ChatContainer>
       <ChatLogHeader>Chat</ChatLogHeader>
       <Space height={18} />
-      <OldChat />
+      {data?.getConversations.map((conversation: Conversation) => {
+        return <OldChat key={conversation.id} chat={conversation} />;
+      })}
       <OldChat />
       {false && (
         <>
@@ -298,6 +328,7 @@ const Feeling = ({
 const getUserQuery = gql`
   query getUser($id: ID!) {
     getUser(id: $id) {
+      id
       name
       mood
     }

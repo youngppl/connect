@@ -98,7 +98,7 @@ const CreateProfileScreenMutation = gql`
   mutation CreateProfile(
     $name: String!
     $birthday: String!
-    $pronouns: String!
+    $pronouns: Pronouns!
   ) {
     createProfile(name: $name, birthday: $birthday, pronouns: $pronouns) {
       message

@@ -1,20 +1,44 @@
 import { PrismaClient, Pronouns } from "@prisma/client";
-import { RedisPubSub } from "graphql-redis-subscriptions";
+import { PubSubEngine } from "graphql-subscriptions";
 import { Redis } from "ioredis";
 import { nanoid } from "nanoid";
 import getIcebreaker from "./helpers/icebreakers";
 import { Resolvers } from "./resolvers-types";
 
+const formatYear = (year: Date) => {
+  return (
+    year.toLocaleString("default", { month: "long" }) + " " + year.getFullYear()
+  );
+};
+
 export const resolvers: Resolvers = {
   Query: {
     getUser: async (_parent, { id }, { prisma }) => {
       const user = await prisma.user.findFirst({ where: { id: parseInt(id) } });
-      const createdAt =
-        user.createdAt.toLocaleString("default", { month: "long" }) +
-        " " +
-        user.createdAt.getFullYear();
+      const createdAt = formatYear(user.createdAt);
       const birthday = user.birthday.toLocaleDateString();
-      return { ...user, createdAt, birthday };
+      return { ...user, id: user.id.toString(), createdAt, birthday };
+    },
+    getConversations: async (_parent, { userId }, { prisma }) => {
+      const conversations = await prisma.conversation.findMany({
+        where: { people: { some: { id: { equals: parseInt(userId) } } } },
+        include: { people: true },
+      });
+      return conversations.map((conversation) => {
+        return {
+          id: conversation.id.toString(),
+          channel: conversation.channel,
+          createdAt: conversation.createdAt.toString(),
+          people: conversation.people.map((person) => {
+            return {
+              ...person,
+              id: person.id.toString(),
+              createdAt: formatYear(person.createdAt),
+              birthday: person.birthday.toLocaleDateString(),
+            };
+          }),
+        };
+      });
     },
   },
   User: {
@@ -24,15 +48,36 @@ export const resolvers: Resolvers = {
       return pronouns.charAt(0).toUpperCase() + pronouns.slice(1);
     },
   },
+  Conversation: {
+    lastMessage: async (conversation, _, { prisma }) => {
+      const message = await prisma.message.findFirst({
+        where: { conversationId: parseInt(conversation.id) },
+        orderBy: { createdAt: "desc" },
+      });
+      if (message) {
+        return { id: message.id.toString(), text: message.text };
+      } else {
+        return null;
+      }
+    },
+  },
   Mutation: {
     createMessage: async (
       _parent,
       { channel, author, message },
-      { pubsub }
+      { pubsub, prisma }
     ) => {
       const chat = { message, author };
       console.log("sending", chat, "to", channel);
       await pubsub.publish(channel, { chat });
+      await prisma.conversation.update({
+        where: { channel },
+        data: {
+          messages: {
+            create: { text: message, userId: parseInt(author) },
+          },
+        },
+      });
       return chat;
     },
     leaveWaitingRoom: async (_parent, { userId }, { redis }) => {
@@ -81,8 +126,12 @@ export const resolvers: Resolvers = {
       },
     },
     waitingRoom: {
-      subscribe: (_parent, { chatTypes, userId }, { pubsub, redis }) => {
-        runMatchingAlgo(redis, pubsub, chatTypes, userId);
+      subscribe: (
+        _parent,
+        { chatTypes, userId },
+        { redis, pubsub, prisma }
+      ) => {
+        runMatchingAlgo(redis, pubsub, prisma, chatTypes, userId);
         return pubsub.asyncIterator("WaitingRoom");
       },
     },
@@ -102,38 +151,51 @@ const CHAT_OPTIONS: StringMapProps = {
 
 const runMatchingAlgo = async (
   redis: Redis,
-  pubsub: RedisPubSub,
+  pubsub: PubSubEngine,
+  prisma: PrismaClient,
   chatTypes: string[],
   userId: string
 ) => {
-  let matchData;
   // Match by chat type
   for (const chatType of chatTypes) {
-    const len = await redis.llen(chatType);
-    if (len > 0) {
+    const numberOfWaitingUsers = await redis.llen(chatType);
+    if (numberOfWaitingUsers > 0) {
       // fetch first user in chatType
-      const matchedUser = await redis.lindex(chatType, 0);
-      if (matchedUser !== userId) {
-        matchData = {
+      const matchedUserId = await redis.lindex(chatType, 0);
+      if (matchedUserId !== userId) {
+        // remove both users from all other lists they may be in
+        await yeetUserFromAllQueues(redis, matchedUserId);
+        await yeetUserFromAllQueues(redis, userId);
+
+        const channelName = `${nanoid()}`;
+        // At this point, generate the data.
+        await prisma.conversation.create({
+          data: {
+            channel: channelName,
+            people: {
+              connect: [
+                { id: parseInt(userId) },
+                { id: parseInt(matchedUserId) },
+              ],
+            },
+          },
+        });
+
+        const matchData = {
           message: "matched",
-          users: [matchedUser, userId],
-          channel: `chat-${nanoid(15)}`,
+          users: [matchedUserId, userId],
+          channel: channelName,
           chatType,
           icebreaker: getIcebreaker(chatType),
         };
-        // remove both users from all other lists they may be in
-        await yeetUserFromAllQueues(redis, matchedUser);
-        await yeetUserFromAllQueues(redis, userId);
-        break;
+        console.log(matchData);
+
+        pubsub.publish("WaitingRoom", { waitingRoom: matchData });
       }
     } else {
       await redis.rpush(chatType, userId);
     }
   }
-  if (matchData)
-    pubsub.publish("WaitingRoom", {
-      waitingRoom: matchData,
-    });
 };
 
 const yeetUserFromAllQueues = async (redis: Redis, userId: string) => {

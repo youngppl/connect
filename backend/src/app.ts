@@ -1,6 +1,6 @@
 import { addResolversToSchema } from "@graphql-tools/schema";
 import express from "express";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer, PubSubEngine } from "apollo-server-express";
 import ws from "ws";
 import { PrismaClient } from "@prisma/client";
 import { useServer } from "graphql-ws/lib/use/ws";
@@ -19,7 +19,7 @@ const redis = new Redis(process.env.REDIS_URL);
 
 export type JufaContextType = {
   prisma: PrismaClient;
-  pubsub: RedisPubSub;
+  pubsub: PubSubEngine;
   redis: IORedis;
 };
 const context: JufaContextType = { prisma, redis, pubsub };
@@ -45,7 +45,7 @@ const socketsServer = app.listen(port, () => {
     server: socketsServer,
     path: "/graphql",
   });
-  useServer({ schema: schemaWithResolvers }, wsServer);
+  useServer({ schema: schemaWithResolvers, context }, wsServer);
 
   console.log(
     `Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`

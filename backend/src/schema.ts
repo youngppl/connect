@@ -9,16 +9,28 @@ export const typeDefs = gql`
     NONE
   }
   type User {
+    id: ID
     email: String
     name: String
-    createdAt: String
-    birthday: String
+    createdAt: String # Make this a custom scalar
+    birthday: String # Make this a custom scalar
     pronouns: Pronouns
     interests: [String!]
     mood: String
 
     # Custom
     formattedPronouns: String
+  }
+  type Conversation {
+    id: ID
+    channel: String
+    createdAt: String # Make this a custom scalar
+    people: [User]
+    lastMessage: Message
+  }
+  type Message {
+    id: ID
+    text: String
   }
   type Chat {
     message: String!
@@ -37,6 +49,7 @@ export const typeDefs = gql`
   }
   type Query {
     getUser(id: ID!): User
+    getConversations(userId: ID!): [Conversation]
   }
   type Mutation {
     createMessage(channel: String!, message: String!, author: ID!): Chat

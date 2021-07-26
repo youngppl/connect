@@ -437,6 +437,7 @@ const ProfileScreen = () => {
 ProfileScreen.query = gql`
   query ProfileScreen($id: ID!) {
     getUser(id: $id) {
+      id
       name
       createdAt
       birthday

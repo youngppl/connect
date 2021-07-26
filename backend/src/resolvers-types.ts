@@ -20,6 +20,15 @@ export type Chat = {
   author: Scalars['ID'];
 };
 
+export type Conversation = {
+  __typename?: 'Conversation';
+  id?: Maybe<Scalars['ID']>;
+  channel?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  people?: Maybe<Array<Maybe<User>>>;
+  lastMessage?: Maybe<Message>;
+};
+
 export type Match = {
   __typename?: 'Match';
   message: Scalars['String'];
@@ -27,6 +36,12 @@ export type Match = {
   channel: Scalars['String'];
   chatType: Scalars['String'];
   icebreaker: Scalars['String'];
+};
+
+export type Message = {
+  __typename?: 'Message';
+  id?: Maybe<Scalars['ID']>;
+  text?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
@@ -96,11 +111,17 @@ export type Pronouns =
 export type Query = {
   __typename?: 'Query';
   getUser?: Maybe<User>;
+  getConversations?: Maybe<Array<Maybe<Conversation>>>;
 };
 
 
 export type QueryGetUserArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryGetConversationsArgs = {
+  userId: Scalars['ID'];
 };
 
 export type Subscription = {
@@ -122,6 +143,7 @@ export type SubscriptionWaitingRoomArgs = {
 
 export type User = {
   __typename?: 'User';
+  id?: Maybe<Scalars['ID']>;
   email?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   createdAt?: Maybe<Scalars['String']>;
@@ -218,7 +240,9 @@ export type ResolversTypes = {
   Chat: ResolverTypeWrapper<Chat>;
   String: ResolverTypeWrapper<Scalars['String']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
+  Conversation: ResolverTypeWrapper<Conversation>;
   Match: ResolverTypeWrapper<Match>;
+  Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Profile: ResolverTypeWrapper<Profile>;
@@ -234,7 +258,9 @@ export type ResolversParentTypes = {
   Chat: Chat;
   String: Scalars['String'];
   ID: Scalars['ID'];
+  Conversation: Conversation;
   Match: Match;
+  Message: Message;
   Mutation: {};
   Int: Scalars['Int'];
   Profile: Profile;
@@ -250,12 +276,27 @@ export type ChatResolvers<ContextType = JufaContextType, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ConversationResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Conversation'] = ResolversParentTypes['Conversation']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  channel?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  people?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  lastMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MatchResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Match'] = ResolversParentTypes['Match']> = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   chatType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   icebreaker?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MessageResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  text?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -276,6 +317,7 @@ export type ProfileResolvers<ContextType = JufaContextType, ParentType extends R
 
 export type QueryResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
+  getConversations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Conversation']>>>, ParentType, ContextType, RequireFields<QueryGetConversationsArgs, 'userId'>>;
 };
 
 export type SubscriptionResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
@@ -284,6 +326,7 @@ export type SubscriptionResolvers<ContextType = JufaContextType, ParentType exte
 };
 
 export type UserResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -297,7 +340,9 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
 
 export type Resolvers<ContextType = JufaContextType> = {
   Chat?: ChatResolvers<ContextType>;
+  Conversation?: ConversationResolvers<ContextType>;
   Match?: MatchResolvers<ContextType>;
+  Message?: MessageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

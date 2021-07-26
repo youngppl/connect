@@ -100,6 +100,7 @@ const waitingRoomSubscription = gql`
 const getUserQuery = gql`
   query getUserQuery($id: ID!) {
     getUser(id: $id) {
+      id
       name
       pronouns
       createdAt
