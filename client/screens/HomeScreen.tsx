@@ -1,6 +1,8 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import { formatDistance } from "date-fns";
+import _ from "lodash";
 import * as React from "react";
 import {
   SafeAreaView,
@@ -146,6 +148,13 @@ const UnreadsText = styled.Text`
   color: #371463;
 `;
 
+function makeNiceDate(dbDate: string | null | undefined) {
+  return formatDistance(
+    dbDate ? new Date(dbDate) : new Date(),
+    Date.now() + new Date().getTimezoneOffset() * 60 * 1000,
+    { addSuffix: true }
+  );
+}
 const Unreads = () => {
   return (
     <UnreadsContainer>
@@ -154,7 +163,14 @@ const Unreads = () => {
   );
 };
 
-const OldChat = ({ chat }: { chat: Conversation }) => {
+const OldChat = ({
+  chat,
+  userId,
+}: {
+  chat: Conversation;
+  userId: string | null;
+}) => {
+  const otherPerson = _.reject(chat.people, ["id", userId])[0]; // Assuming 2 ppl -> 1 person on this filter.
   return (
     <OldChatContainer>
       <Column>
@@ -164,13 +180,13 @@ const OldChat = ({ chat }: { chat: Conversation }) => {
           </Column>
           <Space width={10} />
           <Column>
-            <NameText>{chat?.people?.name || `Naomi`} • 2 🔥</NameText>
+            <NameText>{`${otherPerson?.name}`} • 2 🔥</NameText>
             <LastMessageText>{chat?.lastMessage?.text || `hi`}</LastMessageText>
           </Column>
         </Row>
       </Column>
       <Column>
-        <LastMessageText>{chat?.createdAt || `12m`}</LastMessageText>
+        <LastMessageText>{makeNiceDate(chat?.createdAt)}</LastMessageText>
         <Space height={8} />
         <Unreads />
       </Column>
@@ -211,9 +227,10 @@ const ChatLog = () => {
       <ChatLogHeader>Chat</ChatLogHeader>
       <Space height={18} />
       {data?.getConversations.map((conversation: Conversation) => {
-        return <OldChat key={conversation.id} chat={conversation} />;
+        return (
+          <OldChat key={conversation.id} chat={conversation} userId={id} />
+        );
       })}
-      <OldChat />
       {false && (
         <>
           <ChatLogText>{`You haven't chatted with anyone yet today`}</ChatLogText>
