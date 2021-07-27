@@ -81,7 +81,11 @@ export const resolvers: Resolvers = {
       return chat;
     },
     leaveWaitingRoom: async (_parent, { userId }, { redis }) => {
-      await yeetUserFromAllQueues(redis, userId);
+      await redis.multi().exec((error) => {
+        if (!error) {
+          yeetUserFromAllQueuesCommand(userId);
+        }
+      });
       return "done";
     },
     createProfile: async (
@@ -164,33 +168,38 @@ const runMatchingAlgo = async (
       const matchedUserId = await redis.lindex(chatType, 0);
       if (matchedUserId !== userId) {
         // remove both users from all other lists they may be in
-        await yeetUserFromAllQueues(redis, matchedUserId);
-        await yeetUserFromAllQueues(redis, userId);
+        const allCommands = [
+          ...yeetUserFromAllQueuesCommand(matchedUserId),
+          ...yeetUserFromAllQueuesCommand(userId),
+        ];
+        await redis.multi(allCommands).exec(async (error) => {
+          if (!error) {
+            const channelName = `${nanoid()}`;
+            // At this point, generate the data.
+            await prisma.conversation.create({
+              data: {
+                channel: channelName,
+                people: {
+                  connect: [
+                    { id: parseInt(userId) },
+                    { id: parseInt(matchedUserId) },
+                  ],
+                },
+              },
+            });
 
-        const channelName = `${nanoid()}`;
-        // At this point, generate the data.
-        await prisma.conversation.create({
-          data: {
-            channel: channelName,
-            people: {
-              connect: [
-                { id: parseInt(userId) },
-                { id: parseInt(matchedUserId) },
-              ],
-            },
-          },
+            const matchData = {
+              message: "matched",
+              users: [matchedUserId, userId],
+              channel: channelName,
+              chatType,
+              icebreaker: getIcebreaker(chatType),
+            };
+            console.log(matchData);
+
+            pubsub.publish("WaitingRoom", { waitingRoom: matchData });
+          }
         });
-
-        const matchData = {
-          message: "matched",
-          users: [matchedUserId, userId],
-          channel: channelName,
-          chatType,
-          icebreaker: getIcebreaker(chatType),
-        };
-        console.log(matchData);
-
-        pubsub.publish("WaitingRoom", { waitingRoom: matchData });
       }
     } else {
       await redis.rpush(chatType, userId);
@@ -198,12 +207,12 @@ const runMatchingAlgo = async (
   }
 };
 
-const yeetUserFromAllQueues = async (redis: Redis, userId: string) => {
-  await Promise.all([
-    redis.lrem(CHAT_OPTIONS.DEEP_TALK, 0, userId),
-    redis.lrem(CHAT_OPTIONS.LIGHT_TALK, 0, userId),
-    redis.lrem(CHAT_OPTIONS.SMALL_TALK, 0, userId),
-  ]);
+const yeetUserFromAllQueuesCommand = (userId: string) => {
+  return [
+    ["lrem", CHAT_OPTIONS.DEEP_TALK, "0", userId],
+    ["lrem", CHAT_OPTIONS.LIGHT_TALK, "0", userId],
+    ["lrem", CHAT_OPTIONS.SMALL_TALK, "0", userId],
+  ];
 };
 
 const updateMood = (prisma: PrismaClient, userId: string, mood: string) => {
