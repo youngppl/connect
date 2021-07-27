@@ -4,6 +4,7 @@ import { Redis } from "ioredis";
 import { nanoid } from "nanoid";
 import getIcebreaker from "./helpers/icebreakers";
 import { Resolvers } from "./resolvers-types";
+import _ from "lodash";
 
 const formatYear = (year: Date) => {
   return (
@@ -160,50 +161,71 @@ const runMatchingAlgo = async (
   chatTypes: string[],
   userId: string
 ) => {
+  let matchSucceeded = false;
+  let possibleMatchUserIds = [];
   // Match by chat type
-  for (const chatType of chatTypes) {
-    const numberOfWaitingUsers = await redis.llen(chatType);
-    if (numberOfWaitingUsers > 0) {
-      // fetch first user in chatType
-      const matchedUserId = await redis.lindex(chatType, 0);
-      if (matchedUserId !== userId) {
-        // remove both users from all other lists they may be in
-        const allCommands = [
-          ...yeetUserFromAllQueuesCommand(matchedUserId),
-          ...yeetUserFromAllQueuesCommand(userId),
-        ];
-        await redis.multi(allCommands).exec(async (error) => {
-          if (!error) {
-            const channelName = `${nanoid()}`;
-            // At this point, generate the data.
-            await prisma.conversation.create({
-              data: {
-                channel: channelName,
-                people: {
-                  connect: [
-                    { id: parseInt(userId) },
-                    { id: parseInt(matchedUserId) },
-                  ],
-                },
-              },
-            });
+  const getUserIds = chatTypes.map((chatType) => ["lindex", chatType, "0"]);
+  try {
+    const results = await redis.multi(getUserIds).exec();
+    possibleMatchUserIds = _.zip(
+      chatTypes,
+      results.map((result) => result[1])
+    );
+  } catch (chatErr) {
+    console.log(chatErr);
+    return;
+  }
 
-            const matchData = {
-              message: "matched",
-              users: [matchedUserId, userId],
-              channel: channelName,
-              chatType,
-              icebreaker: getIcebreaker(chatType),
-            };
-            console.log(matchData);
-
-            pubsub.publish("WaitingRoom", { waitingRoom: matchData });
-          }
-        });
-      }
-    } else {
-      await redis.rpush(chatType, userId);
+  for (const chatUserId of possibleMatchUserIds) {
+    const [chatType, matchedUserId] = chatUserId;
+    if (matchSucceeded) {
+      return;
     }
+    if (matchedUserId && matchedUserId !== userId) {
+      // remove both users from all other lists they may be in
+      const allCommands = [
+        ...yeetUserFromAllQueuesCommand(matchedUserId),
+        ...yeetUserFromAllQueuesCommand(userId),
+      ];
+      try {
+        const errors = await redis.multi(allCommands).exec();
+        const hasNoErrors = _.every(
+          errors.map((error) => error[0]),
+          (v) => _.isNull(v)
+        );
+        if (hasNoErrors) {
+          const channelName = `${nanoid()}`;
+          await prisma.conversation.create({
+            data: {
+              channel: channelName,
+              people: {
+                connect: [
+                  { id: parseInt(userId) },
+                  { id: parseInt(matchedUserId) },
+                ],
+              },
+            },
+          });
+          const matchData = {
+            message: "matched",
+            users: [matchedUserId, userId],
+            channel: channelName,
+            chatType,
+            icebreaker: getIcebreaker(chatType),
+          };
+          console.log(matchData);
+
+          pubsub.publish("WaitingRoom", { waitingRoom: matchData });
+          matchSucceeded = true;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+  if (!matchSucceeded) {
+    const pushUserIds = chatTypes.map((chat) => ["rpush", chat, userId]);
+    await redis.multi(pushUserIds).exec();
   }
 };
 
