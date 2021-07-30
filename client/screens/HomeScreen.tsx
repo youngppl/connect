@@ -358,7 +358,11 @@ export const HomeScreen = () => {
     variables: { id },
   });
 
-  useFocusEffect(React.useCallback(() => refetch, [data]));
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [data])
+  );
 
   return (
     <Container edges={["top"]}>

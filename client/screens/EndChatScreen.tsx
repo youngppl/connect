@@ -206,8 +206,8 @@ const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
     ],
   });
 
-  const onSubmit = (data: Record<string, any>) => {
-    submitChatFeedback({
+  const onSubmit = async (data: Record<string, any>) => {
+    await submitChatFeedback({
       variables: { ...data, mood: MOODS[mood - 1], channel, author: userId },
     });
     navigation.reset({

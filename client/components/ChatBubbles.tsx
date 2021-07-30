@@ -125,7 +125,7 @@ const RatingContainer = styled(Row)`
 `;
 
 type RatingProps = {
-  onOptionSelect: () => void;
+  onOptionSelect: (value: Record<string, string | number | undefined>) => void;
 };
 
 const Rating = ({ onOptionSelect }: RatingProps) => {
@@ -138,12 +138,12 @@ const Rating = ({ onOptionSelect }: RatingProps) => {
   return (
     <RatingContainer>
       {[...Array(5).keys()].map((index) => (
-        <>
-          <TouchableOpacity onPress={() => handleSelection(index)} key={index}>
+        <React.Fragment key={index}>
+          <TouchableOpacity onPress={() => handleSelection(index)}>
             <Star filled={index <= rating} />
           </TouchableOpacity>
           <Space />
-        </>
+        </React.Fragment>
       ))}
     </RatingContainer>
   );
@@ -219,7 +219,9 @@ export const LeftChatBubble = ({
       )}
       <ChatBubbleContainer>
         <Space />
-        {showRating && <Rating onOptionSelect={onOptionSelect} />}
+        {showRating && onOptionSelect && (
+          <Rating onOptionSelect={onOptionSelect} />
+        )}
         <Space />
       </ChatBubbleContainer>
     </ChatContainer>
