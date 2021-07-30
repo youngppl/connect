@@ -53,6 +53,14 @@ const TalkTypeText = styled(BannerText)`
   color: #f39fff;
 `;
 
+const InfoText = styled(BannerText)`
+  font-size: 16px;
+`;
+
+const PinkInfoText = styled(InfoText)`
+  color: #f39fff;
+`;
+
 const ButtonContainer = styled.TouchableOpacity`
   background: rgba(255, 255, 255, 0.1);
   border: 3px solid #ffffff;
@@ -134,6 +142,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
     matchTimeoutTimerId,
     setMatchTimeoutTimerId,
   ] = React.useState<number>();
+  const [toChatScreenSeconds, setToChatScreenSeconds] = React.useState(5);
 
   React.useEffect(() => {
     // Match timeout - quit waiting after 30 seconds
@@ -149,15 +158,31 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
       } = matchData;
       if (users.includes(userId)) {
         clearTimeout(matchTimeoutTimerId);
+        const toChatTimer = setInterval(
+          () => setToChatScreenSeconds((seconds) => seconds - 1),
+          1000
+        );
         setState("matched");
         const id = users.filter((id: string) => id !== userId)[0];
         getMatchedUser({ variables: { id } });
         setMatchedChatType(chatType.toLowerCase().split("_").join(" "));
         setChannel(channel);
         setIcebreaker(icebreaker);
+        return () => clearInterval(toChatTimer);
       }
     }
   }, [matchData]);
+
+  React.useEffect(() => {
+    // after a match, go to chat screen after 5 seconds
+    if (toChatScreenSeconds === 0) {
+      navigation.replace("ChatScreen", {
+        channel,
+        otherUser: matchedUserData.getUser,
+        icebreaker,
+      });
+    }
+  }, [toChatScreenSeconds]);
 
   const goBackToHomeScreen = (params: { initiateChat?: boolean } = {}) => {
     leaveWaitingRoom({ variables: { userId } });
@@ -180,17 +205,10 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
             <Space height={24} />
             <UserInfoCard user={matchedUserData.getUser} />
             <Space height={70} />
-            <ButtonContainer
-              onPress={() =>
-                navigation.replace("ChatScreen", {
-                  channel,
-                  otherUser: matchedUserData.getUser,
-                  icebreaker,
-                })
-              }
-            >
-              <ButtonText>Talk to {matchedUserData.getUser.name}</ButtonText>
-            </ButtonContainer>
+            <InfoText>
+              You’ll be taken to the chat room in{" "}
+              <PinkInfoText>{toChatScreenSeconds}</PinkInfoText> seconds
+            </InfoText>
           </>
         )}
 
