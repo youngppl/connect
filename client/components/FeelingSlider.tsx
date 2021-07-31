@@ -20,7 +20,7 @@ const FeelingSlider = ({ mood, setMood, textColor }: FeelingSliderProps) => {
         <Slider
           value={mood}
           label={label}
-          width={320}
+          width={300}
           onSlidingComplete={setMood}
           minimumValue={1}
           maximumValue={5}

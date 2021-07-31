@@ -49,7 +49,7 @@ const Slider = (props: SliderProps) => {
     <SliderContainer>
       <View style={{ flex: 4 }}>
         <DefaultSlider
-          thumbStyle={{ height: 30, width: 30, backgroundColor: "transparent" }}
+          thumbStyle={{ height: 25, width: 20, backgroundColor: "transparent" }}
           thumbProps={{
             children: (
               <SliderThumbContainer>

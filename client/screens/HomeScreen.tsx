@@ -278,11 +278,13 @@ const updateMoodMutation = gql`
 
 const FeelingSheet = ({
   name,
+  currentMood,
   visible,
   setVisible,
   refetchUser,
 }: {
   name: string;
+  currentMood: string;
   visible: boolean;
   setVisible: any;
   refetchUser: () => void;
@@ -290,6 +292,8 @@ const FeelingSheet = ({
   const { id } = React.useContext(UserContext);
   const [updateMood] = useMutation(updateMoodMutation);
   const [mood, setMood] = React.useState(3);
+
+  React.useEffect(() => setMood(MOODS.indexOf(currentMood) + 1), [currentMood]);
 
   const handleDone = async () => {
     await updateMood({ variables: { userId: id, mood: MOODS[mood - 1] } });
@@ -318,7 +322,7 @@ const Feeling = ({
   refetchUser: () => void;
 }) => {
   const [showModal, setShowModal] = React.useState(false);
-
+  console.log(user);
   return (
     <>
       <FeelingContainer onPress={() => setShowModal(true)}>
@@ -334,7 +338,8 @@ const Feeling = ({
       </FeelingContainer>
       <FeelingSheet
         refetchUser={refetchUser}
-        name={user.name}
+        name={user.name as string}
+        currentMood={user.mood || "Calm"}
         visible={showModal}
         setVisible={setShowModal}
       />

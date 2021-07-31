@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -68,6 +68,16 @@ const DoneText = styled.Text`
   color: #ffffff;
 `;
 
+const getUserQuery = gql`
+  query getUser($id: ID!) {
+    getUser(id: $id) {
+      id
+      name
+      mood
+    }
+  }
+`;
+
 const EndChatScreenMutation = gql`
   mutation ChatFeedback(
     $author: ID!
@@ -94,7 +104,20 @@ type OptionValue = Record<string, string | number | undefined>;
 
 type EndChatScreenProps = StackScreenProps<RootStackParamList, "EndChatScreen">;
 
-const processNextStep = (state, action) => {
+type State = {
+  step: number;
+  messages: Record<string, any>[];
+};
+
+type Action = {
+  type: "NEXT_STEP";
+  payload: {
+    getValues: (value: string) => unknown;
+    setValue: (key: string, value: unknown) => unknown;
+  };
+};
+
+const processNextStep = (state: State, action: Action) => {
   const { getValues, setValue } = action.payload;
 
   switch (state.step) {
@@ -181,11 +204,19 @@ const processNextStep = (state, action) => {
 const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
   const { channel } = route.params;
   const { id: userId } = React.useContext(UserContext);
+  const { data: userData } = useQuery(getUserQuery, {
+    variables: { id: userId },
+  });
   const { control, getValues, setValue, handleSubmit } = useForm();
   const [mood, setMood] = React.useState(3);
   const [submitChatFeedback] = useMutation(EndChatScreenMutation);
 
   const messagesViewRef = React.useRef(null);
+  React.useEffect(() => {
+    if (userData) {
+      setMood(MOODS.indexOf(userData.getUser.mood) + 1);
+    }
+  }, [userData]);
 
   const [state, dispatch] = React.useReducer(processNextStep, {
     step: 0,
