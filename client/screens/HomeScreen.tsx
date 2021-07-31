@@ -322,7 +322,7 @@ const Feeling = ({
   refetchUser: () => void;
 }) => {
   const [showModal, setShowModal] = React.useState(false);
-  console.log(user);
+
   return (
     <>
       <FeelingContainer onPress={() => setShowModal(true)}>
