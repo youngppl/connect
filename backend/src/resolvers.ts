@@ -1,29 +1,27 @@
-import { PrismaClient, Pronouns } from "@prisma/client";
-import { PubSubEngine } from "graphql-subscriptions";
-import { Redis } from "ioredis";
-import { nanoid } from "nanoid";
+import {PrismaClient, Pronouns} from "@prisma/client";
+import {PubSubEngine} from "graphql-subscriptions";
+import {Redis} from "ioredis";
+import {nanoid} from "nanoid";
 import getIcebreaker from "./helpers/icebreakers";
-import { Resolvers } from "./resolvers-types";
+import {Resolvers} from "./resolvers-types";
 import _ from "lodash";
 
 const formatYear = (year: Date) => {
-  return (
-    year.toLocaleString("default", { month: "long" }) + " " + year.getFullYear()
-  );
+  return year.toLocaleString("default", {month: "long"}) + " " + year.getFullYear();
 };
 
 export const resolvers: Resolvers = {
   Query: {
-    getUser: async (_parent, { id }, { prisma }) => {
-      const user = await prisma.user.findFirst({ where: { id: parseInt(id) } });
+    getUser: async (_parent, {id}, {prisma}) => {
+      const user = await prisma.user.findFirst({where: {id: parseInt(id)}});
       const createdAt = formatYear(user.createdAt);
       const birthday = user.birthday.toLocaleDateString();
-      return { ...user, id: user.id.toString(), createdAt, birthday };
+      return {...user, id: user.id.toString(), createdAt, birthday};
     },
-    getConversations: async (_parent, { userId }, { prisma }) => {
+    getConversations: async (_parent, {userId}, {prisma}) => {
       const conversations = await prisma.conversation.findMany({
-        where: { people: { some: { id: { equals: parseInt(userId) } } } },
-        include: { people: true },
+        where: {people: {some: {id: {equals: parseInt(userId)}}}},
+        include: {people: true},
       });
       return conversations.map((conversation) => {
         return {
@@ -50,38 +48,34 @@ export const resolvers: Resolvers = {
     },
   },
   Conversation: {
-    lastMessage: async (conversation, _, { prisma }) => {
+    lastMessage: async (conversation, _, {prisma}) => {
       const message = await prisma.message.findFirst({
-        where: { conversationId: parseInt(conversation.id) },
-        orderBy: { createdAt: "desc" },
+        where: {conversationId: parseInt(conversation.id)},
+        orderBy: {createdAt: "desc"},
       });
       if (message) {
-        return { id: message.id.toString(), text: message.text };
+        return {id: message.id.toString(), text: message.text};
       } else {
         return null;
       }
     },
   },
   Mutation: {
-    createMessage: async (
-      _parent,
-      { channel, author, message },
-      { pubsub, prisma }
-    ) => {
-      const chat = { message, author };
+    createMessage: async (_parent, {channel, author, message}, {pubsub, prisma}) => {
+      const chat = {message, author};
       console.log("sending", chat, "to", channel);
-      await pubsub.publish(channel, { chat });
+      await pubsub.publish(channel, {chat});
       await prisma.conversation.update({
-        where: { channel },
+        where: {channel},
         data: {
           messages: {
-            create: { text: message, userId: parseInt(author) },
+            create: {text: message, userId: parseInt(author)},
           },
         },
       });
       return chat;
     },
-    leaveWaitingRoom: async (_parent, { userId }, { redis }) => {
+    leaveWaitingRoom: async (_parent, {userId}, {redis}) => {
       await redis.multi().exec((error) => {
         if (!error) {
           yeetUserFromAllQueuesCommand(userId);
@@ -89,11 +83,7 @@ export const resolvers: Resolvers = {
       });
       return "done";
     },
-    createProfile: async (
-      _parent,
-      { name, birthday, pronouns },
-      { prisma }
-    ) => {
+    createProfile: async (_parent, {name, birthday, pronouns}, {prisma}) => {
       const user = await prisma.user.create({
         data: {
           name,
@@ -102,13 +92,13 @@ export const resolvers: Resolvers = {
           pronouns: Pronouns[pronouns],
         },
       });
-      return { message: "Profile made", id: user.id.toString() };
+      return {message: "Profile made", id: user.id.toString()};
     },
-    createChatFeedback: async (_parent, { author, mood }, { prisma }) => {
+    createChatFeedback: async (_parent, {author, mood}, {prisma}) => {
       await updateMood(prisma, author, mood);
       return "done";
     },
-    updateInterests: async (_parent, { userId, interests }, { prisma }) => {
+    updateInterests: async (_parent, {userId, interests}, {prisma}) => {
       prisma.user.update({
         where: {
           id: parseInt(userId),
@@ -119,23 +109,19 @@ export const resolvers: Resolvers = {
       });
       return interests;
     },
-    updateMood: async (_parent, { userId, mood }, { prisma }) => {
+    updateMood: async (_parent, {userId, mood}, {prisma}) => {
       await updateMood(prisma, userId, mood);
       return mood;
     },
   },
   Subscription: {
     chat: {
-      subscribe: (_parent, { channel }, { pubsub }) => {
+      subscribe: (_parent, {channel}, {pubsub}) => {
         return pubsub.asyncIterator(channel);
       },
     },
     waitingRoom: {
-      subscribe: (
-        _parent,
-        { chatTypes, userId },
-        { redis, pubsub, prisma }
-      ) => {
+      subscribe: (_parent, {chatTypes, userId}, {redis, pubsub, prisma}) => {
         runMatchingAlgo(redis, pubsub, prisma, chatTypes, userId);
         return pubsub.asyncIterator("WaitingRoom");
       },
@@ -159,7 +145,7 @@ const runMatchingAlgo = async (
   pubsub: PubSubEngine,
   prisma: PrismaClient,
   chatTypes: string[],
-  userId: string
+  userId: string,
 ) => {
   let matchSucceeded = false;
   let possibleMatchUserIds = [];
@@ -169,7 +155,7 @@ const runMatchingAlgo = async (
     const results = await redis.multi(getUserIds).exec();
     possibleMatchUserIds = _.zip(
       chatTypes,
-      results.map((result) => result[1])
+      results.map((result) => result[1]),
     );
   } catch (chatErr) {
     console.log(chatErr);
@@ -191,7 +177,7 @@ const runMatchingAlgo = async (
         const errors = await redis.multi(allCommands).exec();
         const hasNoErrors = _.every(
           errors.map((error) => error[0]),
-          (v) => _.isNull(v)
+          (v) => _.isNull(v),
         );
         if (hasNoErrors) {
           const channelName = `${nanoid()}`;
@@ -199,10 +185,7 @@ const runMatchingAlgo = async (
             data: {
               channel: channelName,
               people: {
-                connect: [
-                  { id: parseInt(userId) },
-                  { id: parseInt(matchedUserId) },
-                ],
+                connect: [{id: parseInt(userId)}, {id: parseInt(matchedUserId)}],
               },
             },
           });
@@ -215,7 +198,7 @@ const runMatchingAlgo = async (
           };
           console.log(matchData);
 
-          pubsub.publish("WaitingRoom", { waitingRoom: matchData });
+          pubsub.publish("WaitingRoom", {waitingRoom: matchData});
           matchSucceeded = true;
         }
       } catch (err) {

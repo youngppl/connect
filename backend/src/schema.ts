@@ -1,5 +1,5 @@
-import { gql } from "apollo-server-core";
-import { buildSchema, print } from "graphql";
+import {gql} from "apollo-server-core";
+import {buildSchema, print} from "graphql";
 
 export const typeDefs = gql`
   enum Pronouns {
