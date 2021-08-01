@@ -29,6 +29,11 @@ export type Conversation = {
   lastMessage?: Maybe<Message>;
 };
 
+export type ConversationType =
+  | 'DEEP'
+  | 'LIGHT'
+  | 'SMALL';
+
 export type Match = {
   __typename?: 'Match';
   message: Scalars['String'];
@@ -138,7 +143,14 @@ export type SubscriptionChatArgs = {
 
 export type SubscriptionWaitingRoomArgs = {
   userId: Scalars['ID'];
-  chatTypes: Array<Scalars['String']>;
+  chatTypes: Array<ConversationType>;
+};
+
+export type TalkNumbers = {
+  __typename?: 'TalkNumbers';
+  small?: Maybe<Scalars['Int']>;
+  deep?: Maybe<Scalars['Int']>;
+  light?: Maybe<Scalars['Int']>;
 };
 
 export type User = {
@@ -153,6 +165,8 @@ export type User = {
   mood?: Maybe<Scalars['String']>;
   formattedPronouns?: Maybe<Scalars['String']>;
   overallRating?: Maybe<Scalars['Float']>;
+  numSmallTalk?: Maybe<Scalars['Int']>;
+  talkNumbers?: Maybe<TalkNumbers>;
 };
 
 
@@ -242,6 +256,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Conversation: ResolverTypeWrapper<Conversation>;
+  ConversationType: ConversationType;
   Match: ResolverTypeWrapper<Match>;
   Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -250,6 +265,7 @@ export type ResolversTypes = {
   Pronouns: Pronouns;
   Query: ResolverTypeWrapper<{}>;
   Subscription: ResolverTypeWrapper<{}>;
+  TalkNumbers: ResolverTypeWrapper<TalkNumbers>;
   User: ResolverTypeWrapper<User>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -268,6 +284,7 @@ export type ResolversParentTypes = {
   Profile: Profile;
   Query: {};
   Subscription: {};
+  TalkNumbers: TalkNumbers;
   User: User;
   Float: Scalars['Float'];
   Boolean: Scalars['Boolean'];
@@ -328,6 +345,13 @@ export type SubscriptionResolvers<ContextType = JufaContextType, ParentType exte
   waitingRoom?: SubscriptionResolver<Maybe<ResolversTypes['Match']>, "waitingRoom", ParentType, ContextType, RequireFields<SubscriptionWaitingRoomArgs, 'userId' | 'chatTypes'>>;
 };
 
+export type TalkNumbersResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['TalkNumbers'] = ResolversParentTypes['TalkNumbers']> = {
+  small?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  deep?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  light?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -339,6 +363,8 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
   mood?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   formattedPronouns?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   overallRating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  numSmallTalk?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  talkNumbers?: Resolver<Maybe<ResolversTypes['TalkNumbers']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -351,6 +377,7 @@ export type Resolvers<ContextType = JufaContextType> = {
   Profile?: ProfileResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  TalkNumbers?: TalkNumbersResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

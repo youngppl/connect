@@ -326,9 +326,9 @@ const ProfilePortion = ({user}: {user: UserProp}) => {
           }}
         />
         <RowContainer style={{justifyContent: "space-between", paddingVertical: 16}}>
-          <TalkCounter count={0} text={"Deep talks"} />
-          <TalkCounter count={0} text={"Light talks"} />
-          <TalkCounter count={0} text={"Small talks"} />
+          <TalkCounter count={user.talkNumbers.deep} text={"Deep talks"} />
+          <TalkCounter count={user.talkNumbers.light} text={"Light talks"} />
+          <TalkCounter count={user.talkNumbers.small} text={"Small talks"} />
         </RowContainer>
       </ColumnContainer>
     </ProfileSection>
@@ -418,6 +418,11 @@ ProfileScreen.query = gql`
       formattedPronouns
       interests
       overallRating
+      talkNumbers {
+        deep
+        small
+        light
+      }
     }
   }
 `;

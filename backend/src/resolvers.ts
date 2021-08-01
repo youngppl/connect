@@ -1,4 +1,4 @@
-import {Prisma, PrismaClient, Pronouns} from "@prisma/client";
+import {Prisma, PrismaClient, Pronouns, ConversationType} from "@prisma/client";
 import {PubSubEngine} from "graphql-subscriptions";
 import {Redis} from "ioredis";
 import {nanoid} from "nanoid";
@@ -60,6 +60,20 @@ export const resolvers: Resolvers = {
       const feedBackSum = feedbackRatings.reduce((a, b) => a + b, 0);
       const averageScore = feedBackSum / feedbackRatings.length;
       return averageScore;
+    },
+    talkNumbers: async (_user, data, {prisma}) => {
+      const conversations = await prisma.conversation.findMany({
+        select: {type: true},
+        where: {
+          people: {some: {id: {equals: parseInt(_user.id)}}},
+        },
+      });
+      const talkMap = _.countBy(conversations.map((conversation) => conversation.type));
+      return {
+        small: talkMap["SMALL"] || 0,
+        light: talkMap["LIGHT"] || 0,
+        deep: talkMap["DEEP"] || 0,
+      };
     },
   },
   Conversation: {
@@ -178,22 +192,11 @@ export const resolvers: Resolvers = {
   },
 };
 
-interface StringMapProps {
-  [key: string]: string;
-}
-
-// TODO: Duplicated from client, might want to add it to graphql types for 1 source of truth
-const CHAT_OPTIONS: StringMapProps = {
-  DEEP_TALK: "DEEP_TALK",
-  LIGHT_TALK: "LIGHT_TALK",
-  SMALL_TALK: "SMALL_TALK",
-};
-
 const runMatchingAlgo = async (
   redis: Redis,
   pubsub: PubSubEngine,
   prisma: PrismaClient,
-  chatTypes: string[],
+  chatTypes: ConversationType[],
   userId: string,
 ) => {
   let matchSucceeded = false;
@@ -211,8 +214,10 @@ const runMatchingAlgo = async (
     return;
   }
 
-  for (const chatUserId of possibleMatchUserIds) {
-    const [chatType, matchedUserId] = chatUserId;
+  for (const chatTypeMatchedUserId of possibleMatchUserIds) {
+    const [chatType, matchedUserId] = chatTypeMatchedUserId;
+    const conversationType = ConversationType[chatType];
+
     if (matchSucceeded) {
       return;
     }
@@ -233,6 +238,7 @@ const runMatchingAlgo = async (
           await prisma.conversation.create({
             data: {
               channel: channelName,
+              type: conversationType,
               people: {
                 connect: [{id: parseInt(userId)}, {id: parseInt(matchedUserId)}],
               },
@@ -263,9 +269,9 @@ const runMatchingAlgo = async (
 
 const yeetUserFromAllQueuesCommand = (userId: string) => {
   return [
-    ["lrem", CHAT_OPTIONS.DEEP_TALK, "0", userId],
-    ["lrem", CHAT_OPTIONS.LIGHT_TALK, "0", userId],
-    ["lrem", CHAT_OPTIONS.SMALL_TALK, "0", userId],
+    ["lrem", ConversationType.DEEP, "0", userId],
+    ["lrem", ConversationType.LIGHT, "0", userId],
+    ["lrem", ConversationType.SMALL, "0", userId],
   ];
 };
 

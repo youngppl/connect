@@ -89,7 +89,7 @@ const CancelButton = (props: TouchableOpacityProps) => {
 type WaitingScreenProps = StackScreenProps<RootStackParamList, "WaitingScreen">;
 
 const waitingRoomSubscription = gql`
-  subscription WaitingScreen($userId: ID!, $chatTypes: [String!]!) {
+  subscription WaitingScreen($userId: ID!, $chatTypes: [ConversationType!]!) {
     waitingRoom(userId: $userId, chatTypes: $chatTypes) {
       message
       users

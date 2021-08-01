@@ -8,6 +8,16 @@ export const typeDefs = gql`
     SHE_HER
     NONE
   }
+  enum ConversationType {
+    DEEP
+    LIGHT
+    SMALL
+  }
+  type TalkNumbers {
+    small: Int
+    deep: Int
+    light: Int
+  }
   type User {
     id: ID
     email: String
@@ -21,6 +31,8 @@ export const typeDefs = gql`
     # Custom
     formattedPronouns: String
     overallRating: Float
+    numSmallTalk: Int
+    talkNumbers: TalkNumbers
   }
   type Conversation {
     id: ID
@@ -70,7 +82,7 @@ export const typeDefs = gql`
   }
   type Subscription {
     chat(channel: String!): Chat
-    waitingRoom(userId: ID!, chatTypes: [String!]!): Match
+    waitingRoom(userId: ID!, chatTypes: [ConversationType!]!): Match
   }
 `;
 

@@ -2,6 +2,7 @@ import {useNavigation} from "@react-navigation/native";
 import * as React from "react";
 import styled from "styled-components/native";
 
+import {ConversationType} from "../../backend/src/resolvers-types";
 import BottomSheet, {
   BottomSheetButton,
   BottomSheetHeading,
@@ -26,8 +27,6 @@ const ChatButtonContainer = styled.TouchableOpacity`
   left: 62%;
   top: -10px;
 `;
-
-// Chat Type Sheet
 
 const ChatOptionContainer = styled.TouchableOpacity`
   background: #ffffff;
@@ -62,10 +61,6 @@ interface ChatOptionProps {
   onSelect: (value: boolean) => void;
 }
 
-interface StringMapProps {
-  [key: string]: string;
-}
-
 const ChatOption = ({heading, subheading, selected, onSelect}: ChatOptionProps) => {
   return (
     <ChatOptionContainer selected={selected} onPress={() => onSelect(!selected)}>
@@ -80,22 +75,22 @@ const ChatOption = ({heading, subheading, selected, onSelect}: ChatOptionProps) 
   );
 };
 
-const CHAT_OPTIONS: StringMapProps = {
-  DEEP_TALK: "DEEP_TALK",
-  LIGHT_TALK: "LIGHT_TALK",
-  SMALL_TALK: "SMALL_TALK",
+const CHAT_OPTIONS: Record<ConversationType, ConversationType> = {
+  DEEP: "DEEP",
+  LIGHT: "LIGHT",
+  SMALL: "SMALL",
 };
 
-const CHAT_SUBHEADINGS = {
-  [CHAT_OPTIONS.DEEP_TALK]: "let’s talk life or current events",
-  [CHAT_OPTIONS.LIGHT_TALK]: "I’m bored, help me smile & laugh",
-  [CHAT_OPTIONS.SMALL_TALK]: "let’s talk irrelevant stuff",
+const CHAT_SUBHEADINGS: Record<ConversationType, string> = {
+  DEEP: "let’s talk life or current events",
+  LIGHT: "I’m bored, help me smile & laugh",
+  SMALL: "let’s talk irrelevant stuff",
 };
 
-const CHAT_HEADINGS: StringMapProps = {
-  [CHAT_OPTIONS.DEEP_TALK]: "Deep talk",
-  [CHAT_OPTIONS.LIGHT_TALK]: "Light talk",
-  [CHAT_OPTIONS.SMALL_TALK]: "Small talk",
+const CHAT_HEADINGS: Record<ConversationType, string> = {
+  DEEP: "Deep talk",
+  LIGHT: "Light talk",
+  SMALL: "Small talk",
 };
 
 const ChatTypeSheet = (
@@ -103,10 +98,10 @@ const ChatTypeSheet = (
     onContinue: (preferredChatType: string[]) => void;
   },
 ) => {
-  const [chatSelections, setChatSelections] = React.useState<Record<string, boolean>>({
-    [CHAT_OPTIONS.DEEP_TALK]: false,
-    [CHAT_OPTIONS.LIGHT_TALK]: false,
-    [CHAT_OPTIONS.SMALL_TALK]: false,
+  const [chatSelections, setChatSelections] = React.useState<Record<ConversationType, boolean>>({
+    DEEP: false,
+    LIGHT: false,
+    SMALL: false,
   });
 
   return (
@@ -115,10 +110,10 @@ const ChatTypeSheet = (
       <Space height={24} />
       {Object.keys(CHAT_OPTIONS).map((option) => (
         <ChatOption
-          heading={CHAT_HEADINGS[option]}
-          subheading={CHAT_SUBHEADINGS[option]}
+          heading={CHAT_HEADINGS[option as ConversationType]}
+          subheading={CHAT_SUBHEADINGS[option as ConversationType]}
           key={option}
-          selected={chatSelections[option]}
+          selected={chatSelections[option as ConversationType]}
           onSelect={(value) =>
             setChatSelections((oldSelections) => ({
               ...oldSelections,
@@ -131,7 +126,9 @@ const ChatTypeSheet = (
       <BottomSheetButton
         onPress={() =>
           props.onContinue(
-            Object.keys(chatSelections).filter((key) => chatSelections[key]) as string[],
+            Object.keys(chatSelections).filter(
+              (key) => chatSelections[key as ConversationType],
+            ) as string[],
           )
         }
         disabled={!Object.values(chatSelections).some((value) => value)}

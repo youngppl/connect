@@ -19,6 +19,12 @@ enum Pronouns {
   NONE
 }
 
+enum ConversationType {
+  DEEP
+  LIGHT
+  SMALL
+}
+
 model User {
   id            Int            @id @default(autoincrement())
   createdAt     DateTime       @default(now())
@@ -35,9 +41,10 @@ model User {
 }
 
 model Conversation {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  channel   String     @unique
+  id        Int               @id @default(autoincrement())
+  createdAt DateTime          @default(now())
+  channel   String            @unique
+  type      ConversationType?
   people    User[]
   messages  Message[]
   feedback  Feedback[]
