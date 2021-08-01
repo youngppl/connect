@@ -94,12 +94,46 @@ export const resolvers: Resolvers = {
       });
       return {message: "Profile made", id: user.id.toString()};
     },
-    createChatFeedback: async (_parent, {author, mood}, {prisma}) => {
-      await updateMood(prisma, author, mood);
+    createChatFeedback: async (_parent, data, {prisma}) => {
+      try {
+        // TODO: Store the current user in the context
+        // Get the current user for the before mood.
+        const user = await prisma.user.findUnique({where: {id: parseInt(data.author)}});
+        await prisma.user.update({
+          where: {id: parseInt(data.author)},
+          data: {
+            mood: data.mood,
+            conversations: {
+              update: {
+                data: {
+                  feedback: {
+                    create: [
+                      {
+                        userId: user.id,
+                        survey: {
+                          beforeMood: user.mood,
+                          afterMood: data.mood,
+                          howFeelingAfter: data.howFeelingAfter,
+                          smile: data.smile,
+                          talkAgain: data.talkAgain,
+                          rating: data.engagementRating,
+                        },
+                      },
+                    ],
+                  },
+                },
+                where: {channel: data.channel},
+              },
+            },
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
       return "done";
     },
     updateInterests: async (_parent, {userId, interests}, {prisma}) => {
-      prisma.user.update({
+      await prisma.user.update({
         where: {
           id: parseInt(userId),
         },
