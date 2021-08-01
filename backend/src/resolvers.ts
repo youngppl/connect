@@ -1,4 +1,4 @@
-import {PrismaClient, Pronouns} from "@prisma/client";
+import {Prisma, PrismaClient, Pronouns} from "@prisma/client";
 import {PubSubEngine} from "graphql-subscriptions";
 import {Redis} from "ioredis";
 import {nanoid} from "nanoid";
@@ -42,9 +42,24 @@ export const resolvers: Resolvers = {
   },
   User: {
     formattedPronouns: (user) => {
-      // HE_HIS -> He/His
+      // HE_HIS -> He/his
       const pronouns = user.pronouns.split("_").join("/").toLowerCase();
       return pronouns.charAt(0).toUpperCase() + pronouns.slice(1);
+    },
+    overallRating: async (_user, data, {prisma}) => {
+      const feedback = await prisma.feedback.findMany({
+        where: {
+          NOT: {id: {equals: parseInt(_user.id)}},
+          conversation: {people: {some: {id: {equals: parseInt(_user.id)}}}},
+        },
+      });
+      // Benefit of the doubt, no rating = 5 star score
+      const feedbackRatings: Array<number> = feedback.map(
+        (singleFeedback) => ((singleFeedback.survey as Prisma.JsonObject)["rating"] as number) || 5,
+      );
+      const feedBackSum = feedbackRatings.reduce((a, b) => a + b, 0);
+      const averageScore = feedBackSum / feedbackRatings.length;
+      return averageScore;
     },
   },
   Conversation: {

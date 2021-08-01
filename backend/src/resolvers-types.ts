@@ -152,6 +152,7 @@ export type User = {
   interests?: Maybe<Array<Scalars['String']>>;
   mood?: Maybe<Scalars['String']>;
   formattedPronouns?: Maybe<Scalars['String']>;
+  overallRating?: Maybe<Scalars['Float']>;
 };
 
 
@@ -250,6 +251,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
 
@@ -267,6 +269,7 @@ export type ResolversParentTypes = {
   Query: {};
   Subscription: {};
   User: User;
+  Float: Scalars['Float'];
   Boolean: Scalars['Boolean'];
 };
 
@@ -335,6 +338,7 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
   interests?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   mood?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   formattedPronouns?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  overallRating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

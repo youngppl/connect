@@ -20,6 +20,7 @@ export const typeDefs = gql`
 
     # Custom
     formattedPronouns: String
+    overallRating: Float
   }
   type Conversation {
     id: ID
