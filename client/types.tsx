@@ -1,4 +1,4 @@
-import { User } from "../backend/src/resolvers-types";
+import {User} from "../backend/src/resolvers-types";
 
 export type RootStackParamList = {
   Root: undefined;
@@ -6,13 +6,13 @@ export type RootStackParamList = {
   CreateProfileScreen: undefined;
   HomeScreen: undefined;
   Landing: undefined;
-  MainTabs: { initiateChat?: boolean };
-  ChatScreen: { channel: string; otherUser: User; icebreaker: string };
-  FeedbackScreen: { channel: string };
+  MainTabs: {initiateChat?: boolean};
+  ChatScreen: {channel: string; otherUser: User; icebreaker: string};
+  FeedbackScreen: {channel: string};
   WaitingScreen: {
     chatTypes: string[];
   };
-  TimesUpScreen: { channel: string };
+  TimesUpScreen: {channel: string};
 };
 
 export type BottomTabParamList = {
@@ -28,4 +28,4 @@ export type ProfileTabParamList = {
   ProfileScreen: undefined;
 };
 
-export { User };
+export {User};

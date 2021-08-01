@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 import * as React from "react";
 import styled from "styled-components/native";
 
@@ -31,9 +31,7 @@ const ChatButtonContainer = styled.TouchableOpacity`
 
 const ChatOptionContainer = styled.TouchableOpacity`
   background: #ffffff;
-  border: 3px solid
-    ${(props: { selected: boolean }) =>
-      props.selected ? "#371463" : "#ebe8ef"};
+  border: 3px solid ${(props: {selected: boolean}) => (props.selected ? "#371463" : "#ebe8ef")};
   border-radius: 16px;
   flex-direction: row;
   justify-content: space-between;
@@ -68,22 +66,14 @@ interface StringMapProps {
   [key: string]: string;
 }
 
-const ChatOption = ({
-  heading,
-  subheading,
-  selected,
-  onSelect,
-}: ChatOptionProps) => {
+const ChatOption = ({heading, subheading, selected, onSelect}: ChatOptionProps) => {
   return (
-    <ChatOptionContainer
-      selected={selected}
-      onPress={() => onSelect(!selected)}
-    >
+    <ChatOptionContainer selected={selected} onPress={() => onSelect(!selected)}>
       <Column>
         <ChatOptionHeading>{heading}</ChatOptionHeading>
         <ChatOptionSubheading>{subheading}</ChatOptionSubheading>
       </Column>
-      <Column style={{ justifyContent: "center" }}>
+      <Column style={{justifyContent: "center"}}>
         <Checkbox selected={selected} onSelect={() => onSelect(!selected)} />
       </Column>
     </ChatOptionContainer>
@@ -111,11 +101,9 @@ const CHAT_HEADINGS: StringMapProps = {
 const ChatTypeSheet = (
   props: BottomSheetModalProps & {
     onContinue: (preferredChatType: string[]) => void;
-  }
+  },
 ) => {
-  const [chatSelections, setChatSelections] = React.useState<
-    Record<string, boolean>
-  >({
+  const [chatSelections, setChatSelections] = React.useState<Record<string, boolean>>({
     [CHAT_OPTIONS.DEEP_TALK]: false,
     [CHAT_OPTIONS.LIGHT_TALK]: false,
     [CHAT_OPTIONS.SMALL_TALK]: false,
@@ -123,9 +111,7 @@ const ChatTypeSheet = (
 
   return (
     <BottomSheet {...props}>
-      <BottomSheetHeading>
-        What kind of conversation are you looking to have?
-      </BottomSheetHeading>
+      <BottomSheetHeading>What kind of conversation are you looking to have?</BottomSheetHeading>
       <Space height={24} />
       {Object.keys(CHAT_OPTIONS).map((option) => (
         <ChatOption
@@ -145,9 +131,7 @@ const ChatTypeSheet = (
       <BottomSheetButton
         onPress={() =>
           props.onContinue(
-            Object.keys(chatSelections).filter(
-              (key) => chatSelections[key]
-            ) as string[]
+            Object.keys(chatSelections).filter((key) => chatSelections[key]) as string[],
           )
         }
         disabled={!Object.values(chatSelections).some((value) => value)}
@@ -174,9 +158,7 @@ const AGREEMENTS = {
     "We are here for connection, so authenticity and honesty are key! No fake information ",
 };
 
-const AgreementsSheet = (
-  props: BottomSheetModalProps & { onContinue: () => void }
-) => {
+const AgreementsSheet = (props: BottomSheetModalProps & {onContinue: () => void}) => {
   const [agreements, setAgreements] = React.useState([false, false, false]);
 
   return (
@@ -185,7 +167,7 @@ const AgreementsSheet = (
       <Space height={24} />
       {Object.entries(AGREEMENTS).map(([heading, subheading], index) => (
         <AgreementContainer key={index}>
-          <Column style={{ justifyContent: "flex-start" }}>
+          <Column style={{justifyContent: "flex-start"}}>
             <Checkbox
               selected={agreements[index]}
               onSelect={(value) => {
@@ -199,12 +181,8 @@ const AgreementsSheet = (
           </Column>
           <Space width={8} />
           <Column>
-            <ChatOptionHeading style={{ fontSize: 19 }}>
-              {heading}
-            </ChatOptionHeading>
-            <ChatOptionSubheading style={{ fontSize: 12 }}>
-              {subheading}
-            </ChatOptionSubheading>
+            <ChatOptionHeading style={{fontSize: 19}}>{heading}</ChatOptionHeading>
+            <ChatOptionSubheading style={{fontSize: 12}}>{subheading}</ChatOptionSubheading>
           </Column>
         </AgreementContainer>
       ))}
@@ -219,10 +197,8 @@ const AgreementsSheet = (
   );
 };
 
-const ChatButton = ({ initiateChat = false }: { initiateChat?: boolean }) => {
-  const [showChatTypeSheet, setShowChatTypeSheet] = React.useState(
-    initiateChat
-  );
+const ChatButton = ({initiateChat = false}: {initiateChat?: boolean}) => {
+  const [showChatTypeSheet, setShowChatTypeSheet] = React.useState(initiateChat);
   const [showAgreementSheet, setShowAgreementSheet] = React.useState(false);
   const [chatTypes, setChatTypes] = React.useState<string[]>();
   const navigation = useNavigation();
@@ -246,7 +222,7 @@ const ChatButton = ({ initiateChat = false }: { initiateChat?: boolean }) => {
         setVisible={setShowAgreementSheet}
         onContinue={() => {
           setShowAgreementSheet(false);
-          navigation.replace("WaitingScreen", { chatTypes });
+          navigation.replace("WaitingScreen", {chatTypes});
         }}
       />
     </>

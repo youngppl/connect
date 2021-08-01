@@ -1,7 +1,7 @@
 import * as React from "react";
-import Svg, { SvgProps, Path } from "react-native-svg";
+import Svg, {SvgProps, Path} from "react-native-svg";
 
-function SvgComponent(props: SvgProps & { filled: boolean }) {
+function SvgComponent(props: SvgProps & {filled: boolean}) {
   return (
     <Svg
       width={36}

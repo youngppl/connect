@@ -1,20 +1,14 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
-import { formatDistance } from "date-fns";
+import {gql, useMutation, useQuery} from "@apollo/client";
+import {Ionicons} from "@expo/vector-icons";
+import {useFocusEffect} from "@react-navigation/native";
+import {formatDistance} from "date-fns";
 import _ from "lodash";
 import * as React from "react";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
-import { Conversation } from "../../backend/src/resolvers-types";
-import BottomSheet, {
-  BottomSheetButton,
-  BottomSheetHeading,
-} from "../components/BottomSheet";
+import {Conversation} from "../../backend/src/resolvers-types";
+import BottomSheet, {BottomSheetButton, BottomSheetHeading} from "../components/BottomSheet";
 import Column from "../components/Column";
 import OkayIcon from "../components/emotions/Okay";
 import FeelingSlider from "../components/FeelingSlider";
@@ -22,9 +16,9 @@ import Background from "../components/PlanetBackground";
 import ProfileImage from "../components/ProfileImage";
 import Row from "../components/Row";
 import Space from "../components/Space";
-import { MOODS } from "../constants/Moods";
-import { UserContext } from "../providers/UserProvider";
-import { User } from "../types";
+import {MOODS} from "../constants/Moods";
+import {UserContext} from "../providers/UserProvider";
+import {User} from "../types";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -34,7 +28,7 @@ const Container = styled(SafeAreaView)`
 
 const SpaceBackgroundContainer = styled.View`
   position: absolute;
-  top: ${(props: { top: number }) => props.top}px;
+  top: ${(props: {top: number}) => props.top}px;
   left: 0;
 `;
 
@@ -152,7 +146,7 @@ function makeNiceDate(dbDate: string | null | undefined) {
   return formatDistance(
     dbDate ? new Date(dbDate) : new Date(),
     Date.now() + new Date().getTimezoneOffset() * 60 * 1000,
-    { addSuffix: true }
+    {addSuffix: true},
   );
 }
 const Unreads = () => {
@@ -163,19 +157,13 @@ const Unreads = () => {
   );
 };
 
-const OldChat = ({
-  chat,
-  userId,
-}: {
-  chat: Conversation;
-  userId: string | null;
-}) => {
+const OldChat = ({chat, userId}: {chat: Conversation; userId: string | null}) => {
   const otherPerson = _.reject(chat.people, ["id", userId])[0]; // Assuming 2 ppl -> 1 person on this filter.
   return (
     <OldChatContainer>
       <Column>
         <Row>
-          <Column style={{ justifyContent: "center" }}>
+          <Column style={{justifyContent: "center"}}>
             <ProfileImage />
           </Column>
           <Space width={10} />
@@ -212,9 +200,9 @@ const CHAT_LOG_QUERY = gql`
 `;
 
 const ChatLog = () => {
-  const { id } = React.useContext(UserContext);
-  const { data, loading } = useQuery(CHAT_LOG_QUERY, {
-    variables: { userId: id },
+  const {id} = React.useContext(UserContext);
+  const {data, loading} = useQuery(CHAT_LOG_QUERY, {
+    variables: {userId: id},
     skip: !id,
   });
 
@@ -227,9 +215,7 @@ const ChatLog = () => {
       <ChatLogHeader>Chat</ChatLogHeader>
       <Space height={18} />
       {data?.getConversations.map((conversation: Conversation) => {
-        return (
-          <OldChat key={conversation.id} chat={conversation} userId={id} />
-        );
+        return <OldChat key={conversation.id} chat={conversation} userId={id} />;
       })}
       {false && (
         <>
@@ -289,23 +275,21 @@ const FeelingSheet = ({
   setVisible: any;
   refetchUser: () => void;
 }) => {
-  const { id } = React.useContext(UserContext);
+  const {id} = React.useContext(UserContext);
   const [updateMood] = useMutation(updateMoodMutation);
   const [mood, setMood] = React.useState(3);
 
   React.useEffect(() => setMood(MOODS.indexOf(currentMood) + 1), [currentMood]);
 
   const handleDone = async () => {
-    await updateMood({ variables: { userId: id, mood: MOODS[mood - 1] } });
+    await updateMood({variables: {userId: id, mood: MOODS[mood - 1]}});
     await refetchUser();
     setVisible(false);
   };
 
   return (
     <BottomSheet visible={visible} setVisible={setVisible}>
-      <BottomSheetHeading>
-        Hey {name}, how are you feeling right now?
-      </BottomSheetHeading>
+      <BottomSheetHeading>Hey {name}, how are you feeling right now?</BottomSheetHeading>
       <Space height={44} />
       <FeelingSlider mood={mood} setMood={setMood} />
       <Space height={40} />
@@ -314,13 +298,7 @@ const FeelingSheet = ({
   );
 };
 
-const Feeling = ({
-  user,
-  refetchUser,
-}: {
-  user: User;
-  refetchUser: () => void;
-}) => {
+const Feeling = ({user, refetchUser}: {user: User; refetchUser: () => void}) => {
   const [showModal, setShowModal] = React.useState(false);
 
   return (
@@ -358,15 +336,15 @@ const getUserQuery = gql`
 `;
 
 export const HomeScreen = () => {
-  const { id } = React.useContext(UserContext);
-  const { loading, error, data, refetch } = useQuery(getUserQuery, {
-    variables: { id },
+  const {id} = React.useContext(UserContext);
+  const {loading, error, data, refetch} = useQuery(getUserQuery, {
+    variables: {id},
   });
 
   useFocusEffect(
     React.useCallback(() => {
       refetch();
-    }, [data])
+    }, [data]),
   );
 
   return (

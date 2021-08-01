@@ -1,12 +1,5 @@
 import * as React from "react";
-import Svg, {
-  SvgProps,
-  G,
-  Circle,
-  Path,
-  Defs,
-  ClipPath,
-} from "react-native-svg";
+import Svg, {SvgProps, G, Circle, Path, Defs, ClipPath} from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: filter */
 
 function SvgComponent(props: SvgProps) {

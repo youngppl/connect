@@ -41,4 +41,9 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "import/no-named-as-default": 0,
   },
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
 };

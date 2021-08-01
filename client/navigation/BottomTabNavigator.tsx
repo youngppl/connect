@@ -1,10 +1,7 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {
-  StackScreenProps,
-  createStackNavigator,
-} from "@react-navigation/stack";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import {StackScreenProps, createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
-import { TouchableOpacity, View } from "react-native";
+import {TouchableOpacity, View} from "react-native";
 import styled from "styled-components/native";
 
 import ChatButton from "../components/InitiateChat";
@@ -13,7 +10,7 @@ import HomeTabIcon from "../components/tabIcon/Home";
 import ProfileTabIcon from "../components/tabIcon/Profile";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import { HomeScreen } from "../screens/HomeScreen";
+import {HomeScreen} from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import {
   RootStackParamList,
@@ -34,7 +31,7 @@ const TabContainer = styled(Row)`
   position: relative;
 `;
 
-const CustomTab = ({ state, descriptors, navigation, initiateChat }: any) => {
+const CustomTab = ({state, descriptors, navigation, initiateChat}: any) => {
   const focusedOptions = descriptors[state.routes[state.index].key].options;
 
   if (focusedOptions.tabBarVisible === false) {
@@ -42,7 +39,7 @@ const CustomTab = ({ state, descriptors, navigation, initiateChat }: any) => {
   }
 
   return (
-    <View style={{ backgroundColor: "#371463" }}>
+    <View style={{backgroundColor: "#371463"}}>
       <TabContainer>
         {state.routes.map((route: any, index: number) => {
           const label = route.name;
@@ -68,11 +65,7 @@ const CustomTab = ({ state, descriptors, navigation, initiateChat }: any) => {
           };
 
           return (
-            <TouchableOpacity
-              onPress={onPress}
-              onLongPress={onLongPress}
-              key={index}
-            >
+            <TouchableOpacity onPress={onPress} onLongPress={onLongPress} key={index}>
               {label === "HomeTab" ? (
                 <HomeTabIcon color={isFocused ? "#FF97D5" : "#fff"} />
               ) : (
@@ -91,14 +84,14 @@ const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 type BottomTabProps = StackScreenProps<RootStackParamList, "MainTabs">;
 
-export default function BottomTabNavigator({ route }: BottomTabProps) {
+export default function BottomTabNavigator({route}: BottomTabProps) {
   const colorScheme = useColorScheme();
   const initiateChat = route.params?.initiateChat;
   return (
     <BottomTab.Navigator
       tabBar={(props) => <CustomTab {...props} initiateChat={initiateChat} />}
       initialRouteName="HomeTab"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
+      tabBarOptions={{activeTintColor: Colors[colorScheme].tint}}
     >
       <BottomTab.Screen name="HomeTab" component={HomeTabNavigator} />
       <BottomTab.Screen name="ProfileTab" component={ProfileTabNavigator} />
@@ -114,7 +107,7 @@ function HomeTabNavigator() {
       <HomeTabStack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
     </HomeTabStack.Navigator>
   );
@@ -128,7 +121,7 @@ function ProfileTabNavigator() {
       <ProfileTabStack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
     </ProfileTabStack.Navigator>
   );

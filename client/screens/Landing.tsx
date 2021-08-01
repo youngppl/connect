@@ -1,9 +1,9 @@
-import { StackScreenProps } from "@react-navigation/stack";
+import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import styled from "styled-components/native";
 
 import LandingBackground from "../components/LandingBackground";
-import { RootStackParamList } from "../types";
+import {RootStackParamList} from "../types";
 
 const Container = styled.View`
   background-color: #371463;
@@ -42,7 +42,7 @@ const ButtonText = styled.Text`
 
 type LandingProps = StackScreenProps<RootStackParamList, "Landing">;
 
-const Landing = ({ navigation }: LandingProps) => {
+const Landing = ({navigation}: LandingProps) => {
   return (
     <Container>
       <Background />

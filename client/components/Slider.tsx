@@ -1,9 +1,6 @@
 import * as React from "react";
-import { View } from "react-native";
-import {
-  Slider as DefaultSlider,
-  SliderProps as DefaultSliderProps,
-} from "react-native-elements";
+import {View} from "react-native";
+import {Slider as DefaultSlider, SliderProps as DefaultSliderProps} from "react-native-elements";
 import styled from "styled-components/native";
 
 const SliderThumb = styled.View`
@@ -33,8 +30,7 @@ const SliderThumbLabel = styled.Text`
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
-  color: ${(props: SliderProps) =>
-    props.textColor ? props.textColor : "#371463"};
+  color: ${(props: SliderProps) => (props.textColor ? props.textColor : "#371463")};
   text-align: center;
 `;
 
@@ -47,15 +43,13 @@ const Slider = (props: SliderProps) => {
 
   return (
     <SliderContainer>
-      <View style={{ flex: 4 }}>
+      <View style={{flex: 4}}>
         <DefaultSlider
-          thumbStyle={{ height: 25, width: 20, backgroundColor: "transparent" }}
+          thumbStyle={{height: 25, width: 20, backgroundColor: "transparent"}}
           thumbProps={{
             children: (
               <SliderThumbContainer>
-                <SliderThumbLabel textColor={props.textColor}>
-                  {props.label}
-                </SliderThumbLabel>
+                <SliderThumbLabel textColor={props.textColor}>{props.label}</SliderThumbLabel>
                 <SliderThumb />
               </SliderThumbContainer>
             ),

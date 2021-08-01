@@ -1,22 +1,12 @@
-import {
-  createHttpLink,
-  from,
-  ApolloClient,
-  InMemoryCache,
-  split,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { onError } from "@apollo/client/link/error";
-import { getMainDefinition } from "@apollo/client/utilities";
+import {createHttpLink, from, ApolloClient, InMemoryCache, split} from "@apollo/client";
+import {setContext} from "@apollo/client/link/context";
+import {onError} from "@apollo/client/link/error";
+import {getMainDefinition} from "@apollo/client/utilities";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {
-  BACKEND_URL,
-  HTTP_PROTOCOL,
-  WS_PROTOCOL,
-} from "../constants/Environment";
+import {BACKEND_URL, HTTP_PROTOCOL, WS_PROTOCOL} from "../constants/Environment";
 
-import { WebSocketLink } from "./WebSocketLink";
+import {WebSocketLink} from "./WebSocketLink";
 
 const cache = new InMemoryCache({});
 const httpLink = createHttpLink({
@@ -24,7 +14,7 @@ const httpLink = createHttpLink({
   credentials: "include",
 });
 
-const authLink = setContext(async (_, { headers }) => {
+const authLink = setContext(async (_, {headers}) => {
   const token = await AsyncStorage.getItem("connectToken");
   return {
     headers: {
@@ -48,25 +38,22 @@ const wsLink = new WebSocketLink({
 });
 
 const splitLink = split(
-  ({ query }) => {
+  ({query}) => {
     const definition = getMainDefinition(query);
-    return (
-      definition.kind === "OperationDefinition" &&
-      definition.operation === "subscription"
-    );
+    return definition.kind === "OperationDefinition" && definition.operation === "subscription";
   },
   wsLink,
-  httpLink
+  httpLink,
 );
 
 const errorLink = onError((response) => {
-  const { graphQLErrors, operation, networkError } = response;
-  const { operationName } = operation;
+  const {graphQLErrors, operation, networkError} = response;
+  const {operationName} = operation;
   if (graphQLErrors) {
-    graphQLErrors.map(({ message, locations, path }) =>
+    graphQLErrors.map(({message, locations, path}) =>
       console.log(
-        `[GraphQL error]: Operation Name: ${operationName} Message: ${message}, Location: ${locations}, Path: ${path}`
-      )
+        `[GraphQL error]: Operation Name: ${operationName} Message: ${message}, Location: ${locations}, Path: ${path}`,
+      ),
     );
   }
   if (networkError) {

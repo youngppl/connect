@@ -1,13 +1,5 @@
 import * as React from "react";
-import Svg, {
-  SvgProps,
-  Circle,
-  Mask,
-  G,
-  Ellipse,
-  Path,
-  Defs,
-} from "react-native-svg";
+import Svg, {SvgProps, Circle, Mask, G, Ellipse, Path, Defs} from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: filter */
 
 function SvgComponent(props: SvgProps) {
@@ -21,43 +13,17 @@ function SvgComponent(props: SvgProps) {
       {...props}
     >
       <Circle cx={180.117} cy={41.882} r={41.882} fill="#D1FFA4" />
-      <Mask
-        id="prefix__a"
-        maskUnits="userSpaceOnUse"
-        x={133}
-        y={3}
-        width={84}
-        height={85}
-      >
+      <Mask id="prefix__a" maskUnits="userSpaceOnUse" x={133} y={3} width={84} height={85}>
         <Circle cx={174.882} cy={45.809} r={41.882} fill="#D1FFA4" />
       </Mask>
       <G mask="url(#prefix__a)">
         <Circle cx={189.279} cy={37.956} r={41.882} fill="#BFFE80" />
       </G>
-      <Mask
-        id="prefix__b"
-        maskUnits="userSpaceOnUse"
-        x={142}
-        y={1}
-        width={80}
-        height={82}
-      >
-        <Ellipse
-          cx={182.079}
-          cy={41.883}
-          rx={39.919}
-          ry={40.574}
-          fill="#D1FFA4"
-        />
+      <Mask id="prefix__b" maskUnits="userSpaceOnUse" x={142} y={1} width={80} height={82}>
+        <Ellipse cx={182.079} cy={41.883} rx={39.919} ry={40.574} fill="#D1FFA4" />
       </Mask>
       <G mask="url(#prefix__b)">
-        <Ellipse
-          cx={195.802}
-          cy={34.275}
-          rx={39.919}
-          ry={40.574}
-          fill="#ADFF5C"
-        />
+        <Ellipse cx={195.802} cy={34.275} rx={39.919} ry={40.574} fill="#ADFF5C" />
       </G>
       <Path
         d="M186.662 32.72h5.235"
@@ -65,30 +31,11 @@ function SvgComponent(props: SvgProps) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <Ellipse
-        cx={199.093}
-        cy={22.249}
-        rx={7.199}
-        ry={6.544}
-        fill="#F2FFE6"
-        fillOpacity={0.5}
-      />
-      <Circle
-        cx={168.993}
-        cy={64.787}
-        r={5.89}
-        fill="#F2FFE6"
-        fillOpacity={0.5}
-      />
+      <Ellipse cx={199.093} cy={22.249} rx={7.199} ry={6.544} fill="#F2FFE6" fillOpacity={0.5} />
+      <Circle cx={168.993} cy={64.787} r={5.89} fill="#F2FFE6" fillOpacity={0.5} />
       <Circle cx={175.537} cy={30.757} r={1.963} fill="#3D0230" />
       <Circle cx={201.711} cy={30.757} r={1.963} fill="#3D0230" />
-      <Circle
-        cx={308.807}
-        cy={67.389}
-        r={24.389}
-        fill="#F39FFF"
-        opacity={0.4}
-      />
+      <Circle cx={308.807} cy={67.389} r={24.389} fill="#F39FFF" opacity={0.4} />
       <Path
         opacity={0.4}
         d="M301.687 60.554c-1.636 5.694-9.612 3.163-14.402.7-.755-.387-1.077-1.28-.79-2.08.34-.947 1.404-1.415 2.343-1.054 2.783 1.071 6.806 2.434 8.74 2.434 2.988 0 5.976-7.802 6.35-12.093.373-4.29 4.855-5.461 6.723-5.461.577 0 1.434.156 2.354.376 1.632.392 1.91 2.546.563 3.547-4.59 3.41-10.482 8.758-11.881 13.63zM306.481 69.29c.472-2.209 12.566-6.222 20.505-8.53 1.776-.516 3.717-.956 5.452-.314 3.232 1.197-8.431 3.99-10.718 7.553-2.651 4.13 3.313 1.807 4.638 6.194 1.318 4.362-11.124 2.6-18.43 1.565l-.122-.017c-7.289-1.032-1.988-3.355-1.325-6.451zM297.9 73.193c-3.155-1.177-7.736 3.305-9.766 5.849l1.333 2.05c1.711-1.38 5.426-4.288 6.6-4.89 1.466-.752 1.466.753 1.833 3.01.367 2.256 2.2 2.256 4.767 2.632 2.566.377 2.566 1.129 2.566 3.762 0 2.106-.733 4.89-1.1 6.018l2.934.376c.977-1.63 2.933-5.567 2.933-8.275 0-3.385-2.2-3.761-5.867-4.89-3.666-1.128-2.2-4.137-6.233-5.642z"
@@ -106,22 +53,8 @@ function SvgComponent(props: SvgProps) {
           strokeWidth={3}
         />
       </G>
-      <Ellipse
-        opacity={0.4}
-        cx={303}
-        cy={58.5}
-        rx={1}
-        ry={1.5}
-        fill="#3D0230"
-      />
-      <Ellipse
-        opacity={0.4}
-        cx={315}
-        cy={58.5}
-        rx={1}
-        ry={1.5}
-        fill="#3D0230"
-      />
+      <Ellipse opacity={0.4} cx={303} cy={58.5} rx={1} ry={1.5} fill="#3D0230" />
+      <Ellipse opacity={0.4} cx={315} cy={58.5} rx={1} ry={1.5} fill="#3D0230" />
       <G opacity={0.4}>
         <Circle cx={40.596} cy={67.836} r={24.836} fill="#F44" />
         <Path

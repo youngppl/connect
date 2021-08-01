@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TouchableOpacity } from "react-native";
+import {TouchableOpacity} from "react-native";
 import styled from "styled-components/native";
 
 import ProfileImage from "../components/ProfileImage";
@@ -92,23 +92,21 @@ const SelectionOptionContainer = styled.TouchableOpacity`
   align-items: center;
   align-self: flex-start;
   justify-content: center;
-  background: ${(props: { selected: boolean }) =>
-    props.selected ? "white" : "transparent"};
+  background: ${(props: {selected: boolean}) => (props.selected ? "white" : "transparent")};
   margin-right: 8px;
   margin-bottom: 8px;
 `;
 
 const SelectionOptionText = styled(WhiteChatText)`
   font-size: 16px;
-  color: ${(props: { selected: boolean }) =>
-    props.selected ? "#371463" : "#ffffff"};
+  color: ${(props: {selected: boolean}) => (props.selected ? "#371463" : "#ffffff")};
 `;
 
-const SelectionOption = ({ text, value, selectedValue, setValue }: Option) => {
+const SelectionOption = ({text, value, selectedValue, setValue}: Option) => {
   const selected = (value || text) === selectedValue;
 
   const handleSelect = () => {
-    setValue({ text, value: value || text });
+    setValue({text, value: value || text});
   };
 
   return (
@@ -128,10 +126,10 @@ type RatingProps = {
   onOptionSelect: (value: Record<string, string | number | undefined>) => void;
 };
 
-const Rating = ({ onOptionSelect }: RatingProps) => {
+const Rating = ({onOptionSelect}: RatingProps) => {
   const [rating, setRating] = React.useState(-1);
   const handleSelection = (rating: number) => {
-    onOptionSelect({ value: rating + 1 });
+    onOptionSelect({value: rating + 1});
     setRating(rating);
   };
 
@@ -170,9 +168,7 @@ export const LeftChatBubble = ({
 }: ChatBubbleProps) => {
   const [optionSelection, setOptionSelection] = React.useState(optionValue);
 
-  const handleSelection = (
-    option: Record<string, string | number | undefined>
-  ) => {
+  const handleSelection = (option: Record<string, string | number | undefined>) => {
     setOptionSelection(option.value);
     if (onOptionSelect) {
       onOptionSelect(option);
@@ -183,7 +179,7 @@ export const LeftChatBubble = ({
     <ChatContainer>
       {isFirstInChain && (
         <ChatBubbleContainer>
-          <Space style={{ alignItems: "center", top: 18 }}>
+          <Space style={{alignItems: "center", top: 18}}>
             <ProfileImage />
           </Space>
           <NameContainer>
@@ -219,18 +215,14 @@ export const LeftChatBubble = ({
       )}
       <ChatBubbleContainer>
         <Space />
-        {showRating && onOptionSelect && (
-          <Rating onOptionSelect={onOptionSelect} />
-        )}
+        {showRating && onOptionSelect && <Rating onOptionSelect={onOptionSelect} />}
         <Space />
       </ChatBubbleContainer>
     </ChatContainer>
   );
 };
 
-export const RightChatBubble = ({
-  children,
-}: ChatBubbleProps & { children?: React.ReactElement }) => {
+export const RightChatBubble = ({children}: ChatBubbleProps & {children?: React.ReactElement}) => {
   return (
     <ChatContainer>
       {/* {isFirstInChain && (

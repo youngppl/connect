@@ -1,7 +1,7 @@
 import * as React from "react";
-import Svg, { SvgProps, Path } from "react-native-svg";
+import Svg, {SvgProps, Path} from "react-native-svg";
 
-function SvgComponent(props: SvgProps & { color: string }) {
+function SvgComponent(props: SvgProps & {color: string}) {
   return (
     <Svg width={28} height={28} viewBox="0 0 28 28" fill="none">
       <Path

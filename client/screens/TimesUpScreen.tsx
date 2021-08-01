@@ -1,9 +1,9 @@
-import { StackScreenProps } from "@react-navigation/stack";
+import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import styled from "styled-components/native";
 
 import Space from "../components/Space";
-import { RootStackParamList } from "../types";
+import {RootStackParamList} from "../types";
 
 const Container = styled.View`
   background-color: #371463;
@@ -27,12 +27,12 @@ const Content = styled.View`
 
 type TimesUpScreenProps = StackScreenProps<RootStackParamList, "TimesUpScreen">;
 
-const TimesUpScreen = ({ navigation, route }: TimesUpScreenProps) => {
-  const { channel } = route.params;
+const TimesUpScreen = ({navigation, route}: TimesUpScreenProps) => {
+  const {channel} = route.params;
 
   React.useEffect(() => {
     setTimeout(() => {
-      navigation.replace("FeedbackScreen", { channel });
+      navigation.replace("FeedbackScreen", {channel});
     }, 2000);
   }, []);
 

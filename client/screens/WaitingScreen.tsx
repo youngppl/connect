@@ -1,20 +1,15 @@
-import {
-  gql,
-  useLazyQuery,
-  useMutation,
-  useSubscription,
-} from "@apollo/client";
-import { StackScreenProps } from "@react-navigation/stack";
+import {gql, useLazyQuery, useMutation, useSubscription} from "@apollo/client";
+import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import { TouchableOpacityProps, TouchableOpacity } from "react-native";
+import {TouchableOpacityProps, TouchableOpacity} from "react-native";
 import styled from "styled-components/native";
 
 import Column from "../components/Column";
 import OuterSpaceBackground from "../components/OuterSpaceBackground";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
-import { UserContext } from "../providers/UserProvider";
-import { RootStackParamList } from "../types";
+import {UserContext} from "../providers/UserProvider";
+import {RootStackParamList} from "../types";
 
 const Container = styled.View`
   background-color: #371463;
@@ -123,25 +118,20 @@ const leaveWaitingRoomMutation = gql`
   }
 `;
 
-const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
-  const { id: userId } = React.useContext(UserContext);
-  const { chatTypes } = route.params;
-  const { data: matchData } = useSubscription(waitingRoomSubscription, {
-    variables: { userId, chatTypes },
+const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
+  const {id: userId} = React.useContext(UserContext);
+  const {chatTypes} = route.params;
+  const {data: matchData} = useSubscription(waitingRoomSubscription, {
+    variables: {userId, chatTypes},
   });
-  const [getMatchedUser, { data: matchedUserData }] = useLazyQuery(
-    getUserQuery
-  );
+  const [getMatchedUser, {data: matchedUserData}] = useLazyQuery(getUserQuery);
   const [leaveWaitingRoom] = useMutation(leaveWaitingRoomMutation);
 
   const [state, setState] = React.useState("waiting");
   const [channel, setChannel] = React.useState("");
   const [icebreaker, setIcebreaker] = React.useState("");
   const [matchedChatType, setMatchedChatType] = React.useState("");
-  const [
-    matchTimeoutTimerId,
-    setMatchTimeoutTimerId,
-  ] = React.useState<number>();
+  const [matchTimeoutTimerId, setMatchTimeoutTimerId] = React.useState<number>();
   const [toChatScreenSeconds, setToChatScreenSeconds] = React.useState(5);
 
   React.useEffect(() => {
@@ -154,17 +144,17 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
     console.log(matchData);
     if (matchData) {
       const {
-        waitingRoom: { users, channel, icebreaker, chatType },
+        waitingRoom: {users, channel, icebreaker, chatType},
       } = matchData;
       if (users.includes(userId)) {
         clearTimeout(matchTimeoutTimerId);
         const toChatTimer = setInterval(
           () => setToChatScreenSeconds((seconds) => seconds - 1),
-          1000
+          1000,
         );
         setState("matched");
         const id = users.filter((id: string) => id !== userId)[0];
-        getMatchedUser({ variables: { id } });
+        getMatchedUser({variables: {id}});
         setMatchedChatType(chatType.toLowerCase().split("_").join(" "));
         setChannel(channel);
         setIcebreaker(icebreaker);
@@ -184,8 +174,8 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
     }
   }, [toChatScreenSeconds]);
 
-  const goBackToHomeScreen = (params: { initiateChat?: boolean } = {}) => {
-    leaveWaitingRoom({ variables: { userId } });
+  const goBackToHomeScreen = (params: {initiateChat?: boolean} = {}) => {
+    leaveWaitingRoom({variables: {userId}});
     navigation.replace("MainTabs", params);
   };
 
@@ -193,9 +183,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
     <Container>
       <Background />
       <ContentContainer>
-        {state === "waiting" && (
-          <BannerText>One sec. We’re finding someone for you...</BannerText>
-        )}
+        {state === "waiting" && <BannerText>One sec. We’re finding someone for you...</BannerText>}
         {state === "matched" && matchedUserData && (
           <>
             <BannerText>
@@ -206,8 +194,8 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
             <UserInfoCard user={matchedUserData.getUser} />
             <Space height={70} />
             <InfoText>
-              You’ll be taken to the chat room in{" "}
-              <PinkInfoText>{toChatScreenSeconds}</PinkInfoText> seconds
+              You’ll be taken to the chat room in <PinkInfoText>{toChatScreenSeconds}</PinkInfoText>{" "}
+              seconds
             </InfoText>
           </>
         )}
@@ -216,9 +204,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
           <>
             <BannerText>{"Uh oh! We couldn't find anyone for you."}</BannerText>
             <Space height={36} />
-            <ButtonContainer
-              onPress={() => goBackToHomeScreen({ initiateChat: true })}
-            >
+            <ButtonContainer onPress={() => goBackToHomeScreen({initiateChat: true})}>
               <ButtonText>Adjust type of conversation</ButtonText>
             </ButtonContainer>
             <Space height={18} />
@@ -228,9 +214,7 @@ const WaitingScreen = ({ navigation, route }: WaitingScreenProps) => {
 
         {state === "user left" && (
           <>
-            <BannerText>
-              Uh oh! Looks like someone just got lost in space.
-            </BannerText>
+            <BannerText>Uh oh! Looks like someone just got lost in space.</BannerText>
             <Space height={36} />
             <ButtonContainer>
               <ButtonText>Find someone else for me</ButtonText>

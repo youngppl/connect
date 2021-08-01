@@ -1,9 +1,9 @@
-import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {NavigationContainer, DefaultTheme, DarkTheme} from "@react-navigation/native";
+import {createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
-import { ColorSchemeName } from "react-native";
+import {ColorSchemeName} from "react-native";
 
-import { UserContext } from "../providers/UserProvider";
+import {UserContext} from "../providers/UserProvider";
 import ChatScreen from "../screens/ChatScreen";
 import CreateProfileScreen from "../screens/CreateProfileScreen";
 import FeedbackScreen from "../screens/FeedbackScreen";
@@ -11,12 +11,12 @@ import Landing from "../screens/Landing";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import TimesUpScreen from "../screens/TimesUpScreen";
 import WaitingScreen from "../screens/WaitingScreen";
-import { RootStackParamList } from "../types";
+import {RootStackParamList} from "../types";
 
 import Tabs from "./BottomTabNavigator";
 import LinkingConfiguration from "./LinkingConfiguration";
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+export default function Navigation({colorScheme}: {colorScheme: ColorSchemeName}) {
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
@@ -32,9 +32,9 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const { id } = React.useContext(UserContext);
+  const {id} = React.useContext(UserContext);
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{headerShown: false}}>
       {!id && <Stack.Screen name="Landing" component={Landing} />}
       <Stack.Screen name="MainTabs" component={Tabs} />
       <Stack.Screen name="CreateProfileScreen" component={CreateProfileScreen} />
@@ -42,7 +42,7 @@ function RootNavigator() {
       <Stack.Screen name="FeedbackScreen" component={FeedbackScreen} />
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="TimesUpScreen" component={TimesUpScreen} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: "Oops!" }} />
+      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{title: "Oops!"}} />
     </Stack.Navigator>
   );
 }

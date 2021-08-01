@@ -1,21 +1,17 @@
-import { gql, useMutation, useSubscription } from "@apollo/client";
-import { Feather } from "@expo/vector-icons";
-import { StackScreenProps } from "@react-navigation/stack";
+import {gql, useMutation, useSubscription} from "@apollo/client";
+import {Feather} from "@expo/vector-icons";
+import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import { ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {ScrollView} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
-import {
-  BlackChatText,
-  LeftChatBubble,
-  RightChatBubble,
-} from "../components/ChatBubbles";
+import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
 import DismissKeyboard from "../components/DismissKeyboard";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
-import { UserContext } from "../providers/UserProvider";
-import { RootStackParamList } from "../types";
+import {UserContext} from "../providers/UserProvider";
+import {RootStackParamList} from "../types";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -60,7 +56,7 @@ const Name = styled.Text`
 const TimerContainer = styled.View`
   position: absolute;
   right: 20px;
-  background: ${(props: { secondsLeft: number }) =>
+  background: ${(props: {secondsLeft: number}) =>
     props.secondsLeft > 60 ? "rgba(255, 255, 255, 0.1)" : "#FF97D5"};
   border-radius: 8px;
   padding: 10px;
@@ -70,8 +66,7 @@ const TimerText = styled.Text`
   font-family: Quicksand;
   font-weight: 500;
   font-size: 14px;
-  color: ${(props: { secondsLeft: number }) =>
-    props.secondsLeft > 60 ? "white" : "#371463"};
+  color: ${(props: {secondsLeft: number}) => (props.secondsLeft > 60 ? "white" : "#371463")};
 `;
 
 const UserInfoContainer = styled.View`
@@ -109,7 +104,7 @@ const IcebreakerText = styled.Text`
   color: #ffffff;
 `;
 
-const IcebreakerCard = ({ icebreaker }: { icebreaker: string }) => (
+const IcebreakerCard = ({icebreaker}: {icebreaker: string}) => (
   <IcebreakerCardContainer>
     <IcebreakerHeading>ICEBREAKER</IcebreakerHeading>
     <IcebreakerText>{icebreaker}</IcebreakerText>
@@ -158,13 +153,13 @@ const createMessageMutation = gql`
   }
 `;
 
-const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
+const ChatScreen = ({navigation, route}: ChatScreenProps) => {
   const {
-    params: { channel, otherUser, icebreaker },
+    params: {channel, otherUser, icebreaker},
   } = route;
-  const { id: userId } = React.useContext(UserContext);
-  const { data } = useSubscription(chatSubscription, {
-    variables: { channel },
+  const {id: userId} = React.useContext(UserContext);
+  const {data} = useSubscription(chatSubscription, {
+    variables: {channel},
   });
   const [createMessage] = useMutation(createMessageMutation);
   const [messages, setMessages] = React.useState<Record<string, any>[]>([]);
@@ -176,7 +171,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
   React.useEffect(() => {
     console.log("incoming message", data);
     if (data) {
-      const { chat } = data;
+      const {chat} = data;
       setMessages((prev) => [...prev, chat]);
     }
   }, [data]);
@@ -189,7 +184,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
   }, []);
 
   const formatTimeLeft = React.useMemo(() => {
-    if (secondsLeft === 0) navigation.replace("TimesUpScreen", { channel });
+    if (secondsLeft === 0) navigation.replace("TimesUpScreen", {channel});
     if (secondsLeft > 60) {
       const minutesLeft = Math.floor(secondsLeft / 60);
       return `${minutesLeft} min left`;
@@ -207,7 +202,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
 
   const onSendMessage = (message: string) => {
     if (message) {
-      createMessage({ variables: { message, author: userId, channel } });
+      createMessage({variables: {message, author: userId, channel}});
       setMessageText(undefined);
     }
   };
@@ -220,11 +215,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
         </FlagButtonContainer>
         <UserInfoButton onPress={() => setShowUserInfo((show) => !show)}>
           <Name>{otherUser.name}</Name>
-          <Feather
-            name={showUserInfo ? "chevron-up" : "chevron-down"}
-            size={24}
-            color="white"
-          />
+          <Feather name={showUserInfo ? "chevron-up" : "chevron-down"} size={24} color="white" />
         </UserInfoButton>
         <TimerContainer secondsLeft={secondsLeft}>
           <TimerText secondsLeft={secondsLeft}>{formatTimeLeft}</TimerText>
@@ -261,9 +252,7 @@ const ChatScreen = ({ navigation, route }: ChatScreenProps) => {
                 author={otherUser.name}
                 message={message.message}
                 key={index}
-                isFirstInChain={
-                  index === 0 || messages[index - 1].author !== message.author
-                }
+                isFirstInChain={index === 0 || messages[index - 1].author !== message.author}
                 options={message.options}
                 onOptionSelect={message.onOptionSelect}
               />

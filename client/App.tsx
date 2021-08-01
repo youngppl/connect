@@ -1,11 +1,11 @@
-import { ApolloProvider } from "@apollo/client/react";
-import { useFonts, Quicksand_700Bold } from "@expo-google-fonts/quicksand";
+import {ApolloProvider} from "@apollo/client/react";
+import {useFonts, Quicksand_700Bold} from "@expo-google-fonts/quicksand";
 import AppLoading from "expo-app-loading";
-import { StatusBar } from "expo-status-bar";
+import {StatusBar} from "expo-status-bar";
 import React from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import {SafeAreaProvider} from "react-native-safe-area-context";
 
-import { client } from "./graphql/Client";
+import {client} from "./graphql/Client";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";

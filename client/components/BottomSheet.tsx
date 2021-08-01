@@ -1,7 +1,7 @@
-import { BlurView } from "expo-blur";
+import {BlurView} from "expo-blur";
 import * as React from "react";
-import { Modal, ModalProps, View } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import {Modal, ModalProps, View} from "react-native";
+import {TouchableWithoutFeedback} from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
 export interface BottomSheetModalProps extends ModalProps {
@@ -22,8 +22,7 @@ const BottomSheetButtonContainer = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   height: 68px;
-  background: ${(props) =>
-    props.disabled ? "rgba(55, 20, 99, 0.25)" : "#371463"};
+  background: ${(props) => (props.disabled ? "rgba(55, 20, 99, 0.25)" : "#371463")};
   box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
   border-radius: 32px;
 `;
@@ -46,14 +45,11 @@ export const BottomSheetButton = (props: any) => {
 
 const BottomSheet = (props: BottomSheetModalProps) => {
   return (
-    <View style={{ position: "absolute" }}>
+    <View style={{position: "absolute"}}>
       <Modal animationType="fade" transparent {...props}>
-        <BlurView
-          tint={"dark"}
-          style={{ height: "100%", justifyContent: "flex-end" }}
-        >
+        <BlurView tint={"dark"} style={{height: "100%", justifyContent: "flex-end"}}>
           <TouchableWithoutFeedback onPress={() => props.setVisible(false)}>
-            <View style={{ height: "100%" }} />
+            <View style={{height: "100%"}} />
           </TouchableWithoutFeedback>
           <View
             style={{

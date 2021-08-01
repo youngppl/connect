@@ -1,12 +1,5 @@
 import * as React from "react";
-import Svg, {
-  Path,
-  Circle,
-  G,
-  Defs,
-  LinearGradient,
-  Stop,
-} from "react-native-svg";
+import Svg, {Path, Circle, G, Defs, LinearGradient, Stop} from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: filter */
 
 function SvgComponent(props) {
@@ -92,22 +85,10 @@ function SvgComponent(props) {
         <Circle cx={59} cy={37} r={3} fill="#fff" />
       </G>
       <G filter="url(#prefix__filter9_d)">
-        <Circle
-          cx={22.877}
-          cy={7.231}
-          r={3}
-          transform="rotate(139.302 22.877 7.23)"
-          fill="#fff"
-        />
+        <Circle cx={22.877} cy={7.231} r={3} transform="rotate(139.302 22.877 7.23)" fill="#fff" />
       </G>
       <G filter="url(#prefix__filter10_d)">
-        <Circle
-          cx={7.41}
-          cy={33.722}
-          r={1}
-          transform="rotate(139.302 7.41 33.722)"
-          fill="#fff"
-        />
+        <Circle cx={7.41} cy={33.722} r={1} transform="rotate(139.302 7.41 33.722)" fill="#fff" />
       </G>
       <G filter="url(#prefix__filter11_d)">
         <Circle

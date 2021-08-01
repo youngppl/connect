@@ -13,7 +13,7 @@ export const UserContext = React.createContext<User>({
   },
 });
 
-const UserProvider = ({ children }: { children: React.ReactElement }) => {
+const UserProvider = ({children}: {children: React.ReactElement}) => {
   const [userId, setUserId] = React.useState<string | null>(null);
 
   const userContext = React.useMemo(
@@ -24,7 +24,7 @@ const UserProvider = ({ children }: { children: React.ReactElement }) => {
         setUserId(id);
       },
     }),
-    [userId]
+    [userId],
   );
 
   React.useEffect(() => {

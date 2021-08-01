@@ -1,18 +1,15 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { AntDesign, Entypo } from "@expo/vector-icons";
+import {gql, useMutation, useQuery} from "@apollo/client";
+import {AntDesign, Entypo} from "@expo/vector-icons";
 import _ from "lodash";
 import * as React from "react";
-import { ActivityIndicator, FlatList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {ActivityIndicator, FlatList} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 import BadgeBackground from "../components/BadgeBackground";
-import BottomSheet, {
-  BottomSheetButton,
-  BottomSheetHeading,
-} from "../components/BottomSheet";
+import BottomSheet, {BottomSheetButton, BottomSheetHeading} from "../components/BottomSheet";
 import Space from "../components/Space";
-import { UserContext } from "../providers/UserProvider";
+import {UserContext} from "../providers/UserProvider";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -56,7 +53,7 @@ const ButtonText = styled.Text`
   color: #ffffff;
 `;
 
-const AddInterestsButton = ({ onPress }: { onPress: any }) => {
+const AddInterestsButton = ({onPress}: {onPress: any}) => {
   return (
     <Button onPress={onPress}>
       <AntDesign name="pluscircleo" size={24} color="white" />
@@ -66,23 +63,17 @@ const AddInterestsButton = ({ onPress }: { onPress: any }) => {
   );
 };
 
-const YourInterestsSection = ({
-  addInterestPress,
-}: {
-  addInterestPress: any;
-}) => {
+const YourInterestsSection = ({addInterestPress}: {addInterestPress: any}) => {
   return (
     <Section>
       <BaseText>Your Interests</BaseText>
       <Space height={20} />
-      <BaseText style={{ fontSize: 18 }}>
-        You haven’t shared your interests. Let us know what your interested in
-        and we can share it to whoever you talk to.
+      <BaseText style={{fontSize: 18}}>
+        You haven’t shared your interests. Let us know what your interested in and we can share it
+        to whoever you talk to.
       </BaseText>
       <Space height={20} />
-      <AddInterestsButton
-        onPress={() => addInterestPress(true)}
-      ></AddInterestsButton>
+      <AddInterestsButton onPress={() => addInterestPress(true)}></AddInterestsButton>
     </Section>
   );
 };
@@ -109,8 +100,7 @@ const WhiteChatText = styled.Text`
 
 const SelectionOptionText = styled(WhiteChatText)`
   font-size: 16px;
-  color: ${(props: { selected: boolean }) =>
-    props.selected ? "#ffffff" : "#371463"};
+  color: ${(props: {selected: boolean}) => (props.selected ? "#ffffff" : "#371463")};
 `;
 
 const SelectionOptionContainer = styled.TouchableOpacity`
@@ -121,18 +111,12 @@ const SelectionOptionContainer = styled.TouchableOpacity`
   align-items: center;
   align-self: flex-start;
   justify-content: center;
-  background: ${(props: { selected: boolean }) =>
-    props.selected ? "purple" : "white"};
+  background: ${(props: {selected: boolean}) => (props.selected ? "purple" : "white")};
   margin-right: 8px;
   margin-bottom: 8px;
 `;
 
-const InterestOption = ({
-  item,
-  setInterests,
-  selected,
-  disabled,
-}: InterestOptionProps) => {
+const InterestOption = ({item, setInterests, selected, disabled}: InterestOptionProps) => {
   return (
     <SelectionOptionContainer
       disabled={disabled}
@@ -144,37 +128,35 @@ const InterestOption = ({
         }))
       }
     >
-      <SelectionOptionText selected={selected}>
-        {item.value}
-      </SelectionOptionText>
+      <SelectionOptionText selected={selected}>{item.value}</SelectionOptionText>
     </SelectionOptionContainer>
   );
 };
 
 const INTEREST_OPTIONS = [
-  { value: "Sports" },
-  { value: "Fitness" },
-  { value: "Outdoor Activity" },
-  { value: "Dance" },
-  { value: "Music" },
-  { value: "Podcasts" },
-  { value: "Gaming" },
-  { value: "Movies" },
-  { value: "TV shows" },
-  { value: "Anime" },
-  { value: "Reading" },
-  { value: "Writing" },
-  { value: "Art" },
-  { value: "Coding" },
-  { value: "Food" },
-  { value: "Travel" },
-  { value: "Mindfulness" },
-  { value: "Fashion" },
-  { value: "Beauty" },
-  { value: "Photography" },
-  { value: "Activism" },
-  { value: "STEM" },
-  { value: "Business" },
+  {value: "Sports"},
+  {value: "Fitness"},
+  {value: "Outdoor Activity"},
+  {value: "Dance"},
+  {value: "Music"},
+  {value: "Podcasts"},
+  {value: "Gaming"},
+  {value: "Movies"},
+  {value: "TV shows"},
+  {value: "Anime"},
+  {value: "Reading"},
+  {value: "Writing"},
+  {value: "Art"},
+  {value: "Coding"},
+  {value: "Food"},
+  {value: "Travel"},
+  {value: "Mindfulness"},
+  {value: "Fashion"},
+  {value: "Beauty"},
+  {value: "Photography"},
+  {value: "Activism"},
+  {value: "STEM"},
+  {value: "Business"},
 ];
 
 const Line = styled.View`
@@ -235,13 +217,12 @@ const InterestSheet = ({
     console.log(interests);
     console.log("mutation interests", mutationInterests);
     updateInterests({
-      variables: { interests: mutationInterests, userId },
+      variables: {interests: mutationInterests, userId},
     });
     setVisibleModal(false);
   };
 
-  const disabledInterests =
-    _.values(interests).filter((x) => x === true).length >= 3;
+  const disabledInterests = _.values(interests).filter((x) => x === true).length >= 3;
 
   return (
     <BottomSheet visible={visibleModal} setVisible={setVisibleModal}>
@@ -249,10 +230,10 @@ const InterestSheet = ({
       <Space height={44} />
       <FlatList
         data={INTEREST_OPTIONS}
-        contentContainerStyle={{ flexDirection: "column" }}
+        contentContainerStyle={{flexDirection: "column"}}
         numColumns={3}
         keyExtractor={(item) => item.value}
-        renderItem={({ item }: { item: InterestOptionItemProp }) => (
+        renderItem={({item}: {item: InterestOptionItemProp}) => (
           <InterestOption
             item={item}
             setInterests={setInterests}
@@ -295,11 +276,11 @@ const ProfilePhoto = styled.View`
   background-color: #ffffff;
 `;
 
-const TalkCounter = ({ count, text }: { count: number; text: string }) => {
+const TalkCounter = ({count, text}: {count: number; text: string}) => {
   return (
-    <ColumnContainer style={{ justifyContent: "center", alignItems: "center" }}>
+    <ColumnContainer style={{justifyContent: "center", alignItems: "center"}}>
       <BaseText>{count}</BaseText>
-      <BaseText style={{ fontSize: 16 }}>{text}</BaseText>
+      <BaseText style={{fontSize: 16}}>{text}</BaseText>
     </ColumnContainer>
   );
 };
@@ -309,7 +290,7 @@ type UserProp = {
   formattedPronouns: string;
 };
 
-const ProfilePortion = ({ user }: { user: UserProp }) => {
+const ProfilePortion = ({user}: {user: UserProp}) => {
   return (
     <ProfileSection>
       <BaseText>Profile</BaseText>
@@ -324,7 +305,7 @@ const ProfilePortion = ({ user }: { user: UserProp }) => {
           width: "100%",
         }}
       >
-        <RowContainer style={{ alignItems: "center", paddingVertical: 16 }}>
+        <RowContainer style={{alignItems: "center", paddingVertical: 16}}>
           <ProfilePhoto />
           <Space width={8} />
           <ColumnContainer>
@@ -333,11 +314,9 @@ const ProfilePortion = ({ user }: { user: UserProp }) => {
               <AntDesign name="star" size={24} color="#FF97D5" />
               <BaseText>4.9</BaseText>
             </RowContainer>
-            <BaseText style={{ fontSize: 16 }}>
-              {user.formattedPronouns}
-            </BaseText>
+            <BaseText style={{fontSize: 16}}>{user.formattedPronouns}</BaseText>
           </ColumnContainer>
-          <RowContainer style={{ flex: 1 }} />
+          <RowContainer style={{flex: 1}} />
           <Entypo name="chevron-right" size={24} color="white" />
         </RowContainer>
         <Line
@@ -345,9 +324,7 @@ const ProfilePortion = ({ user }: { user: UserProp }) => {
             borderBottomColor: "rgba(255, 255, 255, 0.2)",
           }}
         />
-        <RowContainer
-          style={{ justifyContent: "space-between", paddingVertical: 16 }}
-        >
+        <RowContainer style={{justifyContent: "space-between", paddingVertical: 16}}>
           <TalkCounter count={0} text={"Deep talks"} />
           <TalkCounter count={0} text={"Light talks"} />
           <TalkCounter count={0} text={"Small talks"} />
@@ -365,20 +342,18 @@ const Badge = styled(BadgeBackground)`
   height: 100vh;
 `;
 
-const BadgeItem = ({ text }: { text: string }) => {
+const BadgeItem = ({text}: {text: string}) => {
   return (
     <ColumnContainer>
       <Badge />
-      <BaseText style={{ fontSize: 16 }}>{text}</BaseText>
+      <BaseText style={{fontSize: 16}}>{text}</BaseText>
     </ColumnContainer>
   );
 };
 
 const BadgesPortion = () => {
   return (
-    <RowContainer
-      style={{ justifyContent: "space-around", alignItems: "center" }}
-    >
+    <RowContainer style={{justifyContent: "space-around", alignItems: "center"}}>
       <BadgeItem text={"Joymaker"} />
       <BadgeItem text={"Charming"} />
       <BadgeItem text={""} />
@@ -394,10 +369,10 @@ const ErrorText = styled.Text`
   color: red;
 `;
 
-const ProfileContent = ({ userId }: { userId: string | number | null }) => {
+const ProfileContent = ({userId}: {userId: string | number | null}) => {
   const [showModal, setShowModal] = React.useState(false);
-  const { loading, error, data } = useQuery(ProfileScreen.query, {
-    variables: { id: userId },
+  const {loading, error, data} = useQuery(ProfileScreen.query, {
+    variables: {id: userId},
   });
   if (loading) return <ActivityIndicator size="large" />;
   if (error) return <ErrorText>`Error! ${error.message}`</ErrorText>;
@@ -409,9 +384,7 @@ const ProfileContent = ({ userId }: { userId: string | number | null }) => {
       <Space height={10} />
       <BadgesPortion />
       <Space height={40} />
-      <YourInterestsSection
-        addInterestPress={setShowModal}
-      ></YourInterestsSection>
+      <YourInterestsSection addInterestPress={setShowModal}></YourInterestsSection>
       <InterestSheet
         userId={userId}
         initialInterests={data.getUser.initialInterests}
@@ -426,7 +399,7 @@ const ProfileScreen = () => {
   return (
     <Container>
       <UserContext.Consumer>
-        {({ id }) => {
+        {({id}) => {
           return <ProfileContent userId={id} />;
         }}
       </UserContext.Consumer>

@@ -6,7 +6,7 @@ import OkayIcon from "../components/emotions/Okay";
 import ProfileImage from "../components/ProfileImage";
 import Row from "../components/Row";
 import Space from "../components/Space";
-import { User } from "../types";
+import {User} from "../types";
 
 const UserInfoCardContainer = styled.View`
   background: rgba(255, 255, 255, 0.1);
@@ -40,7 +40,7 @@ const UserInfoText = styled(UserInfoTitle)`
   padding-bottom: 10px;
 `;
 
-const UserInfoCard = ({ user }: { user: User }) => {
+const UserInfoCard = ({user}: {user: User}) => {
   return (
     <UserInfoCardContainer>
       <UserInfoHeading>

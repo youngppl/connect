@@ -1,13 +1,5 @@
 import * as React from "react";
-import Svg, {
-  SvgProps,
-  G,
-  Circle,
-  Mask,
-  Ellipse,
-  Path,
-  Defs,
-} from "react-native-svg";
+import Svg, {SvgProps, G, Circle, Mask, Ellipse, Path, Defs} from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: filter */
 
 function SvgComponent(props: SvgProps) {
@@ -123,13 +115,7 @@ function SvgComponent(props: SvgProps) {
         <Circle cx={141} cy={13} r={1} fill="#fff" />
       </G>
       <G filter="url(#prefix__filter14_d)">
-        <Circle
-          cx={66.23}
-          cy={83.231}
-          r={3}
-          transform="rotate(139.302 66.23 83.23)"
-          fill="#fff"
-        />
+        <Circle cx={66.23} cy={83.231} r={3} transform="rotate(139.302 66.23 83.23)" fill="#fff" />
       </G>
       <G filter="url(#prefix__filter15_d)">
         <Circle
@@ -201,13 +187,7 @@ function SvgComponent(props: SvgProps) {
         />
       </G>
       <G filter="url(#prefix__filter26_d)">
-        <Circle
-          cx={6.41}
-          cy={121.722}
-          r={1}
-          transform="rotate(139.302 6.41 121.722)"
-          fill="#fff"
-        />
+        <Circle cx={6.41} cy={121.722} r={1} transform="rotate(139.302 6.41 121.722)" fill="#fff" />
       </G>
       <G filter="url(#prefix__filter27_d)">
         <Circle cx={214} cy={75} r={1} fill="#fff" />
@@ -526,59 +506,20 @@ function SvgComponent(props: SvgProps) {
       </G>
       <G filter="url(#prefix__filter80_d)">
         <Circle cx={48.529} cy={620.47} r={72.47} fill="#D1FFA4" />
-        <Mask
-          id="prefix__a"
-          maskUnits="userSpaceOnUse"
-          x={-33}
-          y={554}
-          width={145}
-          height={146}
-        >
+        <Mask id="prefix__a" maskUnits="userSpaceOnUse" x={-33} y={554} width={145} height={146}>
           <Circle cx={39.47} cy={627.265} r={72.47} fill="#D1FFA4" />
         </Mask>
         <G mask="url(#prefix__a)">
           <Circle cx={64.38} cy={613.675} r={72.47} fill="#BFFE80" />
         </G>
-        <Mask
-          id="prefix__b"
-          maskUnits="userSpaceOnUse"
-          x={-18}
-          y={550}
-          width={139}
-          height={141}
-        >
-          <Ellipse
-            cx={51.927}
-            cy={620.471}
-            rx={69.073}
-            ry={70.205}
-            fill="#D1FFA4"
-          />
+        <Mask id="prefix__b" maskUnits="userSpaceOnUse" x={-18} y={550} width={139} height={141}>
+          <Ellipse cx={51.927} cy={620.471} rx={69.073} ry={70.205} fill="#D1FFA4" />
         </Mask>
         <G mask="url(#prefix__b)">
-          <Ellipse
-            cx={75.671}
-            cy={607.307}
-            rx={69.073}
-            ry={70.205}
-            fill="#ADFF5C"
-          />
+          <Ellipse cx={75.671} cy={607.307} rx={69.073} ry={70.205} fill="#ADFF5C" />
         </G>
-        <Ellipse
-          cx={81.366}
-          cy={586.5}
-          rx={12.456}
-          ry={11.323}
-          fill="#F2FFE6"
-          fillOpacity={0.5}
-        />
-        <Circle
-          cx={29.281}
-          cy={660.102}
-          r={10.191}
-          fill="#F2FFE6"
-          fillOpacity={0.5}
-        />
+        <Ellipse cx={81.366} cy={586.5} rx={12.456} ry={11.323} fill="#F2FFE6" fillOpacity={0.5} />
+        <Circle cx={29.281} cy={660.102} r={10.191} fill="#F2FFE6" fillOpacity={0.5} />
       </G>
       <G filter="url(#prefix__filter81_d)">
         <Circle cx={332.958} cy={681.575} r={104.575} fill="#F39FFF" />

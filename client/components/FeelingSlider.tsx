@@ -1,9 +1,9 @@
 import * as React from "react";
-import { View } from "react-native";
+import {View} from "react-native";
 
 import AllEmotionsIcon from "../components/emotions/All";
 import Slider from "../components/Slider";
-import { MOODS } from "../constants/Moods";
+import {MOODS} from "../constants/Moods";
 
 type FeelingSliderProps = {
   mood: number;
@@ -11,12 +11,12 @@ type FeelingSliderProps = {
   textColor?: string;
 };
 
-const FeelingSlider = ({ mood, setMood, textColor }: FeelingSliderProps) => {
+const FeelingSlider = ({mood, setMood, textColor}: FeelingSliderProps) => {
   const label = React.useMemo(() => MOODS[mood - 1], [mood]);
   return (
     <>
       <AllEmotionsIcon />
-      <View style={{ alignItems: "center" }}>
+      <View style={{alignItems: "center"}}>
         <Slider
           value={mood}
           label={label}

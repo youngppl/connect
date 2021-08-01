@@ -1,21 +1,17 @@
-import { gql, useMutation } from "@apollo/client";
-import { Ionicons } from "@expo/vector-icons";
-import { StackScreenProps } from "@react-navigation/stack";
+import {gql, useMutation} from "@apollo/client";
+import {Ionicons} from "@expo/vector-icons";
+import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import { useForm, Controller } from "react-hook-form";
-import { Keyboard, KeyboardAvoidingView, ScrollView } from "react-native";
-import { TextInputMask } from "react-native-masked-text";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {useForm, Controller} from "react-hook-form";
+import {Keyboard, KeyboardAvoidingView, ScrollView} from "react-native";
+import {TextInputMask} from "react-native-masked-text";
+import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
-import {
-  BlackChatText,
-  LeftChatBubble,
-  RightChatBubble,
-} from "../components/ChatBubbles";
+import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
 import Space from "../components/Space";
-import { UserContext } from "../providers/UserProvider";
-import { RootStackParamList } from "../types";
+import {UserContext} from "../providers/UserProvider";
+import {RootStackParamList} from "../types";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -95,11 +91,7 @@ const prompts = [
 ];
 
 const CreateProfileScreenMutation = gql`
-  mutation CreateProfile(
-    $name: String!
-    $birthday: String!
-    $pronouns: Pronouns!
-  ) {
+  mutation CreateProfile($name: String!, $birthday: String!, $pronouns: Pronouns!) {
     createProfile(name: $name, birthday: $birthday, pronouns: $pronouns) {
       message
       id
@@ -107,10 +99,7 @@ const CreateProfileScreenMutation = gql`
   }
 `;
 
-type CreateProfileScreenProps = StackScreenProps<
-  RootStackParamList,
-  "CreateProfileScreen"
->;
+type CreateProfileScreenProps = StackScreenProps<RootStackParamList, "CreateProfileScreen">;
 
 const INITIAL_CREATE_FLOW_STATE = {
   step: 0,
@@ -133,7 +122,7 @@ const INITIAL_CREATE_FLOW_STATE = {
 };
 
 const processNextStep = (state, action) => {
-  const { getValues, setValue } = action.payload;
+  const {getValues, setValue} = action.payload;
   const fieldNames = ["name", "birthday", "pronouns"];
   if (!getValues(fieldNames[state.step])) {
     return;
@@ -164,8 +153,7 @@ const processNextStep = (state, action) => {
               ...state.messages,
               {
                 author: "Faju",
-                message:
-                  "Are you sure that's your birthday? You might have entered it wrong.",
+                message: "Are you sure that's your birthday? You might have entered it wrong.",
                 isFirstInChain: true,
               },
             ],
@@ -204,9 +192,7 @@ const processNextStep = (state, action) => {
           };
         } else {
           // init pronouns step
-          const handlePronounSelection = ({
-            text,
-          }: Record<string, string | number | undefined>) => {
+          const handlePronounSelection = ({text}: Record<string, string | number | undefined>) => {
             setValue("pronouns", text); // manually set pronoun value in form
           };
           return {
@@ -223,10 +209,10 @@ const processNextStep = (state, action) => {
                 message:
                   "What’s your pronouns? I wanna make sure we all refer to you right (including everyone in jufa).",
                 options: [
-                  { text: "They / Them", value: "THEY_THEM" },
-                  { text: "She / Her", value: "SHE_HER" },
-                  { text: "He / His", value: "HE_HIS" },
-                  { text: "I'd prefer not to say", value: "NONE" },
+                  {text: "They / Them", value: "THEY_THEM"},
+                  {text: "She / Her", value: "SHE_HER"},
+                  {text: "He / His", value: "HE_HIS"},
+                  {text: "I'd prefer not to say", value: "NONE"},
                 ],
                 onOptionSelect: handlePronounSelection,
               },
@@ -246,9 +232,7 @@ const processNextStep = (state, action) => {
             {
               author: "Faju",
               isFirstInChain: true,
-              message: `Welcome to jufa, ${getValues(
-                "name"
-              )}. Let me show you around!`,
+              message: `Welcome to jufa, ${getValues("name")}. Let me show you around!`,
             },
           ],
         };
@@ -258,9 +242,9 @@ const processNextStep = (state, action) => {
   }
 };
 
-const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
-  const { control, getValues, setValue, handleSubmit } = useForm();
-  const { setId } = React.useContext(UserContext);
+const CreateProfileScreen = ({navigation}: CreateProfileScreenProps) => {
+  const {control, getValues, setValue, handleSubmit} = useForm();
+  const {setId} = React.useContext(UserContext);
   const [createProfile] = useMutation(CreateProfileScreenMutation, {
     onCompleted: (data) => {
       setId(data.createProfile.id);
@@ -269,10 +253,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
 
   const messagesViewRef = React.useRef(null);
 
-  const [state, dispatch] = React.useReducer(
-    processNextStep,
-    INITIAL_CREATE_FLOW_STATE
-  );
+  const [state, dispatch] = React.useReducer(processNextStep, INITIAL_CREATE_FLOW_STATE);
 
   const onSubmit = (data: Record<string, any>) => {
     const PRONOUNS: Record<string, string> = {
@@ -282,10 +263,10 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
       "I'd prefer not to say": "NONE",
     };
     data.pronouns = PRONOUNS[data.pronouns];
-    createProfile({ variables: data });
+    createProfile({variables: data});
     navigation.reset({
       index: 0,
-      routes: [{ name: "MainTabs" }],
+      routes: [{name: "MainTabs"}],
     });
   };
 
@@ -295,7 +276,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
     });
 
   const nextStep = () => {
-    dispatch({ type: "NEXT_STEP", payload: { getValues, setValue } });
+    dispatch({type: "NEXT_STEP", payload: {getValues, setValue}});
   };
 
   React.useEffect(() => {
@@ -336,7 +317,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
               return (
                 <Controller
                   control={control}
-                  render={({ field: { onChange, value } }) => (
+                  render={({field: {onChange, value}}) => (
                     <RightChatBubble
                       author={message.author}
                       key={index}
@@ -372,7 +353,7 @@ const CreateProfileScreen = ({ navigation }: CreateProfileScreenProps) => {
                   )}
                   name={message.fieldName}
                   key={index}
-                  rules={{ required: true }}
+                  rules={{required: true}}
                 />
               );
             else if (message.author === "you")

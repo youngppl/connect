@@ -1,22 +1,18 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { StackScreenProps } from "@react-navigation/stack";
+import {gql, useMutation, useQuery} from "@apollo/client";
+import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import { useForm, Controller } from "react-hook-form";
-import { Keyboard, KeyboardAvoidingView, ScrollView } from "react-native";
-import { TextInputMask } from "react-native-masked-text";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {useForm, Controller} from "react-hook-form";
+import {Keyboard, KeyboardAvoidingView, ScrollView} from "react-native";
+import {TextInputMask} from "react-native-masked-text";
+import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
-import {
-  BlackChatText,
-  LeftChatBubble,
-  RightChatBubble,
-} from "../components/ChatBubbles";
+import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
 import FeelingSlider from "../components/FeelingSlider";
 import Space from "../components/Space";
-import { MOODS } from "../constants/Moods";
-import { UserContext } from "../providers/UserProvider";
-import { RootStackParamList } from "../types";
+import {MOODS} from "../constants/Moods";
+import {UserContext} from "../providers/UserProvider";
+import {RootStackParamList} from "../types";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -102,10 +98,7 @@ const FeedbackScreenMutation = gql`
 
 type OptionValue = Record<string, string | number | undefined>;
 
-type FeedbackScreenProps = StackScreenProps<
-  RootStackParamList,
-  "FeedbackScreen"
->;
+type FeedbackScreenProps = StackScreenProps<RootStackParamList, "FeedbackScreen">;
 
 type State = {
   step: number;
@@ -121,7 +114,7 @@ type Action = {
 };
 
 const processNextStep = (state: State, action: Action) => {
-  const { getValues, setValue } = action.payload;
+  const {getValues, setValue} = action.payload;
 
   switch (state.step) {
     case 0:
@@ -138,9 +131,8 @@ const processNextStep = (state: State, action: Action) => {
             author: "Faju",
             message: `Great to hear! Please fill in the statement: I feel ____ than when I started this conversation`,
             isFirstInChain: true,
-            options: [{ text: "Better" }, { text: "Same" }, { text: "Worse" }],
-            onOptionSelect: ({ value }: OptionValue) =>
-              setValue("howFeelingAfter", value),
+            options: [{text: "Better"}, {text: "Same"}, {text: "Worse"}],
+            onOptionSelect: ({value}: OptionValue) => setValue("howFeelingAfter", value),
           },
         ],
       };
@@ -158,8 +150,7 @@ const processNextStep = (state: State, action: Action) => {
             author: "Faju",
             message: `How engaging was the conversation?`,
             showRating: true,
-            onOptionSelect: ({ value }: OptionValue) =>
-              setValue("engagementRating", value),
+            onOptionSelect: ({value}: OptionValue) => setValue("engagementRating", value),
             isFirstInChain: true,
           },
         ],
@@ -176,9 +167,8 @@ const processNextStep = (state: State, action: Action) => {
           {
             author: "Faju",
             message: `That’s awesome! Would you ever talk to them again?`,
-            options: [{ text: "Yes" }, { text: "No" }],
-            onOptionSelect: ({ value }: OptionValue) =>
-              setValue("talkAgain", value),
+            options: [{text: "Yes"}, {text: "No"}],
+            onOptionSelect: ({value}: OptionValue) => setValue("talkAgain", value),
             isFirstInChain: true,
           },
         ],
@@ -204,13 +194,13 @@ const processNextStep = (state: State, action: Action) => {
   }
 };
 
-const FeedbackScreen = ({ navigation, route }: FeedbackScreenProps) => {
-  const { channel } = route.params;
-  const { id: userId } = React.useContext(UserContext);
-  const { data: userData } = useQuery(getUserQuery, {
-    variables: { id: userId },
+const FeedbackScreen = ({navigation, route}: FeedbackScreenProps) => {
+  const {channel} = route.params;
+  const {id: userId} = React.useContext(UserContext);
+  const {data: userData} = useQuery(getUserQuery, {
+    variables: {id: userId},
   });
-  const { control, getValues, setValue, handleSubmit } = useForm();
+  const {control, getValues, setValue, handleSubmit} = useForm();
   const [moodIndex, setMoodIndex] = React.useState(3);
   const [submitChatFeedback] = useMutation(FeedbackScreenMutation);
 
@@ -232,10 +222,9 @@ const FeedbackScreen = ({ navigation, route }: FeedbackScreenProps) => {
       },
       {
         author: "Faju",
-        message:
-          "Did you genuinely smile and/or laugh during your conversation with her?",
-        options: [{ text: "Yes" }, { text: "No" }],
-        onOptionSelect: ({ value }: OptionValue) => setValue("smile", value),
+        message: "Did you genuinely smile and/or laugh during your conversation with her?",
+        options: [{text: "Yes"}, {text: "No"}],
+        onOptionSelect: ({value}: OptionValue) => setValue("smile", value),
       },
     ],
   });
@@ -249,11 +238,11 @@ const FeedbackScreen = ({ navigation, route }: FeedbackScreenProps) => {
         author: userId,
       };
       await submitChatFeedback({
-        variables: { ...sentVariables },
+        variables: {...sentVariables},
       });
       navigation.reset({
         index: 0,
-        routes: [{ name: "MainTabs" }],
+        routes: [{name: "MainTabs"}],
       });
     } catch (e) {
       console.error(e);
@@ -266,7 +255,7 @@ const FeedbackScreen = ({ navigation, route }: FeedbackScreenProps) => {
     });
 
   const nextStep = () => {
-    dispatch({ type: "NEXT_STEP", payload: { getValues, setValue } });
+    dispatch({type: "NEXT_STEP", payload: {getValues, setValue}});
   };
 
   React.useEffect(() => {
@@ -304,7 +293,7 @@ const FeedbackScreen = ({ navigation, route }: FeedbackScreenProps) => {
               return (
                 <Controller
                   control={control}
-                  render={({ field: { onChange, value } }) => (
+                  render={({field: {onChange, value}}) => (
                     <RightChatBubble
                       author={message.author}
                       key={index}
@@ -340,7 +329,7 @@ const FeedbackScreen = ({ navigation, route }: FeedbackScreenProps) => {
                   )}
                   name={message.fieldName}
                   key={index}
-                  rules={{ required: true }}
+                  rules={{required: true}}
                 />
               );
             else if (message.author === "you")
@@ -370,11 +359,7 @@ const FeedbackScreen = ({ navigation, route }: FeedbackScreenProps) => {
           })}
           {state?.step === 4 && (
             <>
-              <FeelingSlider
-                mood={moodIndex}
-                setMood={setMoodIndex}
-                textColor="white"
-              />
+              <FeelingSlider mood={moodIndex} setMood={setMoodIndex} textColor="white" />
               <DoneButtonContainer onPress={handleSubmit(onSubmit)}>
                 <DoneText>Done</DoneText>
               </DoneButtonContainer>
