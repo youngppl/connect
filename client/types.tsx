@@ -8,7 +8,7 @@ export type RootStackParamList = {
   Landing: undefined;
   MainTabs: { initiateChat?: boolean };
   ChatScreen: { channel: string; otherUser: User; icebreaker: string };
-  EndChatScreen: { channel: string };
+  FeedbackScreen: { channel: string };
   WaitingScreen: {
     chatTypes: string[];
   };

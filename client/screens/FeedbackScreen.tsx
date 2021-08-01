@@ -78,7 +78,7 @@ const getUserQuery = gql`
   }
 `;
 
-const EndChatScreenMutation = gql`
+const FeedbackScreenMutation = gql`
   mutation ChatFeedback(
     $author: ID!
     $channel: String!
@@ -102,7 +102,10 @@ const EndChatScreenMutation = gql`
 
 type OptionValue = Record<string, string | number | undefined>;
 
-type EndChatScreenProps = StackScreenProps<RootStackParamList, "EndChatScreen">;
+type FeedbackScreenProps = StackScreenProps<
+  RootStackParamList,
+  "FeedbackScreen"
+>;
 
 type State = {
   step: number;
@@ -201,20 +204,20 @@ const processNextStep = (state: State, action: Action) => {
   }
 };
 
-const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
+const FeedbackScreen = ({ navigation, route }: FeedbackScreenProps) => {
   const { channel } = route.params;
   const { id: userId } = React.useContext(UserContext);
   const { data: userData } = useQuery(getUserQuery, {
     variables: { id: userId },
   });
   const { control, getValues, setValue, handleSubmit } = useForm();
-  const [mood, setMood] = React.useState(3);
-  const [submitChatFeedback] = useMutation(EndChatScreenMutation);
+  const [moodIndex, setMoodIndex] = React.useState(3);
+  const [submitChatFeedback] = useMutation(FeedbackScreenMutation);
 
   const messagesViewRef = React.useRef(null);
   React.useEffect(() => {
     if (userData) {
-      setMood(MOODS.indexOf(userData.getUser.mood) + 1);
+      setMoodIndex(MOODS.indexOf(userData.getUser.mood) + 1);
     }
   }, [userData]);
 
@@ -238,13 +241,23 @@ const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
   });
 
   const onSubmit = async (data: Record<string, any>) => {
-    await submitChatFeedback({
-      variables: { ...data, mood: MOODS[mood - 1], channel, author: userId },
-    });
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "MainTabs" }],
-    });
+    try {
+      const sentVariables = {
+        ...data,
+        mood: MOODS[moodIndex - 1],
+        channel,
+        author: userId,
+      };
+      await submitChatFeedback({
+        variables: { ...sentVariables },
+      });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "MainTabs" }],
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const scrollToLastMessage = () =>
@@ -357,7 +370,11 @@ const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
           })}
           {state?.step === 4 && (
             <>
-              <FeelingSlider mood={mood} setMood={setMood} textColor="white" />
+              <FeelingSlider
+                mood={moodIndex}
+                setMood={setMoodIndex}
+                textColor="white"
+              />
               <DoneButtonContainer onPress={handleSubmit(onSubmit)}>
                 <DoneText>Done</DoneText>
               </DoneButtonContainer>
@@ -370,4 +387,4 @@ const EndChatScreen = ({ navigation, route }: EndChatScreenProps) => {
   );
 };
 
-export default EndChatScreen;
+export default FeedbackScreen;

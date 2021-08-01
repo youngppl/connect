@@ -31,8 +31,6 @@ const UserProvider = ({ children }: { children: React.ReactElement }) => {
     AsyncStorage.getItem("connectId").then((id) => setUserId(id));
   }, []);
 
-  return (
-    <UserContext.Provider value={userContext}>{children}</UserContext.Provider>
-  );
+  return <UserContext.Provider value={userContext}>{children}</UserContext.Provider>;
 };
 export default UserProvider;

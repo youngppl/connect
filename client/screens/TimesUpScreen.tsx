@@ -32,7 +32,7 @@ const TimesUpScreen = ({ navigation, route }: TimesUpScreenProps) => {
 
   React.useEffect(() => {
     setTimeout(() => {
-      navigation.replace("EndChatScreen", { channel });
+      navigation.replace("FeedbackScreen", { channel });
     }, 2000);
   }, []);
 
