@@ -36,10 +36,10 @@ function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       {!id && <Stack.Screen name="Landing" component={Landing} />}
-      <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="MainTabs" component={Tabs} />
       <Stack.Screen name="CreateProfileScreen" component={CreateProfileScreen} />
       <Stack.Screen name="WaitingScreen" component={WaitingScreen} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="FeedbackScreen" component={FeedbackScreen} />
       <Stack.Screen name="TimesUpScreen" component={TimesUpScreen} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{title: "Oops!"}} />

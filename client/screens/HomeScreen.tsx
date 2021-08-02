@@ -1,6 +1,6 @@
 import {gql, useMutation, useQuery} from "@apollo/client";
 import {Ionicons} from "@expo/vector-icons";
-import {useFocusEffect} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {formatDistance} from "date-fns";
 import _ from "lodash";
 import * as React from "react";
@@ -154,10 +154,19 @@ const Unreads = () => {
   );
 };
 
-const OldChat = ({chat, userId}: {chat: Conversation; userId: string | null}) => {
-  const otherPerson = _.reject(chat.people, ["id", userId])[0]; // Assuming 2 ppl -> 1 person on this filter.
+const OldChat = ({conversation, userId}: {conversation: Conversation; userId: string | null}) => {
+  const navigation = useNavigation();
+  const otherPerson = _.reject(conversation.people, ["id", userId])[0]; // Assuming 2 ppl -> 1 person on this filter.
   return (
-    <OldChatContainer>
+    <OldChatContainer
+      onPress={() => {
+        navigation.push("ChatScreen", {
+          channel: conversation.channel,
+          otherUser: otherPerson,
+          alreadyMessaged: true,
+        });
+      }}
+    >
       <Column>
         <Row>
           <Column style={{justifyContent: "center"}}>
@@ -166,12 +175,12 @@ const OldChat = ({chat, userId}: {chat: Conversation; userId: string | null}) =>
           <Space width={10} />
           <Column>
             <NameText>{`${otherPerson?.name}`} • 2 🔥</NameText>
-            <LastMessageText>{chat?.lastMessage?.text || `hi`}</LastMessageText>
+            <LastMessageText>{conversation?.lastMessage?.text || `hi`}</LastMessageText>
           </Column>
         </Row>
       </Column>
       <Column>
-        <LastMessageText>{makeNiceDate(chat?.createdAt)}</LastMessageText>
+        <LastMessageText>{makeNiceDate(conversation?.createdAt)}</LastMessageText>
         <Space height={8} />
         <Unreads />
       </Column>
@@ -184,6 +193,7 @@ const CHAT_LOG_QUERY = gql`
     getConversations(userId: $userId) {
       id
       createdAt
+      channel
       lastMessage {
         id
         text
@@ -208,7 +218,7 @@ const ChatLog = () => {
   }
 
   const renderItem = ({item}: {item: Conversation}) => {
-    return <OldChat chat={item} userId={id} />;
+    return <OldChat conversation={item} userId={id} />;
   };
 
   return (

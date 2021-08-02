@@ -183,10 +183,11 @@ const CONVERSATION_QUERY = gql`
 // TODO: set up the yarn graphql codegen for operations to fix these type errors
 interface ChatScreenDataContainerProps {
   channel: string;
-  icebreaker: string;
+  icebreaker: string | undefined;
   otherUser: User; // Fix
   conversation: Conversation; // Fix
   subscribeToNewMessages: () => void;
+  alreadyMessaged: boolean;
 }
 
 const ChatScreenDataContainer = ({
@@ -195,6 +196,7 @@ const ChatScreenDataContainer = ({
   otherUser,
   conversation,
   subscribeToNewMessages,
+  alreadyMessaged,
 }: ChatScreenDataContainerProps) => {
   const navigation = useNavigation();
   const {id: userId} = React.useContext(UserContext);
@@ -217,10 +219,12 @@ const ChatScreenDataContainer = ({
   }, []);
 
   React.useEffect(() => {
-    const intervalId = setInterval(() => {
-      setSecondsLeft((seconds) => seconds - 1);
-    }, 1);
-    return () => clearInterval(intervalId);
+    if (!alreadyMessaged) {
+      const intervalId = setInterval(() => {
+        setSecondsLeft((seconds) => seconds - 1);
+      }, 1);
+      return () => clearInterval(intervalId);
+    }
   }, []);
 
   const formatTimeLeft = React.useMemo(() => {
@@ -252,13 +256,21 @@ const ChatScreenDataContainer = ({
         <FlagButtonContainer>
           <Feather name="flag" size={24} color="white" />
         </FlagButtonContainer>
+        <Space width={150} />
         <UserInfoButton onPress={() => setShowUserInfo((show) => !show)}>
           <Name>{otherUser.name}</Name>
           <Feather name={showUserInfo ? "chevron-up" : "chevron-down"} size={24} color="white" />
         </UserInfoButton>
-        <TimerContainer secondsLeft={secondsLeft}>
-          <TimerText secondsLeft={secondsLeft}>{formatTimeLeft}</TimerText>
-        </TimerContainer>
+        {alreadyMessaged ? (
+          <>
+            <Space width={100} />
+            <GoBack />
+          </>
+        ) : (
+          <TimerContainer secondsLeft={secondsLeft}>
+            <TimerText secondsLeft={secondsLeft}>{formatTimeLeft}</TimerText>
+          </TimerContainer>
+        )}
       </HeaderContainer>
 
       {showUserInfo && (
@@ -267,7 +279,7 @@ const ChatScreenDataContainer = ({
         </UserInfoContainer>
       )}
 
-      {showIcebreaker && <IcebreakerCard icebreaker={icebreaker} />}
+      {!alreadyMessaged && showIcebreaker && <IcebreakerCard icebreaker={icebreaker} />}
 
       <DismissKeyboard>
         <MessagesContainer
@@ -308,9 +320,26 @@ const ChatScreenDataContainer = ({
   );
 };
 
+const GoBackButton = styled.TouchableOpacity`
+  right: 0px;
+`;
+
+const GoBack = () => {
+  const navigation = useNavigation();
+  return (
+    <GoBackButton
+      onPress={() => {
+        navigation.goBack();
+      }}
+    >
+      <Feather name="chevron-left" size={24} color="white" />
+    </GoBackButton>
+  );
+};
+
 const ChatScreen = ({route}: ChatScreenProps) => {
   const {
-    params: {channel, otherUser, icebreaker},
+    params: {channel, otherUser, icebreaker, alreadyMessaged},
   } = route;
   const {subscribeToMore, data, loading} = useQuery(CONVERSATION_QUERY, {
     variables: {channel},
@@ -326,6 +355,7 @@ const ChatScreen = ({route}: ChatScreenProps) => {
       channel={channel}
       otherUser={otherUser}
       icebreaker={icebreaker}
+      alreadyMessaged={alreadyMessaged || false}
       subscribeToNewMessages={() =>
         subscribeToMore({
           document: CHAT_SUBSCRIPTION,
