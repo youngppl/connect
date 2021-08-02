@@ -1,5 +1,7 @@
 import {gql, useMutation, useQuery} from "@apollo/client";
+import {createIconSetFromFontello} from "@expo/vector-icons";
 import {StackScreenProps} from "@react-navigation/stack";
+import {setISODay} from "date-fns/esm";
 import * as React from "react";
 import {useForm, Controller} from "react-hook-form";
 import {Keyboard, KeyboardAvoidingView, ScrollView} from "react-native";
@@ -81,8 +83,8 @@ const FeedbackScreenMutation = gql`
     $engagementRating: Int!
     $howFeelingAfter: String!
     $mood: String!
-    $smile: String!
-    $talkAgain: String!
+    $smile: Boolean!
+    $talkAgain: Boolean!
   ) {
     createChatFeedback(
       author: $author
@@ -236,10 +238,10 @@ const FeedbackScreen = ({navigation, route}: FeedbackScreenProps) => {
         mood: MOODS[moodIndex - 1],
         channel,
         author: userId,
+        smile: data["smile"] === "Yes",
+        talkAgain: data["talkAgain"] === "Yes",
       };
-      await submitChatFeedback({
-        variables: {...sentVariables},
-      });
+      await submitChatFeedback({variables: {...sentVariables}});
       navigation.reset({
         index: 0,
         routes: [{name: "MainTabs"}],

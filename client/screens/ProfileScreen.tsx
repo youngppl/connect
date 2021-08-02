@@ -8,6 +8,9 @@ import styled from "styled-components/native";
 
 import BadgeBackground from "../components/BadgeBackground";
 import BottomSheet, {BottomSheetButton, BottomSheetHeading} from "../components/BottomSheet";
+import Charming from "../components/Charming";
+import JoyMaker from "../components/JoyMaker";
+import Jufanaut from "../components/Jufanaut";
 import Space from "../components/Space";
 import {UserContext} from "../providers/UserProvider";
 
@@ -287,6 +290,7 @@ const TalkCounter = ({count, text}: {count: number; text: string}) => {
 
 type UserProp = {
   name: string;
+  talkNumbers: Record<string, number>;
   formattedPronouns: string;
   overallRating: number;
 };
@@ -343,21 +347,54 @@ const Badge = styled(BadgeBackground)`
   height: 100vh;
 `;
 
-const BadgeItem = ({text}: {text: string}) => {
+const PinkContainer = styled.View`
+  position: absolute;
+  background-color: #ff97d5;
+  border-radius: 8px;
+  width: 30px;
+  height: 16px;
+  top: 12px;
+  right: 0px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const BadgeText = styled.Text`
+  font-family: Quicksand;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  color: #ffffff;
+`;
+
+const BadgeItem = ({
+  badgeComponent,
+  text,
+  count,
+}: {
+  badgeComponent: React.ReactElement;
+  text: string;
+  count: number;
+}) => {
   return (
     <ColumnContainer>
-      <Badge />
+      <ColumnContainer>
+        <PinkContainer>
+          <BadgeText>{count}</BadgeText>
+        </PinkContainer>
+        {badgeComponent}
+      </ColumnContainer>
       <BaseText style={{fontSize: 16}}>{text}</BaseText>
     </ColumnContainer>
   );
 };
 
-const BadgesPortion = () => {
+const BadgesPortion = ({badgeNumbers}: {badgeNumbers: Record<string, number>}) => {
   return (
     <RowContainer style={{justifyContent: "space-around", alignItems: "center"}}>
-      <BadgeItem text={"Joymaker"} />
-      <BadgeItem text={"Charming"} />
-      <BadgeItem text={""} />
+      <BadgeItem badgeComponent={<JoyMaker />} text={"Joymaker"} count={badgeNumbers.joymaker} />
+      <BadgeItem badgeComponent={<Charming />} text={"Charming"} count={badgeNumbers.charming} />
+      <BadgeItem badgeComponent={<Jufanaut />} text={"Jufa-naut"} count={badgeNumbers.jufanaut} />
     </RowContainer>
   );
 };
@@ -383,7 +420,7 @@ const ProfileContent = ({userId}: {userId: string | number | null}) => {
     <>
       <ProfilePortion user={data.getUser} />
       <Space height={10} />
-      <BadgesPortion />
+      <BadgesPortion badgeNumbers={data.getUser.badgeNumbers} />
       <Space height={40} />
       <YourInterestsSection addInterestPress={setShowModal}></YourInterestsSection>
       <InterestSheet
@@ -422,6 +459,11 @@ ProfileScreen.query = gql`
         deep
         small
         light
+      }
+      badgeNumbers {
+        charming
+        joymaker
+        jufanaut
       }
     }
   }

@@ -14,6 +14,13 @@ export type Scalars = {
   Float: number;
 };
 
+export type BadgeNumbers = {
+  __typename?: 'BadgeNumbers';
+  joymaker?: Maybe<Scalars['Int']>;
+  charming?: Maybe<Scalars['Int']>;
+  jufanaut?: Maybe<Scalars['Int']>;
+};
+
 export type Chat = {
   __typename?: 'Chat';
   message: Scalars['String'];
@@ -85,8 +92,8 @@ export type MutationCreateChatFeedbackArgs = {
   engagementRating: Scalars['Int'];
   howFeelingAfter: Scalars['String'];
   mood: Scalars['String'];
-  smile: Scalars['String'];
-  talkAgain: Scalars['String'];
+  smile: Scalars['Boolean'];
+  talkAgain: Scalars['Boolean'];
 };
 
 
@@ -167,6 +174,7 @@ export type User = {
   overallRating?: Maybe<Scalars['Float']>;
   numSmallTalk?: Maybe<Scalars['Int']>;
   talkNumbers?: Maybe<TalkNumbers>;
+  badgeNumbers?: Maybe<BadgeNumbers>;
 };
 
 
@@ -252,6 +260,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  BadgeNumbers: ResolverTypeWrapper<BadgeNumbers>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Chat: ResolverTypeWrapper<Chat>;
   String: ResolverTypeWrapper<Scalars['String']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
@@ -260,7 +270,7 @@ export type ResolversTypes = {
   Match: ResolverTypeWrapper<Match>;
   Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Profile: ResolverTypeWrapper<Profile>;
   Pronouns: Pronouns;
   Query: ResolverTypeWrapper<{}>;
@@ -268,11 +278,12 @@ export type ResolversTypes = {
   TalkNumbers: ResolverTypeWrapper<TalkNumbers>;
   User: ResolverTypeWrapper<User>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  BadgeNumbers: BadgeNumbers;
+  Int: Scalars['Int'];
   Chat: Chat;
   String: Scalars['String'];
   ID: Scalars['ID'];
@@ -280,14 +291,20 @@ export type ResolversParentTypes = {
   Match: Match;
   Message: Message;
   Mutation: {};
-  Int: Scalars['Int'];
+  Boolean: Scalars['Boolean'];
   Profile: Profile;
   Query: {};
   Subscription: {};
   TalkNumbers: TalkNumbers;
   User: User;
   Float: Scalars['Float'];
-  Boolean: Scalars['Boolean'];
+};
+
+export type BadgeNumbersResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['BadgeNumbers'] = ResolversParentTypes['BadgeNumbers']> = {
+  joymaker?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  charming?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  jufanaut?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ChatResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = {
@@ -365,10 +382,12 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
   overallRating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   numSmallTalk?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   talkNumbers?: Resolver<Maybe<ResolversTypes['TalkNumbers']>, ParentType, ContextType>;
+  badgeNumbers?: Resolver<Maybe<ResolversTypes['BadgeNumbers']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = JufaContextType> = {
+  BadgeNumbers?: BadgeNumbersResolvers<ContextType>;
   Chat?: ChatResolvers<ContextType>;
   Conversation?: ConversationResolvers<ContextType>;
   Match?: MatchResolvers<ContextType>;

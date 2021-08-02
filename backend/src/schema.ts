@@ -13,6 +13,11 @@ export const typeDefs = gql`
     LIGHT
     SMALL
   }
+  type BadgeNumbers {
+    joymaker: Int
+    charming: Int
+    jufanaut: Int
+  }
   type TalkNumbers {
     small: Int
     deep: Int
@@ -33,6 +38,7 @@ export const typeDefs = gql`
     overallRating: Float
     numSmallTalk: Int
     talkNumbers: TalkNumbers
+    badgeNumbers: BadgeNumbers
   }
   type Conversation {
     id: ID
@@ -74,8 +80,8 @@ export const typeDefs = gql`
       engagementRating: Int!
       howFeelingAfter: String!
       mood: String!
-      smile: String!
-      talkAgain: String!
+      smile: Boolean!
+      talkAgain: Boolean!
     ): String
     updateInterests(userId: ID!, interests: [String!]): [String!]
     updateMood(userId: ID!, mood: String!): String

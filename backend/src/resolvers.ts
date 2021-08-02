@@ -61,19 +61,52 @@ export const resolvers: Resolvers = {
       const averageScore = feedBackSum / feedbackRatings.length;
       return averageScore;
     },
-    talkNumbers: async (_user, data, {prisma}) => {
-      const conversations = await prisma.conversation.findMany({
+    talkNumbers: async (user, _data, {prisma}) => {
+      const conversationTypes = await prisma.conversation.findMany({
         select: {type: true},
         where: {
-          people: {some: {id: {equals: parseInt(_user.id)}}},
+          people: {some: {id: {equals: parseInt(user.id)}}},
         },
       });
-      const talkMap = _.countBy(conversations.map((conversation) => conversation.type));
+      const talkMap = _.countBy(conversationTypes);
       return {
         small: talkMap["SMALL"] || 0,
         light: talkMap["LIGHT"] || 0,
         deep: talkMap["DEEP"] || 0,
       };
+    },
+    badgeNumbers: async (user, _data, {prisma}) => {
+      const feedback = await prisma.feedback.findMany({
+        select: {survey: true},
+        where: {
+          NOT: {id: {equals: parseInt(user.id)}},
+          conversation: {people: {some: {id: {equals: parseInt(user.id)}}}},
+        },
+      });
+      console.log("feedback");
+      console.log(feedback);
+      const messageDates = await prisma.message.findMany({
+        distinct: ["createdAt"],
+        select: {createdAt: true},
+        where: {userId: {equals: parseInt(user.id)}},
+      });
+      const daysFrom1970 = messageDates.map((messageDate) =>
+        Math.floor(messageDate.createdAt.getTime() / (1000 * 60 * 60 * 24)),
+      );
+      const longestMessageChain = longestConsecutive(daysFrom1970);
+      // TODO: convert number of smiles to an enum
+      const numberOfSmiles = feedback
+        .map((singleFeedback) => (singleFeedback.survey as Prisma.JsonObject)["smile"] as string)
+        .filter(Boolean).length;
+
+      // TODO: convert talk again to boolean value, since there are two only values
+      const numberOfTalkAgain = feedback
+        .map(
+          (singleFeedback) => (singleFeedback.survey as Prisma.JsonObject)["talkAgain"] as string,
+        )
+        .filter(Boolean).length;
+
+      return {joymaker: numberOfSmiles, charming: numberOfTalkAgain, jufanaut: longestMessageChain};
     },
   },
   Conversation: {
@@ -191,6 +224,21 @@ export const resolvers: Resolvers = {
     },
   },
 };
+
+function longestConsecutive(arrayOfNumbers: number[]) {
+  const sortedArrayOfNumbers = arrayOfNumbers.sort();
+  let longest_streak = 1;
+  let current_streak = 1;
+  for (let i = 1; i < sortedArrayOfNumbers.length; i++) {
+    if (sortedArrayOfNumbers[i] - sortedArrayOfNumbers[i - 1] == 1) {
+      current_streak += 1;
+    } else {
+      longest_streak = Math.max(longest_streak, current_streak);
+      current_streak = 1;
+    }
+  }
+  return longest_streak;
+}
 
 const runMatchingAlgo = async (
   redis: Redis,
