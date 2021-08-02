@@ -46,9 +46,13 @@ export const typeDefs = gql`
     createdAt: String # Make this a custom scalar
     people: [User]
     lastMessage: Message
+
+    # Custom
+    messages: [Message]
   }
   type Message {
     id: ID
+    createdAt: String
     text: String
   }
   type Chat {
@@ -69,9 +73,10 @@ export const typeDefs = gql`
   type Query {
     getUser(id: ID!): User
     getConversations(userId: ID!): [Conversation]
+    getConversation(channel: String!): Conversation
   }
   type Mutation {
-    createMessage(channel: String!, message: String!, author: ID!): Chat
+    createMessage(channel: String!, message: String!, author: ID!): Message
     leaveWaitingRoom(userId: ID!): String
     createProfile(name: String!, pronouns: Pronouns, birthday: String!): Profile
     createChatFeedback(
@@ -87,7 +92,7 @@ export const typeDefs = gql`
     updateMood(userId: ID!, mood: String!): User!
   }
   type Subscription {
-    chat(channel: String!): Chat
+    chat(channel: String!): Message
     waitingRoom(userId: ID!, chatTypes: [ConversationType!]!): Match
   }
 `;

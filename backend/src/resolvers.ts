@@ -38,6 +38,14 @@ export const resolvers: Resolvers = {
         };
       });
     },
+    getConversation: async (_parent, {channel}, {prisma}) => {
+      const conversation = await prisma.conversation.findUnique({where: {channel}});
+      return {
+        ...conversation,
+        id: conversation.id.toString(),
+        createdAt: conversation.createdAt.toString(),
+      };
+    },
   },
   User: {
     formattedPronouns: (user) => {
@@ -120,25 +128,45 @@ export const resolvers: Resolvers = {
         return null;
       }
     },
-  },
-  Mutation: {
-    createMessage: async (_parent, {channel, author, message}, {pubsub, prisma}) => {
-      const chat = {message, author};
-      console.log("sending", chat, "to", channel);
-      await pubsub.publish(channel, {chat});
-      await prisma.conversation.update({
-        where: {channel},
-        data: {
-          messages: {
-            create: {text: message, userId: parseInt(author)},
+    messages: async (conversation, _, {prisma}) => {
+      const messages = await prisma.message.findMany({
+        orderBy: [{createdAt: "asc"}],
+        where: {
+          conversation: {
+            is: {channel: {equals: conversation.channel}},
           },
         },
       });
-      return chat;
+      return messages.map((message) => {
+        return {
+          ...message,
+          id: message.id.toString(),
+          createdAt: message.createdAt.toLocaleDateString(),
+        };
+      });
+    },
+  },
+  Mutation: {
+    createMessage: async (_parent, {channel, author, message}, {pubsub, prisma}) => {
+      const newMessage = await prisma.message.create({
+        data: {
+          text: message,
+          author: {connect: {id: parseInt(author)}},
+          conversation: {connect: {channel}},
+        },
+      });
+      await pubsub.publish(channel, {
+        chat: {
+          ...newMessage,
+          id: newMessage.id.toString(),
+          createdAt: newMessage.createdAt.toLocaleDateString(),
+        },
+      });
+      return {...newMessage, id: newMessage.id.toString()};
     },
     leaveWaitingRoom: async (_parent, {userId}, {redis}) => {
-      await redis.multi(yeetUserFromAllQueuesCommand(userId)).exec();
       // TODO: maybe we should update user status, dunno?
+      await redis.multi(yeetUserFromAllQueuesCommand(userId)).exec();
       return "done";
     },
     createProfile: async (_parent, {name, birthday, pronouns}, {prisma}) => {
@@ -207,8 +235,8 @@ export const resolvers: Resolvers = {
   },
   Subscription: {
     chat: {
-      subscribe: (_parent, {channel}, {pubsub}) => {
-        return pubsub.asyncIterator(channel);
+      subscribe: (_parent, data, {pubsub}) => {
+        return pubsub.asyncIterator(data.channel);
       },
     },
     waitingRoom: {

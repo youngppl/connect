@@ -1,11 +1,13 @@
-import {gql, useMutation, useSubscription} from "@apollo/client";
+import {gql, useMutation, useQuery} from "@apollo/client";
 import {Feather} from "@expo/vector-icons";
+import {useNavigation} from "@react-navigation/native";
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import {ScrollView} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
+import {Conversation, User} from "../../backend/src/resolvers-types";
 import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
 import DismissKeyboard from "../components/DismissKeyboard";
 import Space from "../components/Space";
@@ -136,50 +138,88 @@ const MessageInput = styled.TextInput`
 
 type ChatScreenProps = StackScreenProps<RootStackParamList, "ChatScreen">;
 
-const chatSubscription = gql`
+const MESSAGE_FRAGMENT = gql`
+  fragment MessageFragment on Message {
+    id
+    text
+    createdAt
+  }
+`;
+
+const CHAT_SUBSCRIPTION = gql`
+  ${MESSAGE_FRAGMENT}
   subscription ChatScreen($channel: String!) {
     chat(channel: $channel) {
-      message
-      author
+      id
+      ...MessageFragment
     }
   }
 `;
 
-const createMessageMutation = gql`
+const CREATE_MESSAGE_MUTATION = gql`
+  ${MESSAGE_FRAGMENT}
   mutation createMessage($channel: String!, $message: String!, $author: ID!) {
     createMessage(channel: $channel, message: $message, author: $author) {
-      message
+      id
+      ...MessageFragment
+      __typename
     }
   }
 `;
 
-const ChatScreen = ({navigation, route}: ChatScreenProps) => {
-  const {
-    params: {channel, otherUser, icebreaker},
-  } = route;
+const CONVERSATION_QUERY = gql`
+  ${MESSAGE_FRAGMENT}
+  query ChatScreenConversation($channel: String!) {
+    getConversation(channel: $channel) {
+      id
+      messages {
+        id
+        ...MessageFragment
+      }
+    }
+  }
+`;
+
+// TODO: set up the yarn graphql codegen for operations to fix these type errors
+interface ChatScreenDataContainerProps {
+  channel: string;
+  icebreaker: string;
+  otherUser: User; // Fix
+  conversation: Conversation; // Fix
+  subscribeToNewMessages: () => void;
+}
+
+const ChatScreenDataContainer = ({
+  channel,
+  icebreaker,
+  otherUser,
+  conversation,
+  subscribeToNewMessages,
+}: ChatScreenDataContainerProps) => {
+  const navigation = useNavigation();
   const {id: userId} = React.useContext(UserContext);
-  const {data} = useSubscription(chatSubscription, {
-    variables: {channel},
-  });
-  const [createMessage] = useMutation(createMessageMutation);
-  const [messages, setMessages] = React.useState<Record<string, any>[]>([]);
+  const [createMessage] = useMutation(CREATE_MESSAGE_MUTATION);
   const [messageText, setMessageText] = React.useState<string | undefined>();
   const messagesViewRef = React.useRef(null);
   const [showUserInfo, setShowUserInfo] = React.useState(false);
   const [secondsLeft, setSecondsLeft] = React.useState(60);
+  const [showIcebreaker, setShowIcebreaker] = React.useState(true);
+
+  const scrollToLastMessage = () =>
+    ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
+      animated: true,
+    });
 
   React.useEffect(() => {
-    console.log("incoming message", data);
-    if (data) {
-      const {chat} = data;
-      setMessages((prev) => [...prev, chat]);
-    }
-  }, [data]);
+    scrollToLastMessage();
+    const unsubscribe = subscribeToNewMessages();
+    return () => unsubscribe(); // TODO: Apollo docs fix
+  }, []);
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
       setSecondsLeft((seconds) => seconds - 1);
-    }, 1000);
+    }, 1);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -193,12 +233,11 @@ const ChatScreen = ({navigation, route}: ChatScreenProps) => {
     }
   }, [secondsLeft]);
 
-  const showIcebreaker = React.useMemo(() => messages.length < 2, [messages]);
-
-  const scrollToLastMessage = () =>
-    ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
-      animated: true,
-    });
+  React.useEffect(() => {
+    if (conversation.messages.length > 1) {
+      setShowIcebreaker(false);
+    }
+  }, [conversation.messages]);
 
   const onSendMessage = (message: string) => {
     if (message) {
@@ -236,25 +275,19 @@ const ChatScreen = ({navigation, route}: ChatScreenProps) => {
           ref={messagesViewRef}
           onContentSizeChange={scrollToLastMessage}
         >
-          {messages.map((message, index) => {
-            if (message.author === userId)
+          {conversation.messages.map((message, index) => {
+            if (message.id === userId)
               return (
-                <RightChatBubble
-                  author={message.author}
-                  key={index}
-                  isFirstInChain={message.isFirstInChain}
-                >
-                  <BlackChatText>{message.message}</BlackChatText>
+                <RightChatBubble author={message.id} key={index}>
+                  <BlackChatText>{message.text}</BlackChatText>
                 </RightChatBubble>
               );
             return (
               <LeftChatBubble
                 author={otherUser.name}
-                message={message.message}
+                message={message.text}
                 key={index}
-                isFirstInChain={index === 0 || messages[index - 1].author !== message.author}
-                options={message.options}
-                onOptionSelect={message.onOptionSelect}
+                isFirstInChain={index === 0 || conversation.messages[index - 1].id !== message.id}
               />
             );
           })}
@@ -272,6 +305,43 @@ const ChatScreen = ({navigation, route}: ChatScreenProps) => {
         </MessageInputContainer>
       </DismissKeyboard>
     </Container>
+  );
+};
+
+const ChatScreen = ({route}: ChatScreenProps) => {
+  const {
+    params: {channel, otherUser, icebreaker},
+  } = route;
+  const {subscribeToMore, data, loading} = useQuery(CONVERSATION_QUERY, {
+    variables: {channel},
+  });
+
+  if (loading) {
+    return null;
+  }
+
+  return (
+    <ChatScreenDataContainer
+      conversation={data.getConversation}
+      channel={channel}
+      otherUser={otherUser}
+      icebreaker={icebreaker}
+      subscribeToNewMessages={() =>
+        subscribeToMore({
+          document: CHAT_SUBSCRIPTION,
+          variables: {channel},
+          updateQuery: (prev, {subscriptionData}) => {
+            if (!subscriptionData.data) return prev;
+            const newMessageItem = subscriptionData.data.chat;
+            return Object.assign({}, prev, {
+              getConversation: {
+                messages: [newMessageItem, ...prev.getConversation.messages],
+              },
+            });
+          },
+        })
+      }
+    />
   );
 };
 

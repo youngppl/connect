@@ -225,14 +225,6 @@ export const LeftChatBubble = ({
 export const RightChatBubble = ({children}: ChatBubbleProps & {children?: React.ReactElement}) => {
   return (
     <ChatContainer>
-      {/* {isFirstInChain && (
-        <ChatBubbleContainer>
-          <Space />
-          <NameContainer>
-            <NameText style={{ textAlign: "right" }}>You</NameText>
-          </NameContainer>
-        </ChatBubbleContainer>
-      )} */}
       <ChatBubbleContainer>
         <Space />
         <RightChatBubbleContainer>{children}</RightChatBubbleContainer>
