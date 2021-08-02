@@ -59,7 +59,7 @@ export const resolvers: Resolvers = {
       );
       const feedBackSum = feedbackRatings.reduce((a, b) => a + b, 0);
       const averageScore = feedBackSum / feedbackRatings.length;
-      return averageScore;
+      return averageScore || 5;
     },
     talkNumbers: async (user, _data, {prisma}) => {
       const conversationTypes = await prisma.conversation.findMany({
@@ -270,18 +270,28 @@ const runMatchingAlgo = async (
       return;
     }
     if (matchedUserId && matchedUserId !== userId) {
-      // remove both users from all other lists they may be in
-      const allCommands = [
-        ...yeetUserFromAllQueuesCommand(matchedUserId),
-        ...yeetUserFromAllQueuesCommand(userId),
-      ];
       try {
-        const errors = await redis.multi(allCommands).exec();
+        // Algorithm idea:
+        // When a user first enters a queue, check if there is anything available. Otherwise, leave an id on multiple queues.
+        // We try booting the person in the queue. If the person got booted via no errors and a count >= 1, then we have a clean match.
+        // In the case of a race condition, where someone else takes the user first, we'll have 0 pops. So, we skip.
+
+        const bootOtherPersonResults = await redis
+          .multi([
+            ...yeetUserFromAllQueuesCommand(userId),
+            ...yeetUserFromAllQueuesCommand(matchedUserId),
+          ])
+          .exec();
+        const matchedUserIds = bootOtherPersonResults.slice(3);
         const hasNoErrors = _.every(
-          errors.map((error) => error[0]),
+          matchedUserIds.map((result) => result[0]),
           (v) => _.isNull(v),
         );
-        if (hasNoErrors) {
+        const redisPops = bootOtherPersonResults.map((result) => result[1]); // [Error, numPopped]
+        const bootedMatchedUser = hasNoErrors && _.sum(redisPops) >= 1;
+        if (bootedMatchedUser) {
+          // race can be introduced here...
+          // Only boot yourself if the matched user got booted
           const channelName = `${nanoid()}`;
           await prisma.conversation.create({
             data: {

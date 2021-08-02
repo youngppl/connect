@@ -411,6 +411,7 @@ const ProfileContent = ({userId}: {userId: string | number | null}) => {
   const [showModal, setShowModal] = React.useState(false);
   const {loading, error, data} = useQuery(ProfileScreen.query, {
     variables: {id: userId},
+    fetchPolicy: "cache-and-network",
   });
   if (loading) return <ActivityIndicator size="large" />;
   if (error) return <ErrorText>`Error! ${error.message}`</ErrorText>;
