@@ -53,11 +53,11 @@ export const resolvers: Resolvers = {
       const pronouns = user.pronouns.split("_").join("/").toLowerCase();
       return pronouns.charAt(0).toUpperCase() + pronouns.slice(1);
     },
-    overallRating: async (_user, data, {prisma}) => {
+    overallRating: async (user, data, {prisma}) => {
       const feedback = await prisma.feedback.findMany({
         where: {
-          NOT: {id: {equals: parseInt(_user.id)}},
-          conversation: {people: {some: {id: {equals: parseInt(_user.id)}}}},
+          NOT: {userId: {equals: parseInt(user.id)}},
+          conversation: {people: {some: {id: {equals: parseInt(user.id)}}}},
         },
       });
       // Benefit of the doubt, no rating = 5 star score
@@ -86,7 +86,7 @@ export const resolvers: Resolvers = {
       const feedback = await prisma.feedback.findMany({
         select: {survey: true},
         where: {
-          NOT: {id: {equals: parseInt(user.id)}},
+          NOT: {userId: {equals: parseInt(user.id)}},
           conversation: {people: {some: {id: {equals: parseInt(user.id)}}}},
         },
       });

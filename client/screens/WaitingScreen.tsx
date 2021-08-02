@@ -155,7 +155,7 @@ const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
         setState("matched");
         const id = users.filter((id: string) => id !== userId)[0];
         getMatchedUser({variables: {id}});
-        setMatchedChatType(chatType.toLowerCase().split("_").join(" "));
+        setMatchedChatType(chatType + " talk");
         setChannel(channel);
         setIcebreaker(icebreaker);
         return () => clearInterval(toChatTimer);

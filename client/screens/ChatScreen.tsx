@@ -223,7 +223,7 @@ const ChatScreenDataContainer = ({
     if (!alreadyMessaged) {
       const intervalId = setInterval(() => {
         setSecondsLeft((seconds) => seconds - 1);
-      }, 1);
+      }, 1000);
       return () => clearInterval(intervalId);
     }
   }, []);
@@ -259,7 +259,7 @@ const ChatScreenDataContainer = ({
         <FlagButtonContainer>
           <Feather name="flag" size={24} color="white" />
         </FlagButtonContainer>
-        <Space width={150} />
+        {alreadyMessaged && <Space width={150} />}
         <UserInfoButton onPress={() => setShowUserInfo((show) => !show)}>
           <Name>{otherUser.name}</Name>
           <Feather name={showUserInfo ? "chevron-up" : "chevron-down"} size={24} color="white" />
