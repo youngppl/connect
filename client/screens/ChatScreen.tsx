@@ -3,7 +3,7 @@ import {Feather} from "@expo/vector-icons";
 import {useNavigation} from "@react-navigation/native";
 import {StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
-import {ScrollView} from "react-native";
+import {ActivityIndicator, ScrollView} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
@@ -143,6 +143,7 @@ const MESSAGE_FRAGMENT = gql`
     id
     text
     createdAt
+    userId
   }
 `;
 
@@ -243,6 +244,8 @@ const ChatScreenDataContainer = ({
     }
   }, [conversation.messages]);
 
+  console.log(userId);
+  console.log(conversation.messages);
   const onSendMessage = (message: string) => {
     if (message) {
       createMessage({variables: {message, author: userId, channel}});
@@ -288,9 +291,9 @@ const ChatScreenDataContainer = ({
           onContentSizeChange={scrollToLastMessage}
         >
           {conversation.messages.map((message, index) => {
-            if (message.id === userId)
+            if (message.userId === userId)
               return (
-                <RightChatBubble author={message.id} key={index}>
+                <RightChatBubble author={message.name} key={index}>
                   <BlackChatText>{message.text}</BlackChatText>
                 </RightChatBubble>
               );
@@ -344,10 +347,12 @@ const ChatScreen = ({route}: ChatScreenProps) => {
   const {subscribeToMore, data, loading} = useQuery(CONVERSATION_QUERY, {
     variables: {channel},
   });
-
-  if (loading) {
-    return null;
-  }
+  if (loading)
+    return (
+      <Container>
+        <ActivityIndicator size="large" />
+      </Container>
+    );
 
   return (
     <ChatScreenDataContainer

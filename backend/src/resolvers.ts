@@ -1,4 +1,4 @@
-import {Prisma, PrismaClient, Pronouns, ConversationType, User} from "@prisma/client";
+import {Prisma, PrismaClient, Pronouns, ConversationType, User, Message} from "@prisma/client";
 import {PubSubEngine} from "graphql-subscriptions";
 import {Redis} from "ioredis";
 import {nanoid} from "nanoid";
@@ -69,13 +69,13 @@ export const resolvers: Resolvers = {
       return averageScore || 5;
     },
     talkNumbers: async (user, _data, {prisma}) => {
-      const conversationTypes = await prisma.conversation.findMany({
+      const conversations = await prisma.conversation.findMany({
         select: {type: true},
         where: {
           people: {some: {id: {equals: parseInt(user.id)}}},
         },
       });
-      const talkMap = _.countBy(conversationTypes);
+      const talkMap = _.countBy(conversations.map((conversation) => conversation.type));
       return {
         small: talkMap["SMALL"] || 0,
         light: talkMap["LIGHT"] || 0,
@@ -90,8 +90,6 @@ export const resolvers: Resolvers = {
           conversation: {people: {some: {id: {equals: parseInt(user.id)}}}},
         },
       });
-      console.log("feedback");
-      console.log(feedback);
       const messageDates = await prisma.message.findMany({
         distinct: ["createdAt"],
         select: {createdAt: true},
@@ -123,7 +121,7 @@ export const resolvers: Resolvers = {
         orderBy: {createdAt: "desc"},
       });
       if (message) {
-        return {id: message.id.toString(), text: message.text};
+        return convertPrismaMessagetoGraphQLMessage(message);
       } else {
         return null;
       }
@@ -138,11 +136,7 @@ export const resolvers: Resolvers = {
         },
       });
       return messages.map((message) => {
-        return {
-          ...message,
-          id: message.id.toString(),
-          createdAt: message.createdAt.toLocaleDateString(),
-        };
+        return convertPrismaMessagetoGraphQLMessage(message);
       });
     },
   },
@@ -157,12 +151,10 @@ export const resolvers: Resolvers = {
       });
       await pubsub.publish(channel, {
         chat: {
-          ...newMessage,
-          id: newMessage.id.toString(),
-          createdAt: newMessage.createdAt.toLocaleDateString(),
+          ...convertPrismaMessagetoGraphQLMessage(newMessage),
         },
       });
-      return {...newMessage, id: newMessage.id.toString()};
+      return convertPrismaMessagetoGraphQLMessage(newMessage);
     },
     leaveWaitingRoom: async (_parent, {userId}, {redis}) => {
       // TODO: maybe we should update user status, dunno?
@@ -252,6 +244,15 @@ function convertPrismaUsertoGraphQLUser(user: User) {
   const createdAt = formatYear(user.createdAt);
   const birthday = user.birthday.toLocaleDateString();
   return {...user, id: user.id.toString(), createdAt, birthday};
+}
+
+function convertPrismaMessagetoGraphQLMessage(newMessage: Message) {
+  return {
+    ...newMessage,
+    id: newMessage.id.toString(),
+    createdAt: newMessage.createdAt.toLocaleDateString(),
+    userId: newMessage.userId.toString(),
+  };
 }
 
 function longestConsecutive(arrayOfNumbers: number[]) {

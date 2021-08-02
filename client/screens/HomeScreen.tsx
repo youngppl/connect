@@ -229,6 +229,7 @@ const ChatLog = () => {
         data={data?.getConversations}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={{paddingBottom: 300}}
       />
       {false && (
         <>

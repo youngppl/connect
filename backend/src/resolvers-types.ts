@@ -56,6 +56,7 @@ export type Message = {
   id?: Maybe<Scalars['ID']>;
   createdAt?: Maybe<Scalars['String']>;
   text?: Maybe<Scalars['String']>;
+  userId?: Maybe<Scalars['ID']>;
 };
 
 export type Mutation = {
@@ -344,6 +345,7 @@ export type MessageResolvers<ContextType = JufaContextType, ParentType extends R
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   text?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

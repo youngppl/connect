@@ -54,6 +54,7 @@ export const typeDefs = gql`
     id: ID
     createdAt: String
     text: String
+    userId: ID
   }
   type Chat {
     message: String!
