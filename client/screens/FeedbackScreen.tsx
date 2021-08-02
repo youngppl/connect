@@ -1,7 +1,5 @@
 import {gql, useMutation, useQuery} from "@apollo/client";
-import {createIconSetFromFontello} from "@expo/vector-icons";
 import {StackScreenProps} from "@react-navigation/stack";
-import {setISODay} from "date-fns/esm";
 import * as React from "react";
 import {useForm, Controller} from "react-hook-form";
 import {Keyboard, KeyboardAvoidingView, ScrollView} from "react-native";
@@ -94,7 +92,10 @@ const FeedbackScreenMutation = gql`
       mood: $mood
       smile: $smile
       talkAgain: $talkAgain
-    )
+    ) {
+      id
+      mood
+    }
   }
 `;
 

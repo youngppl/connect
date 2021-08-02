@@ -82,9 +82,9 @@ export const typeDefs = gql`
       mood: String!
       smile: Boolean!
       talkAgain: Boolean!
-    ): String
-    updateInterests(userId: ID!, interests: [String!]): [String!]
-    updateMood(userId: ID!, mood: String!): String
+    ): User!
+    updateInterests(userId: ID!, interests: [String!]): User!
+    updateMood(userId: ID!, mood: String!): User!
   }
   type Subscription {
     chat(channel: String!): Chat

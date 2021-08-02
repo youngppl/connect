@@ -1,4 +1,4 @@
-import {Prisma, PrismaClient, Pronouns, ConversationType} from "@prisma/client";
+import {Prisma, PrismaClient, Pronouns, ConversationType, User} from "@prisma/client";
 import {PubSubEngine} from "graphql-subscriptions";
 import {Redis} from "ioredis";
 import {nanoid} from "nanoid";
@@ -14,12 +14,11 @@ export const resolvers: Resolvers = {
   Query: {
     getUser: async (_parent, {id}, {prisma}) => {
       const user = await prisma.user.findFirst({where: {id: parseInt(id)}});
-      const createdAt = formatYear(user.createdAt);
-      const birthday = user.birthday.toLocaleDateString();
-      return {...user, id: user.id.toString(), createdAt, birthday};
+      return convertPrismaUsertoGraphQLUser(user);
     },
     getConversations: async (_parent, {userId}, {prisma}) => {
       const conversations = await prisma.conversation.findMany({
+        orderBy: [{createdAt: "desc"}],
         where: {people: {some: {id: {equals: parseInt(userId)}}}},
         include: {people: true},
       });
@@ -138,11 +137,8 @@ export const resolvers: Resolvers = {
       return chat;
     },
     leaveWaitingRoom: async (_parent, {userId}, {redis}) => {
-      await redis.multi().exec((error) => {
-        if (!error) {
-          yeetUserFromAllQueuesCommand(userId);
-        }
-      });
+      await redis.multi(yeetUserFromAllQueuesCommand(userId)).exec();
+      // TODO: maybe we should update user status, dunno?
       return "done";
     },
     createProfile: async (_parent, {name, birthday, pronouns}, {prisma}) => {
@@ -157,45 +153,44 @@ export const resolvers: Resolvers = {
       return {message: "Profile made", id: user.id.toString()};
     },
     createChatFeedback: async (_parent, data, {prisma}) => {
-      try {
-        // TODO: Store the current user in the context
-        // Get the current user for the before mood.
-        const user = await prisma.user.findUnique({where: {id: parseInt(data.author)}});
-        await prisma.user.update({
-          where: {id: parseInt(data.author)},
-          data: {
-            mood: data.mood,
-            conversations: {
-              update: {
-                data: {
-                  feedback: {
-                    create: [
-                      {
-                        userId: user.id,
-                        survey: {
-                          beforeMood: user.mood,
-                          afterMood: data.mood,
-                          howFeelingAfter: data.howFeelingAfter,
-                          smile: data.smile,
-                          talkAgain: data.talkAgain,
-                          rating: data.engagementRating,
-                        },
+      // TODO: Store the current user in the context
+      // Get the current user for the before mood.
+      const {mood: oldMood} = await prisma.user.findUnique({
+        select: {mood: true},
+        where: {id: parseInt(data.author)},
+      });
+      const user = await prisma.user.update({
+        where: {id: parseInt(data.author)},
+        data: {
+          mood: data.mood,
+          conversations: {
+            update: {
+              data: {
+                feedback: {
+                  create: [
+                    {
+                      userId: parseInt(data.author),
+                      survey: {
+                        beforeMood: oldMood,
+                        afterMood: data.mood,
+                        howFeelingAfter: data.howFeelingAfter,
+                        smile: data.smile,
+                        talkAgain: data.talkAgain,
+                        rating: data.engagementRating,
                       },
-                    ],
-                  },
+                    },
+                  ],
                 },
-                where: {channel: data.channel},
               },
+              where: {channel: data.channel},
             },
           },
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      return "done";
+        },
+      });
+      return convertPrismaUsertoGraphQLUser(user);
     },
     updateInterests: async (_parent, {userId, interests}, {prisma}) => {
-      await prisma.user.update({
+      const user = await prisma.user.update({
         where: {
           id: parseInt(userId),
         },
@@ -203,11 +198,11 @@ export const resolvers: Resolvers = {
           interests: interests,
         },
       });
-      return interests;
+      return convertPrismaUsertoGraphQLUser(user);
     },
     updateMood: async (_parent, {userId, mood}, {prisma}) => {
-      await updateMood(prisma, userId, mood);
-      return mood;
+      const user = await updateMood(prisma, userId, mood);
+      return convertPrismaUsertoGraphQLUser(user);
     },
   },
   Subscription: {
@@ -224,6 +219,12 @@ export const resolvers: Resolvers = {
     },
   },
 };
+
+function convertPrismaUsertoGraphQLUser(user: User) {
+  const createdAt = formatYear(user.createdAt);
+  const birthday = user.birthday.toLocaleDateString();
+  return {...user, id: user.id.toString(), createdAt, birthday};
+}
 
 function longestConsecutive(arrayOfNumbers: number[]) {
   const sortedArrayOfNumbers = arrayOfNumbers.sort();

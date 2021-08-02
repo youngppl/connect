@@ -4,6 +4,7 @@ import {useFocusEffect} from "@react-navigation/native";
 import {formatDistance} from "date-fns";
 import _ from "lodash";
 import * as React from "react";
+import {FlatList} from "react-native-gesture-handler";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
@@ -143,11 +144,7 @@ const UnreadsText = styled.Text`
 `;
 
 function makeNiceDate(dbDate: string | null | undefined) {
-  return formatDistance(
-    dbDate ? new Date(dbDate) : new Date(),
-    Date.now() + new Date().getTimezoneOffset() * 60 * 1000,
-    {addSuffix: true},
-  );
+  return formatDistance(dbDate ? new Date(dbDate) : new Date(), Date.now(), {addSuffix: true});
 }
 const Unreads = () => {
   return (
@@ -210,13 +207,19 @@ const ChatLog = () => {
     return null;
   }
 
+  const renderItem = ({item}: {item: Conversation}) => {
+    return <OldChat chat={item} userId={id} />;
+  };
+
   return (
     <ChatContainer>
       <ChatLogHeader>Chat</ChatLogHeader>
       <Space height={18} />
-      {data?.getConversations.map((conversation: Conversation) => {
-        return <OldChat key={conversation.id} chat={conversation} userId={id} />;
-      })}
+      <FlatList
+        data={data?.getConversations}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
       {false && (
         <>
           <ChatLogText>{`You haven't chatted with anyone yet today`}</ChatLogText>
@@ -258,7 +261,10 @@ const FeelingText = styled.Text`
 
 const updateMoodMutation = gql`
   mutation updateMood($userId: ID!, $mood: String!) {
-    updateMood(userId: $userId, mood: $mood)
+    updateMood(userId: $userId, mood: $mood) {
+      id
+      mood
+    }
   }
 `;
 
@@ -267,13 +273,11 @@ const FeelingSheet = ({
   currentMood,
   visible,
   setVisible,
-  refetchUser,
 }: {
   name: string;
   currentMood: string;
   visible: boolean;
   setVisible: any;
-  refetchUser: () => void;
 }) => {
   const {id} = React.useContext(UserContext);
   const [updateMood] = useMutation(updateMoodMutation);
@@ -283,7 +287,6 @@ const FeelingSheet = ({
 
   const handleDone = async () => {
     await updateMood({variables: {userId: id, mood: MOODS[mood - 1]}});
-    await refetchUser();
     setVisible(false);
   };
 
@@ -298,7 +301,7 @@ const FeelingSheet = ({
   );
 };
 
-const Feeling = ({user, refetchUser}: {user: User; refetchUser: () => void}) => {
+const Feeling = ({user}: {user: User}) => {
   const [showModal, setShowModal] = React.useState(false);
 
   return (
@@ -315,7 +318,6 @@ const Feeling = ({user, refetchUser}: {user: User; refetchUser: () => void}) => 
         <Ionicons name="chevron-forward" size={24} color="white" />
       </FeelingContainer>
       <FeelingSheet
-        refetchUser={refetchUser}
         name={user.name as string}
         currentMood={user.mood || "Calm"}
         visible={showModal}
@@ -351,7 +353,7 @@ export const HomeScreen = () => {
     <Container edges={["top"]}>
       <CurrentUsers />
       <Space height={130} />
-      <Feeling user={data?.getUser || {}} refetchUser={refetch} />
+      <Feeling user={data?.getUser || {}} />
       <Space height={32} />
       <ChatLog />
     </Container>

@@ -66,15 +66,51 @@ const AddInterestsButton = ({onPress}: {onPress: any}) => {
   );
 };
 
-const YourInterestsSection = ({addInterestPress}: {addInterestPress: any}) => {
+const YourInterestContainer = styled.View`
+  padding: 10px;
+  height: 42px;
+  border: 1px solid #371463;
+  border-radius: 48px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  margin-right: 8px;
+  margin-bottom: 8px;
+`;
+
+const YourInterestText = styled.Text`
+  font-family: Quicksand;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #ffffff;
+`;
+
+const YourInterestsSection = ({
+  interests,
+  addInterestPress,
+}: {
+  interests: string[];
+  addInterestPress: any;
+}) => {
   return (
     <Section>
       <BaseText>Your Interests</BaseText>
       <Space height={20} />
-      <BaseText style={{fontSize: 18}}>
-        You haven’t shared your interests. Let us know what your interested in and we can share it
-        to whoever you talk to.
-      </BaseText>
+      {interests.length === 0 ? (
+        <BaseText style={{fontSize: 18}}>
+          You haven’t shared your interests. Let us know what your interested in and we can share it
+          to whoever you talk to.
+        </BaseText>
+      ) : (
+        <RowContainer>
+          {interests.map((interest) => (
+            <YourInterestContainer key={interest}>
+              <YourInterestText>{interest}</YourInterestText>
+            </YourInterestContainer>
+          ))}
+        </RowContainer>
+      )}
       <Space height={20} />
       <AddInterestsButton onPress={() => addInterestPress(true)}></AddInterestsButton>
     </Section>
@@ -189,7 +225,10 @@ const SuggestionTextButtonText = styled.Text`
 
 const UPDATE_INTERESTS_MUTATION = gql`
   mutation UpdateInterestsMutation($userId: ID!, $interests: [String!]) {
-    updateInterests(userId: $userId, interests: $interests)
+    updateInterests(userId: $userId, interests: $interests) {
+      id
+      interests
+    }
   }
 `;
 
@@ -209,7 +248,7 @@ const InterestSheet = ({
     const baseInterests: StringBooleanHash = {};
     for (const option of INTEREST_OPTIONS) {
       const key: string = option.value;
-      const initialExists = _.has(key, initialInterests);
+      const initialExists = initialInterests.includes(key);
       baseInterests[key] = initialExists;
     }
     return baseInterests;
@@ -415,7 +454,6 @@ const ProfileContent = ({userId}: {userId: string | number | null}) => {
   });
   if (loading) return <ActivityIndicator size="large" />;
   if (error) return <ErrorText>`Error! ${error.message}`</ErrorText>;
-  console.log(data);
 
   return (
     <>
@@ -423,10 +461,13 @@ const ProfileContent = ({userId}: {userId: string | number | null}) => {
       <Space height={10} />
       <BadgesPortion badgeNumbers={data.getUser.badgeNumbers} />
       <Space height={40} />
-      <YourInterestsSection addInterestPress={setShowModal}></YourInterestsSection>
+      <YourInterestsSection
+        interests={data.getUser.interests}
+        addInterestPress={setShowModal}
+      ></YourInterestsSection>
       <InterestSheet
         userId={userId}
-        initialInterests={data.getUser.initialInterests}
+        initialInterests={data.getUser.interests}
         visibleModal={showModal}
         setVisibleModal={setShowModal}
       ></InterestSheet>
