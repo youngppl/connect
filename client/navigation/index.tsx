@@ -3,7 +3,7 @@ import {createStackNavigator} from "@react-navigation/stack";
 import * as React from "react";
 import {ColorSchemeName} from "react-native";
 
-import {UserContext} from "../providers/UserProvider";
+import {useUser} from "../providers/UserProvider";
 import ChatScreen from "../screens/ChatScreen";
 import CreateProfileScreen from "../screens/CreateProfileScreen";
 import FeedbackScreen from "../screens/FeedbackScreen";
@@ -32,12 +32,16 @@ export default function Navigation({colorScheme}: {colorScheme: ColorSchemeName}
 const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const {id} = React.useContext(UserContext);
+  const user = useUser();
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      {!id && <Stack.Screen name="Landing" component={Landing} />}
+      {(!user || !user.id) && (
+        <>
+          <Stack.Screen name="Landing" component={Landing} />
+          <Stack.Screen name="CreateProfileScreen" component={CreateProfileScreen} />
+        </>
+      )}
       <Stack.Screen name="MainTabs" component={Tabs} />
-      <Stack.Screen name="CreateProfileScreen" component={CreateProfileScreen} />
       <Stack.Screen name="WaitingScreen" component={WaitingScreen} />
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="FeedbackScreen" component={FeedbackScreen} />

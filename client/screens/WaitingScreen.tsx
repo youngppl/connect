@@ -8,7 +8,7 @@ import Column from "../components/Column";
 import OuterSpaceBackground from "../components/OuterSpaceBackground";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
-import {UserContext} from "../providers/UserProvider";
+import {useActualUser} from "../providers/UserProvider";
 import {RootStackParamList} from "../types";
 
 const Container = styled.View`
@@ -113,13 +113,13 @@ const getUserQuery = gql`
 `;
 
 const leaveWaitingRoomMutation = gql`
-  mutation($userId: ID!) {
+  mutation leaveWaitingRoom($userId: ID!) {
     leaveWaitingRoom(userId: $userId)
   }
 `;
 
 const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
-  const {id: userId} = React.useContext(UserContext);
+  const {id: userId} = useActualUser();
   const {chatTypes} = route.params;
   const {data: matchData} = useSubscription(waitingRoomSubscription, {
     variables: {userId, chatTypes},

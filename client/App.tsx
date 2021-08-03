@@ -9,7 +9,7 @@ import {client} from "./graphql/Client";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
-import UserProvider from "./providers/UserProvider";
+import {UserProvider} from "./providers/UserProvider";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();

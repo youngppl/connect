@@ -419,3 +419,208 @@ export type Resolvers<ContextType = JufaContextType> = {
  * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
  */
 export type IResolvers<ContextType = JufaContextType> = Resolvers<ContextType>;
+
+export type MessageFragmentFragment = (
+  { __typename?: 'Message' }
+  & Pick<Message, 'id' | 'text' | 'createdAt' | 'userId'>
+);
+
+export type ChatScreenSubscriptionVariables = Exact<{
+  channel: Scalars['String'];
+}>;
+
+
+export type ChatScreenSubscription = (
+  { __typename?: 'Subscription' }
+  & { chat?: Maybe<(
+    { __typename?: 'Message' }
+    & Pick<Message, 'id'>
+    & MessageFragmentFragment
+  )> }
+);
+
+export type CreateMessageMutationVariables = Exact<{
+  channel: Scalars['String'];
+  message: Scalars['String'];
+  author: Scalars['ID'];
+}>;
+
+
+export type CreateMessageMutation = (
+  { __typename?: 'Mutation' }
+  & { createMessage?: Maybe<(
+    { __typename: 'Message' }
+    & Pick<Message, 'id'>
+    & MessageFragmentFragment
+  )> }
+);
+
+export type ChatScreenConversationQueryVariables = Exact<{
+  channel: Scalars['String'];
+}>;
+
+
+export type ChatScreenConversationQuery = (
+  { __typename?: 'Query' }
+  & { getConversation?: Maybe<(
+    { __typename?: 'Conversation' }
+    & Pick<Conversation, 'id'>
+    & { messages?: Maybe<Array<Maybe<(
+      { __typename?: 'Message' }
+      & Pick<Message, 'id'>
+      & MessageFragmentFragment
+    )>>> }
+  )> }
+);
+
+export type CreateProfileMutationVariables = Exact<{
+  name: Scalars['String'];
+  birthday: Scalars['String'];
+  pronouns: Pronouns;
+}>;
+
+
+export type CreateProfileMutation = (
+  { __typename?: 'Mutation' }
+  & { createProfile?: Maybe<(
+    { __typename?: 'Profile' }
+    & Pick<Profile, 'message' | 'id'>
+  )> }
+);
+
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetUserQuery = (
+  { __typename?: 'Query' }
+  & { getUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'mood'>
+  )> }
+);
+
+export type ChatFeedbackMutationVariables = Exact<{
+  author: Scalars['ID'];
+  channel: Scalars['String'];
+  engagementRating: Scalars['Int'];
+  howFeelingAfter: Scalars['String'];
+  mood: Scalars['String'];
+  smile: Scalars['Boolean'];
+  talkAgain: Scalars['Boolean'];
+}>;
+
+
+export type ChatFeedbackMutation = (
+  { __typename?: 'Mutation' }
+  & { createChatFeedback: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'mood'>
+  ) }
+);
+
+export type ChatLogQueryQueryVariables = Exact<{
+  userId: Scalars['ID'];
+}>;
+
+
+export type ChatLogQueryQuery = (
+  { __typename?: 'Query' }
+  & { getConversations?: Maybe<Array<Maybe<(
+    { __typename?: 'Conversation' }
+    & Pick<Conversation, 'id' | 'createdAt' | 'channel'>
+    & { lastMessage?: Maybe<(
+      { __typename?: 'Message' }
+      & Pick<Message, 'id' | 'text'>
+    )>, people?: Maybe<Array<Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'name'>
+    )>>> }
+  )>>> }
+);
+
+export type UpdateMoodMutationVariables = Exact<{
+  userId: Scalars['ID'];
+  mood: Scalars['String'];
+}>;
+
+
+export type UpdateMoodMutation = (
+  { __typename?: 'Mutation' }
+  & { updateMood: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'mood'>
+  ) }
+);
+
+export type UpdateInterestsMutationMutationVariables = Exact<{
+  userId: Scalars['ID'];
+  interests?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+}>;
+
+
+export type UpdateInterestsMutationMutation = (
+  { __typename?: 'Mutation' }
+  & { updateInterests: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'interests'>
+  ) }
+);
+
+export type ProfileScreenQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type ProfileScreenQuery = (
+  { __typename?: 'Query' }
+  & { getUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'createdAt' | 'birthday' | 'formattedPronouns' | 'interests' | 'overallRating'>
+    & { talkNumbers?: Maybe<(
+      { __typename?: 'TalkNumbers' }
+      & Pick<TalkNumbers, 'deep' | 'small' | 'light'>
+    )>, badgeNumbers?: Maybe<(
+      { __typename?: 'BadgeNumbers' }
+      & Pick<BadgeNumbers, 'charming' | 'joymaker' | 'jufanaut'>
+    )> }
+  )> }
+);
+
+export type WaitingScreenSubscriptionVariables = Exact<{
+  userId: Scalars['ID'];
+  chatTypes: Array<ConversationType> | ConversationType;
+}>;
+
+
+export type WaitingScreenSubscription = (
+  { __typename?: 'Subscription' }
+  & { waitingRoom?: Maybe<(
+    { __typename?: 'Match' }
+    & Pick<Match, 'message' | 'users' | 'channel' | 'icebreaker' | 'chatType'>
+  )> }
+);
+
+export type GetUserQueryQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetUserQueryQuery = (
+  { __typename?: 'Query' }
+  & { getUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'pronouns' | 'createdAt' | 'birthday'>
+  )> }
+);
+
+export type LeaveWaitingRoomMutationVariables = Exact<{
+  userId: Scalars['ID'];
+}>;
+
+
+export type LeaveWaitingRoomMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'leaveWaitingRoom'>
+);

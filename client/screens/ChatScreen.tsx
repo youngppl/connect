@@ -7,12 +7,17 @@ import {ActivityIndicator, ScrollView} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
-import {Conversation, User} from "../../backend/src/resolvers-types";
+import {
+  Conversation,
+  CreateMessageMutation,
+  CreateMessageMutationVariables,
+  User,
+} from "../../backend/src/resolvers-types";
 import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
 import DismissKeyboard from "../components/DismissKeyboard";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
-import {UserContext} from "../providers/UserProvider";
+import {useActualUser} from "../providers/UserProvider";
 import {RootStackParamList} from "../types";
 
 const Container = styled(SafeAreaView)`
@@ -200,8 +205,10 @@ const ChatScreenDataContainer = ({
   alreadyMessaged,
 }: ChatScreenDataContainerProps) => {
   const navigation = useNavigation();
-  const {id: userId} = React.useContext(UserContext);
-  const [createMessage] = useMutation(CREATE_MESSAGE_MUTATION);
+  const {id: userId} = useActualUser();
+  const [createMessage] = useMutation<CreateMessageMutation, CreateMessageMutationVariables>(
+    CREATE_MESSAGE_MUTATION,
+  );
   const [messageText, setMessageText] = React.useState<string | undefined>();
   const messagesViewRef = React.useRef(null);
   const [showUserInfo, setShowUserInfo] = React.useState(false);

@@ -2,19 +2,30 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as React from "react";
 
 export interface User {
-  id: string | null;
+  id: string;
   setId: (id: string) => void;
 }
 
-export const UserContext = React.createContext<User>({
-  id: null,
-  setId: (id: string) => {
-    return;
-  },
-});
+const UserContext = React.createContext<User | undefined>(undefined);
+
+const useUser = () => {
+  const context = React.useContext(UserContext);
+  if (context === undefined) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
+};
+
+const useActualUser = () => {
+  const context = useUser();
+  if (context.id === "") {
+    throw new Error("useUser doesn't have a valid id");
+  }
+  return context;
+};
 
 const UserProvider = ({children}: {children: React.ReactElement}) => {
-  const [userId, setUserId] = React.useState<string | null>(null);
+  const [userId, setUserId] = React.useState<string>("");
 
   const userContext = React.useMemo(
     () => ({
@@ -28,9 +39,10 @@ const UserProvider = ({children}: {children: React.ReactElement}) => {
   );
 
   React.useEffect(() => {
-    AsyncStorage.getItem("connectId").then((id) => setUserId(id));
+    AsyncStorage.getItem("connectId").then((id) => setUserId(id || ""));
   }, []);
 
   return <UserContext.Provider value={userContext}>{children}</UserContext.Provider>;
 };
-export default UserProvider;
+
+export {UserProvider, UserContext, useUser, useActualUser};

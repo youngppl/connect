@@ -18,7 +18,7 @@ import ProfileImage from "../components/ProfileImage";
 import Row from "../components/Row";
 import Space from "../components/Space";
 import {MOODS} from "../constants/Moods";
-import {UserContext} from "../providers/UserProvider";
+import {useActualUser} from "../providers/UserProvider";
 import {User} from "../types";
 
 const Container = styled(SafeAreaView)`
@@ -207,7 +207,7 @@ const CHAT_LOG_QUERY = gql`
 `;
 
 const ChatLog = () => {
-  const {id} = React.useContext(UserContext);
+  const {id} = useActualUser();
   const {data, loading} = useQuery(CHAT_LOG_QUERY, {
     variables: {userId: id},
     skip: !id,
@@ -290,7 +290,7 @@ const FeelingSheet = ({
   visible: boolean;
   setVisible: any;
 }) => {
-  const {id} = React.useContext(UserContext);
+  const {id} = useActualUser();
   const [updateMood] = useMutation(updateMoodMutation);
   const [mood, setMood] = React.useState(3);
 
@@ -349,7 +349,7 @@ const getUserQuery = gql`
 `;
 
 export const HomeScreen = () => {
-  const {id} = React.useContext(UserContext);
+  const {id} = useActualUser();
   const {loading, error, data, refetch} = useQuery(getUserQuery, {
     variables: {id},
   });

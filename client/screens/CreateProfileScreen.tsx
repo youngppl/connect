@@ -10,7 +10,7 @@ import styled from "styled-components/native";
 
 import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
 import Space from "../components/Space";
-import {UserContext} from "../providers/UserProvider";
+import {useUser} from "../providers/UserProvider";
 import {RootStackParamList} from "../types";
 
 const Container = styled(SafeAreaView)`
@@ -244,7 +244,7 @@ const processNextStep = (state, action) => {
 
 const CreateProfileScreen = ({navigation}: CreateProfileScreenProps) => {
   const {control, getValues, setValue, handleSubmit} = useForm();
-  const {setId} = React.useContext(UserContext);
+  const {setId} = useUser();
   const [createProfile] = useMutation(CreateProfileScreenMutation, {
     onCompleted: (data) => {
       setId(data.createProfile.id);

@@ -11,7 +11,7 @@ import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/Chat
 import FeelingSlider from "../components/FeelingSlider";
 import Space from "../components/Space";
 import {MOODS} from "../constants/Moods";
-import {UserContext} from "../providers/UserProvider";
+import {useActualUser} from "../providers/UserProvider";
 import {RootStackParamList} from "../types";
 
 const Container = styled(SafeAreaView)`
@@ -199,7 +199,7 @@ const processNextStep = (state: State, action: Action) => {
 
 const FeedbackScreen = ({navigation, route}: FeedbackScreenProps) => {
   const {channel} = route.params;
-  const {id: userId} = React.useContext(UserContext);
+  const {id: userId} = useActualUser();
   const {data: userData} = useQuery(getUserQuery, {
     variables: {id: userId},
   });

@@ -1,4 +1,5 @@
 schema: ./src/schema.ts
+documents: ../client/**/*.tsx
 generates:
   ./src/resolvers-types.ts:
     plugins:

@@ -12,7 +12,7 @@ import Charming from "../components/Charming";
 import JoyMaker from "../components/JoyMaker";
 import Jufanaut from "../components/Jufanaut";
 import Space from "../components/Space";
-import {UserContext} from "../providers/UserProvider";
+import {useActualUser} from "../providers/UserProvider";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -475,13 +475,10 @@ const ProfileContent = ({userId}: {userId: string | number | null}) => {
 };
 
 const ProfileScreen = () => {
+  const {id} = useActualUser();
   return (
     <Container>
-      <UserContext.Consumer>
-        {({id}) => {
-          return <ProfileContent userId={id} />;
-        }}
-      </UserContext.Consumer>
+      <ProfileContent userId={id} />
     </Container>
   );
 };
