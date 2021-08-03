@@ -14,24 +14,24 @@ export const typeDefs = gql`
     SMALL
   }
   type BadgeNumbers {
-    joymaker: Int
-    charming: Int
-    jufanaut: Int
+    joymaker: Int!
+    charming: Int!
+    jufanaut: Int!
   }
   type TalkNumbers {
-    small: Int
-    deep: Int
-    light: Int
+    small: Int!
+    deep: Int!
+    light: Int!
   }
   type User {
-    id: ID
-    email: String
-    name: String
-    createdAt: String # Make this a custom scalar
-    birthday: String # Make this a custom scalar
-    pronouns: Pronouns
-    interests: [String!]
-    mood: String
+    id: ID!
+    email: String!
+    name: String!
+    createdAt: String! # Make this a custom scalar
+    birthday: String! # Make this a custom scalar
+    pronouns: Pronouns!
+    interests: [String!]!
+    mood: String!
 
     # Custom
     formattedPronouns: String
@@ -41,19 +41,19 @@ export const typeDefs = gql`
     badgeNumbers: BadgeNumbers
   }
   type Conversation {
-    id: ID
-    channel: String
-    createdAt: String # Make this a custom scalar
-    people: [User]
-    lastMessage: Message
+    id: ID!
+    channel: String!
+    createdAt: String! # Make this a custom scalar
+    people: [User!]
 
     # Custom
-    messages: [Message]
+    lastMessage: Message
+    messages: [Message!]
   }
   type Message {
     id: ID
     createdAt: String
-    text: String
+    text: String!
     userId: ID
   }
   type Chat {

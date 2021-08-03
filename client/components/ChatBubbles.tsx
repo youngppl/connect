@@ -149,8 +149,8 @@ const Rating = ({onOptionSelect}: RatingProps) => {
 
 interface ChatBubbleProps {
   author?: string;
-  message?: string;
-  isFirstInChain: boolean;
+  message?: string | null;
+  isFirstInChain?: boolean;
   options?: Option[];
   optionValue?: string | number | undefined;
   onOptionSelect?: (value: Record<string, string | number | undefined>) => void;

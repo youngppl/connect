@@ -1,16 +1,22 @@
 import {gql, useMutation, useQuery} from "@apollo/client";
 import {Feather} from "@expo/vector-icons";
 import {useNavigation} from "@react-navigation/native";
-import {StackScreenProps} from "@react-navigation/stack";
+import {StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
 import {ActivityIndicator, ScrollView} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 import {
-  Conversation,
+  ChatScreenConversationFragment,
+  ChatScreenConversationQuery,
+  ChatScreenConversationQueryVariables,
+  ChatScreenSubscription,
+  ChatScreenSubscriptionVariables,
   CreateMessageMutation,
   CreateMessageMutationVariables,
+  MagicFragment,
+  MessageFragmentFragment,
   User,
 } from "../../backend/src/resolvers-types";
 import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
@@ -173,15 +179,23 @@ const CREATE_MESSAGE_MUTATION = gql`
   }
 `;
 
-const CONVERSATION_QUERY = gql`
+const CONVERSATION_FRAGMENT = gql`
   ${MESSAGE_FRAGMENT}
+  fragment ChatScreenConversation on Conversation {
+    id
+    messages {
+      id
+      ...MessageFragment
+    }
+  }
+`;
+
+const CONVERSATION_QUERY = gql`
+  ${CONVERSATION_FRAGMENT}
   query ChatScreenConversation($channel: String!) {
     getConversation(channel: $channel) {
       id
-      messages {
-        id
-        ...MessageFragment
-      }
+      ...ChatScreenConversation
     }
   }
 `;
@@ -191,9 +205,9 @@ interface ChatScreenDataContainerProps {
   channel: string;
   icebreaker: string | undefined;
   otherUser: User; // Fix
-  conversation: Conversation; // Fix
   subscribeToNewMessages: () => void;
   alreadyMessaged: boolean;
+  conversation: ChatScreenConversationFragment;
 }
 
 const ChatScreenDataContainer = ({
@@ -204,7 +218,7 @@ const ChatScreenDataContainer = ({
   subscribeToNewMessages,
   alreadyMessaged,
 }: ChatScreenDataContainerProps) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const {id: userId} = useActualUser();
   const [createMessage] = useMutation<CreateMessageMutation, CreateMessageMutationVariables>(
     CREATE_MESSAGE_MUTATION,
@@ -246,7 +260,7 @@ const ChatScreenDataContainer = ({
   }, [secondsLeft]);
 
   React.useEffect(() => {
-    if (conversation.messages.length > 1) {
+    if ((conversation?.messages?.length || 0) > 1) {
       setShowIcebreaker(false);
     }
   }, [conversation.messages]);
@@ -289,7 +303,7 @@ const ChatScreenDataContainer = ({
         </UserInfoContainer>
       )}
 
-      {!alreadyMessaged && showIcebreaker && <IcebreakerCard icebreaker={icebreaker} />}
+      {!alreadyMessaged && showIcebreaker && <IcebreakerCard icebreaker={icebreaker || ""} />}
 
       <DismissKeyboard>
         <MessagesContainer
@@ -297,10 +311,10 @@ const ChatScreenDataContainer = ({
           ref={messagesViewRef}
           onContentSizeChange={scrollToLastMessage}
         >
-          {conversation.messages.map((message, index) => {
+          {conversation?.messages?.map((message: MessageFragmentFragment, index: number) => {
             if (message.userId === userId)
               return (
-                <RightChatBubble author={message.name} key={index}>
+                <RightChatBubble key={index}>
                   <BlackChatText>{message.text}</BlackChatText>
                 </RightChatBubble>
               );
@@ -309,7 +323,9 @@ const ChatScreenDataContainer = ({
                 author={otherUser.name}
                 message={message.text}
                 key={index}
-                isFirstInChain={index === 0 || conversation.messages[index - 1].id !== message.id}
+                isFirstInChain={
+                  index === 0 || conversation?.messages?.[index - 1]?.id !== message.id
+                }
               />
             );
           })}
@@ -351,15 +367,19 @@ const ChatScreen = ({route}: ChatScreenProps) => {
   const {
     params: {channel, otherUser, icebreaker, alreadyMessaged},
   } = route;
-  const {subscribeToMore, data, loading} = useQuery(CONVERSATION_QUERY, {
+  const {subscribeToMore, data, loading} = useQuery<
+    ChatScreenConversationQuery,
+    ChatScreenConversationQueryVariables
+  >(CONVERSATION_QUERY, {
     variables: {channel},
   });
-  if (loading)
+  if (loading || !data || !data.getConversation) {
     return (
       <Container>
         <ActivityIndicator size="large" />
       </Container>
     );
+  }
 
   return (
     <ChatScreenDataContainer
@@ -369,7 +389,7 @@ const ChatScreen = ({route}: ChatScreenProps) => {
       icebreaker={icebreaker}
       alreadyMessaged={alreadyMessaged || false}
       subscribeToNewMessages={() =>
-        subscribeToMore({
+        subscribeToMore<ChatScreenSubscription, ChatScreenSubscriptionVariables>({
           document: CHAT_SUBSCRIPTION,
           variables: {channel},
           updateQuery: (prev, {subscriptionData}) => {
@@ -377,7 +397,7 @@ const ChatScreen = ({route}: ChatScreenProps) => {
             const newMessageItem = subscriptionData.data.chat;
             return Object.assign({}, prev, {
               getConversation: {
-                messages: [newMessageItem, ...prev.getConversation.messages],
+                messages: [newMessageItem, ...(prev?.getConversation?.messages || [])],
               },
             });
           },

@@ -10,3 +10,4 @@ generates:
       mapperTypeSuffix: Model
       contextType: ./app#JufaContextType
       enumsAsTypes: true
+      arrayInputCoercion: true

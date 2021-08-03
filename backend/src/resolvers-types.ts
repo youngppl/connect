@@ -16,9 +16,9 @@ export type Scalars = {
 
 export type BadgeNumbers = {
   __typename?: 'BadgeNumbers';
-  joymaker?: Maybe<Scalars['Int']>;
-  charming?: Maybe<Scalars['Int']>;
-  jufanaut?: Maybe<Scalars['Int']>;
+  joymaker: Scalars['Int'];
+  charming: Scalars['Int'];
+  jufanaut: Scalars['Int'];
 };
 
 export type Chat = {
@@ -29,12 +29,12 @@ export type Chat = {
 
 export type Conversation = {
   __typename?: 'Conversation';
-  id?: Maybe<Scalars['ID']>;
-  channel?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['String']>;
-  people?: Maybe<Array<Maybe<User>>>;
+  id: Scalars['ID'];
+  channel: Scalars['String'];
+  createdAt: Scalars['String'];
+  people?: Maybe<Array<User>>;
   lastMessage?: Maybe<Message>;
-  messages?: Maybe<Array<Maybe<Message>>>;
+  messages?: Maybe<Array<Message>>;
 };
 
 export type ConversationType =
@@ -55,7 +55,7 @@ export type Message = {
   __typename?: 'Message';
   id?: Maybe<Scalars['ID']>;
   createdAt?: Maybe<Scalars['String']>;
-  text?: Maybe<Scalars['String']>;
+  text: Scalars['String'];
   userId?: Maybe<Scalars['ID']>;
 };
 
@@ -164,21 +164,21 @@ export type SubscriptionWaitingRoomArgs = {
 
 export type TalkNumbers = {
   __typename?: 'TalkNumbers';
-  small?: Maybe<Scalars['Int']>;
-  deep?: Maybe<Scalars['Int']>;
-  light?: Maybe<Scalars['Int']>;
+  small: Scalars['Int'];
+  deep: Scalars['Int'];
+  light: Scalars['Int'];
 };
 
 export type User = {
   __typename?: 'User';
-  id?: Maybe<Scalars['ID']>;
-  email?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['String']>;
-  birthday?: Maybe<Scalars['String']>;
-  pronouns?: Maybe<Pronouns>;
-  interests?: Maybe<Array<Scalars['String']>>;
-  mood?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  email: Scalars['String'];
+  name: Scalars['String'];
+  createdAt: Scalars['String'];
+  birthday: Scalars['String'];
+  pronouns: Pronouns;
+  interests: Array<Scalars['String']>;
+  mood: Scalars['String'];
   formattedPronouns?: Maybe<Scalars['String']>;
   overallRating?: Maybe<Scalars['Float']>;
   numSmallTalk?: Maybe<Scalars['Int']>;
@@ -310,9 +310,9 @@ export type ResolversParentTypes = {
 };
 
 export type BadgeNumbersResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['BadgeNumbers'] = ResolversParentTypes['BadgeNumbers']> = {
-  joymaker?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  charming?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  jufanaut?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  joymaker?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  charming?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  jufanaut?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -323,12 +323,12 @@ export type ChatResolvers<ContextType = JufaContextType, ParentType extends Reso
 };
 
 export type ConversationResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Conversation'] = ResolversParentTypes['Conversation']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  channel?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  people?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  people?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
   lastMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
-  messages?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
+  messages?: Resolver<Maybe<Array<ResolversTypes['Message']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -344,7 +344,7 @@ export type MatchResolvers<ContextType = JufaContextType, ParentType extends Res
 export type MessageResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  text?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -376,21 +376,21 @@ export type SubscriptionResolvers<ContextType = JufaContextType, ParentType exte
 };
 
 export type TalkNumbersResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['TalkNumbers'] = ResolversParentTypes['TalkNumbers']> = {
-  small?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  deep?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  light?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  small?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  deep?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  light?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  birthday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  pronouns?: Resolver<Maybe<ResolversTypes['Pronouns']>, ParentType, ContextType>;
-  interests?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
-  mood?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  birthday?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pronouns?: Resolver<ResolversTypes['Pronouns'], ParentType, ContextType>;
+  interests?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  mood?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   formattedPronouns?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   overallRating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   numSmallTalk?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -455,6 +455,16 @@ export type CreateMessageMutation = (
   )> }
 );
 
+export type ChatScreenConversationFragment = (
+  { __typename?: 'Conversation' }
+  & Pick<Conversation, 'id'>
+  & { messages?: Maybe<Array<(
+    { __typename?: 'Message' }
+    & Pick<Message, 'id'>
+    & MessageFragmentFragment
+  )>> }
+);
+
 export type ChatScreenConversationQueryVariables = Exact<{
   channel: Scalars['String'];
 }>;
@@ -465,11 +475,7 @@ export type ChatScreenConversationQuery = (
   & { getConversation?: Maybe<(
     { __typename?: 'Conversation' }
     & Pick<Conversation, 'id'>
-    & { messages?: Maybe<Array<Maybe<(
-      { __typename?: 'Message' }
-      & Pick<Message, 'id'>
-      & MessageFragmentFragment
-    )>>> }
+    & ChatScreenConversationFragment
   )> }
 );
 
@@ -533,10 +539,10 @@ export type ChatLogQueryQuery = (
     & { lastMessage?: Maybe<(
       { __typename?: 'Message' }
       & Pick<Message, 'id' | 'text'>
-    )>, people?: Maybe<Array<Maybe<(
+    )>, people?: Maybe<Array<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'name'>
-    )>>> }
+    )>> }
   )>>> }
 );
 
