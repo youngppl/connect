@@ -4,23 +4,22 @@ import Svg, {SvgProps, Circle, Path} from "react-native-svg";
 function SvgComponent(props: SvgProps) {
   return (
     <Svg
-      width={23}
-      height={24}
-      viewBox="0 0 23 24"
+      width={72}
+      height={72}
+      viewBox="0 0 72 72"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <Circle cx={11.5} cy={12} r={11} fill="#FFA63D" stroke="#fff" />
+      <Circle cx={36} cy={36} r={36} fill="#FFA63D" />
       <Path
-        d="M13.299 9.484c.559.593.877.514 1.437 0"
+        d="M41.627 28.125c1.75 1.857 2.746 1.608 4.5 0"
         stroke="#3D0230"
-        strokeWidth={0.5}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <Circle cx={10.244} cy={8.945} r={0.539} fill="#3D0230" />
-      <Circle cx={17.43} cy={8.945} r={0.539} fill="#3D0230" />
+      <Circle cx={32.065} cy={26.438} r={1.688} fill="#3D0230" />
+      <Circle cx={54.563} cy={26.438} r={1.688} fill="#3D0230" />
     </Svg>
   );
 }

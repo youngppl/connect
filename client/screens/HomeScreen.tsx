@@ -11,7 +11,7 @@ import styled from "styled-components/native";
 import {Conversation} from "../../backend/src/resolvers-types";
 import BottomSheet, {BottomSheetButton, BottomSheetHeading} from "../components/BottomSheet";
 import Column from "../components/Column";
-import OkayIcon from "../components/emotions/Okay";
+import MoodIcon from "../components/emotions/MoodIcon";
 import FeelingSlider from "../components/FeelingSlider";
 import Background from "../components/PlanetBackground";
 import ProfileImage from "../components/ProfileImage";
@@ -323,7 +323,7 @@ const Feeling = ({user}: {user: User}) => {
           <FeelingLabel>{`i'm feeling...`}</FeelingLabel>
           <Space height={8} />
           <Row>
-            <OkayIcon />
+            <MoodIcon mood={user.mood} />
             <FeelingText>{user.mood || "🤷🏽‍♀️"}</FeelingText>
           </Row>
         </Column>
