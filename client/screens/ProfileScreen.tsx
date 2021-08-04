@@ -432,8 +432,8 @@ const BadgesPortion = ({badgeNumbers}: {badgeNumbers: Record<string, number>}) =
   return (
     <RowContainer style={{justifyContent: "space-around", alignItems: "center"}}>
       <BadgeItem badgeComponent={<JoyMaker />} text={"Joymaker"} count={badgeNumbers.joymaker} />
-      <BadgeItem badgeComponent={<Charming />} text={"Charming"} count={badgeNumbers.charming} />
       <BadgeItem badgeComponent={<Jufanaut />} text={"Jufa-naut"} count={badgeNumbers.jufanaut} />
+      <BadgeItem badgeComponent={<Charming />} text={"Charming"} count={badgeNumbers.charming} />
     </RowContainer>
   );
 };
