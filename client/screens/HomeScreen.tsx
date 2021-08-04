@@ -230,6 +230,7 @@ const ChatLog = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{paddingBottom: 300}}
+        showsVerticalScrollIndicator={false}
       />
       {false && (
         <>

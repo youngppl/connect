@@ -2,7 +2,7 @@ import {gql, useMutation, useQuery} from "@apollo/client";
 import {AntDesign, Entypo} from "@expo/vector-icons";
 import _ from "lodash";
 import * as React from "react";
-import {ActivityIndicator, FlatList} from "react-native";
+import {ActivityIndicator, FlatList, ScrollView} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
@@ -478,7 +478,9 @@ const ProfileScreen = () => {
   const {id} = useActualUser();
   return (
     <Container>
-      <ProfileContent userId={id} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <ProfileContent userId={id} />
+      </ScrollView>
     </Container>
   );
 };
