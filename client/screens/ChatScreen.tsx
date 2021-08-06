@@ -1,5 +1,5 @@
 import {gql, useMutation, useQuery} from "@apollo/client";
-import {Feather} from "@expo/vector-icons";
+import {Feather, Ionicons} from "@expo/vector-icons";
 import {useNavigation} from "@react-navigation/native";
 import {StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
@@ -15,7 +15,6 @@ import {
   ChatScreenSubscriptionVariables,
   CreateMessageMutation,
   CreateMessageMutationVariables,
-  MagicFragment,
   MessageFragmentFragment,
   User,
 } from "../../backend/src/resolvers-types";
@@ -49,10 +48,16 @@ const MessagesContainer = styled.ScrollView`
 
 const FlagButtonContainer = styled.TouchableOpacity`
   position: absolute;
-  left: 20px;
+  ${(props: {position: string}) => props.position}: 16px;
   width: 32px;
   height: 32px;
 `;
+
+const FlagButton = ({position}: {position: string}) => (
+  <FlagButtonContainer position={position}>
+    <Feather name="flag" size={26} color="white" />
+  </FlagButtonContainer>
+);
 
 const UserInfoButton = styled.TouchableOpacity`
   flex-direction: row;
@@ -205,7 +210,7 @@ interface ChatScreenDataContainerProps {
   channel: string;
   icebreaker: string | undefined;
   otherUser: User; // Fix
-  subscribeToNewMessages: () => void;
+  subscribeToNewMessages: () => () => void;
   alreadyMessaged: boolean;
   conversation: ChatScreenConversationFragment;
 }
@@ -277,18 +282,14 @@ const ChatScreenDataContainer = ({
   return (
     <Container>
       <HeaderContainer>
-        <FlagButtonContainer>
-          <Feather name="flag" size={24} color="white" />
-        </FlagButtonContainer>
-        {alreadyMessaged && <Space width={150} />}
+        {alreadyMessaged ? <GoBack /> : <FlagButton position="left" />}
         <UserInfoButton onPress={() => setShowUserInfo((show) => !show)}>
           <Name>{otherUser.name}</Name>
           <Feather name={showUserInfo ? "chevron-up" : "chevron-down"} size={24} color="white" />
         </UserInfoButton>
         {alreadyMessaged ? (
           <>
-            <Space width={100} />
-            <GoBack />
+            <FlagButton position="right" />
           </>
         ) : (
           <TimerContainer secondsLeft={secondsLeft}>
@@ -347,7 +348,14 @@ const ChatScreenDataContainer = ({
 };
 
 const GoBackButton = styled.TouchableOpacity`
-  right: 0px;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background-color: #f8f8f8;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 16px;
 `;
 
 const GoBack = () => {
@@ -358,7 +366,7 @@ const GoBack = () => {
         navigation.goBack();
       }}
     >
-      <Feather name="chevron-left" size={24} color="white" />
+      <Ionicons name="chevron-back" size={24} color="black" />
     </GoBackButton>
   );
 };
