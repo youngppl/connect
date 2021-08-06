@@ -65,7 +65,7 @@ const DoneText = styled.Text`
 `;
 
 const getUserQuery = gql`
-  query getUser($id: ID!) {
+  query FeedbackScreenGetUser($id: ID!) {
     getUser(id: $id) {
       id
       name

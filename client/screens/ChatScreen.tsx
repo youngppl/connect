@@ -122,7 +122,11 @@ const IcebreakerText = styled.Text`
   color: #ffffff;
 `;
 
-const IcebreakerCard = ({icebreaker}: {icebreaker: string}) => (
+const IcebreakerCard = ({
+  icebreaker,
+}: {
+  icebreaker: ChatScreenConversationFragment["icebreaker"];
+}) => (
   <IcebreakerCardContainer>
     <IcebreakerHeading>ICEBREAKER</IcebreakerHeading>
     <IcebreakerText>{icebreaker}</IcebreakerText>
@@ -188,6 +192,7 @@ const CONVERSATION_FRAGMENT = gql`
   ${MESSAGE_FRAGMENT}
   fragment ChatScreenConversation on Conversation {
     id
+    icebreaker
     messages {
       id
       ...MessageFragment
@@ -232,7 +237,6 @@ const ChatScreenDataContainer = ({
   const messagesViewRef = React.useRef(null);
   const [showUserInfo, setShowUserInfo] = React.useState(false);
   const [secondsLeft, setSecondsLeft] = React.useState(60);
-  const [showIcebreaker, setShowIcebreaker] = React.useState(true);
 
   const scrollToLastMessage = () =>
     ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
@@ -263,12 +267,6 @@ const ChatScreenDataContainer = ({
       return `${secondsLeft}s left`;
     }
   }, [secondsLeft]);
-
-  React.useEffect(() => {
-    if ((conversation?.messages?.length || 0) > 1) {
-      setShowIcebreaker(false);
-    }
-  }, [conversation.messages]);
 
   console.log(userId);
   console.log(conversation.messages);
@@ -304,14 +302,13 @@ const ChatScreenDataContainer = ({
         </UserInfoContainer>
       )}
 
-      {!alreadyMessaged && showIcebreaker && <IcebreakerCard icebreaker={icebreaker || ""} />}
-
       <DismissKeyboard>
         <MessagesContainer
           showsVerticalScrollIndicator={false}
           ref={messagesViewRef}
           onContentSizeChange={scrollToLastMessage}
         >
+          <IcebreakerCard icebreaker={icebreaker || conversation.icebreaker} />
           {conversation?.messages?.map((message: MessageFragmentFragment, index: number) => {
             if (message.userId === userId)
               return (

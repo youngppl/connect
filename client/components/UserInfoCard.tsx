@@ -42,7 +42,7 @@ const UserInfoText = styled(UserInfoTitle)`
 `;
 
 const getUserQuery = gql`
-  query getUser($id: ID!) {
+  query UserInfoCardGetUser($id: ID!) {
     getUser(id: $id) {
       id
       name

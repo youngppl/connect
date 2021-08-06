@@ -340,7 +340,7 @@ const Feeling = ({user}: {user: User}) => {
 };
 
 const getUserQuery = gql`
-  query getUser($id: ID!) {
+  query HomeScreenGetUser($id: ID!) {
     getUser(id: $id) {
       id
       name

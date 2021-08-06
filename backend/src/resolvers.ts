@@ -322,11 +322,13 @@ const runMatchingAlgo = async (
         if (bootedMatchedUser) {
           // race can be introduced here...
           // Only boot yourself if the matched user got booted
-          const channelName = `${nanoid()}`;
+          const channelName = nanoid();
+          const icebreaker = getIcebreaker(chatType);
           await prisma.conversation.create({
             data: {
               channel: channelName,
               type: conversationType,
+              icebreaker,
               people: {
                 connect: [{id: parseInt(userId)}, {id: parseInt(matchedUserId)}],
               },
@@ -337,7 +339,7 @@ const runMatchingAlgo = async (
             users: [matchedUserId, userId],
             channel: channelName,
             chatType,
-            icebreaker: getIcebreaker(chatType),
+            icebreaker,
           };
           console.log(matchData);
 

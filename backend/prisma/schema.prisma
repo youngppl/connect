@@ -41,13 +41,14 @@ model User {
 }
 
 model Conversation {
-  id        Int               @id @default(autoincrement())
-  createdAt DateTime          @default(now())
-  channel   String            @unique
-  type      ConversationType?
-  people    User[]
-  messages  Message[]
-  feedback  Feedback[]
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  channel     String            @unique
+  type        ConversationType?
+  icebreaker  String?
+  people      User[]
+  messages    Message[]
+  feedback    Feedback[]
 }
 
 model Message {

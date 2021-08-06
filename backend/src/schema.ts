@@ -45,6 +45,7 @@ export const typeDefs = gql`
     channel: String!
     createdAt: String! # Make this a custom scalar
     people: [User!]
+    icebreaker: String
 
     # Custom
     lastMessage: Message

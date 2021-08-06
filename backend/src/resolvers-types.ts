@@ -33,6 +33,7 @@ export type Conversation = {
   channel: Scalars['String'];
   createdAt: Scalars['String'];
   people?: Maybe<Array<User>>;
+  icebreaker?: Maybe<Scalars['String']>;
   lastMessage?: Maybe<Message>;
   messages?: Maybe<Array<Message>>;
 };
@@ -327,6 +328,7 @@ export type ConversationResolvers<ContextType = JufaContextType, ParentType exte
   channel?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   people?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
+  icebreaker?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
   messages?: Resolver<Maybe<Array<ResolversTypes['Message']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -420,6 +422,19 @@ export type Resolvers<ContextType = JufaContextType> = {
  */
 export type IResolvers<ContextType = JufaContextType> = Resolvers<ContextType>;
 
+export type UserInfoCardGetUserQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type UserInfoCardGetUserQuery = (
+  { __typename?: 'Query' }
+  & { getUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'mood' | 'formattedPronouns' | 'interests' | 'createdAt'>
+  )> }
+);
+
 export type MessageFragmentFragment = (
   { __typename?: 'Message' }
   & Pick<Message, 'id' | 'text' | 'createdAt' | 'userId'>
@@ -457,7 +472,7 @@ export type CreateMessageMutation = (
 
 export type ChatScreenConversationFragment = (
   { __typename?: 'Conversation' }
-  & Pick<Conversation, 'id'>
+  & Pick<Conversation, 'id' | 'icebreaker'>
   & { messages?: Maybe<Array<(
     { __typename?: 'Message' }
     & Pick<Message, 'id'>
@@ -494,12 +509,12 @@ export type CreateProfileMutation = (
   )> }
 );
 
-export type GetUserQueryVariables = Exact<{
+export type FeedbackScreenGetUserQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetUserQuery = (
+export type FeedbackScreenGetUserQuery = (
   { __typename?: 'Query' }
   & { getUser?: Maybe<(
     { __typename?: 'User' }
@@ -558,6 +573,19 @@ export type UpdateMoodMutation = (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'mood'>
   ) }
+);
+
+export type HomeScreenGetUserQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type HomeScreenGetUserQuery = (
+  { __typename?: 'Query' }
+  & { getUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'mood'>
+  )> }
 );
 
 export type UpdateInterestsMutationMutationVariables = Exact<{
