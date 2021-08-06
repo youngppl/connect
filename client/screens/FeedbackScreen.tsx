@@ -198,7 +198,7 @@ const processNextStep = (state: State, action: Action) => {
 };
 
 const FeedbackScreen = ({navigation, route}: FeedbackScreenProps) => {
-  const {channel} = route.params;
+  const {channel, otherUser} = route.params;
   const {id: userId} = useActualUser();
   const {data: userData} = useQuery(getUserQuery, {
     variables: {id: userId},
@@ -219,13 +219,12 @@ const FeedbackScreen = ({navigation, route}: FeedbackScreenProps) => {
     messages: [
       {
         author: "Faju",
-        message:
-          "Faju again! Let me know how your chat with __ was, so we can do better in connecting you next time!",
+        message: `Faju again! Let me know how your chat with ${otherUser.name} was, so we can do better in connecting you next time!`,
         isFirstInChain: true,
       },
       {
         author: "Faju",
-        message: "Did you genuinely smile and/or laugh during your conversation with her?",
+        message: `Did you genuinely smile and/or laugh during your conversation with ${otherUser.name}?`,
         options: [{text: "Yes"}, {text: "No"}],
         onOptionSelect: ({value}: OptionValue) => setValue("smile", value),
       },

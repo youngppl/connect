@@ -8,11 +8,11 @@ export type RootStackParamList = {
   Landing: undefined;
   MainTabs: {initiateChat?: boolean};
   ChatScreen: {channel: string; otherUser: User; icebreaker: string; alreadyMessaged: boolean};
-  FeedbackScreen: {channel: string};
+  FeedbackScreen: {channel: string; otherUser: User};
   WaitingScreen: {
     chatTypes: string[];
   };
-  TimesUpScreen: {channel: string};
+  TimesUpScreen: {channel: string; otherUser: User};
 };
 
 export type BottomTabParamList = {

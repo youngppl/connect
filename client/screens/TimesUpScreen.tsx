@@ -28,11 +28,11 @@ const Content = styled.View`
 type TimesUpScreenProps = StackScreenProps<RootStackParamList, "TimesUpScreen">;
 
 const TimesUpScreen = ({navigation, route}: TimesUpScreenProps) => {
-  const {channel} = route.params;
+  const {channel, otherUser} = route.params;
 
   React.useEffect(() => {
     setTimeout(() => {
-      navigation.replace("FeedbackScreen", {channel});
+      navigation.replace("FeedbackScreen", {channel, otherUser});
     }, 2000);
   }, []);
 

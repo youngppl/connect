@@ -250,7 +250,7 @@ const ChatScreenDataContainer = ({
   }, []);
 
   const formatTimeLeft = React.useMemo(() => {
-    if (secondsLeft === 0) navigation.replace("TimesUpScreen", {channel});
+    if (secondsLeft === 0) navigation.replace("TimesUpScreen", {channel, otherUser});
     if (secondsLeft > 60) {
       const minutesLeft = Math.floor(secondsLeft / 60);
       return `${minutesLeft} min left`;
