@@ -3,11 +3,7 @@ import * as React from "react";
 import {SvgProps} from "react-native-svg";
 import styled from "styled-components/native";
 
-import BottomSheet, {
-  BottomSheetButton,
-  BottomSheetHeading,
-  BottomSheetModalProps,
-} from "../components/BottomSheet";
+import BottomSheet, {BottomSheetButton} from "../components/BottomSheet";
 import Charming from "../components/Charming";
 import Jufanaut from "../components/Jufanaut";
 
@@ -46,7 +42,6 @@ const BigText = styled(SmallText)`
 `;
 
 const EarnedBadgeSheet = ({badge, count}: {badge: string; count: number}) => {
-  console.log(badge, count === 1 || (count > 0 && count % 5 === 0));
   const BADGES: Record<string, (props: SvgProps) => JSX.Element> = {
     Joymaker: Joymaker,
     "Jufa-naut": Jufanaut,

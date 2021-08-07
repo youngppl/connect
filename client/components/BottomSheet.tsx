@@ -1,6 +1,6 @@
 import {BlurView} from "expo-blur";
 import * as React from "react";
-import {Modal, ModalProps, TouchableOpacityProps, View} from "react-native";
+import {Modal, ModalProps, View} from "react-native";
 import {TouchableWithoutFeedback} from "react-native-gesture-handler";
 import styled, {css} from "styled-components/native";
 
