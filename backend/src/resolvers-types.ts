@@ -585,6 +585,10 @@ export type HomeScreenGetUserQuery = (
   & { getUser?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'name' | 'mood'>
+    & { badgeNumbers?: Maybe<(
+      { __typename?: 'BadgeNumbers' }
+      & Pick<BadgeNumbers, 'joymaker' | 'charming' | 'jufanaut'>
+    )> }
   )> }
 );
 

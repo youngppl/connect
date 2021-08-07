@@ -11,6 +11,7 @@ import styled from "styled-components/native";
 import {Conversation} from "../../backend/src/resolvers-types";
 import BottomSheet, {BottomSheetButton, BottomSheetHeading} from "../components/BottomSheet";
 import Column from "../components/Column";
+import EarnedBadgeSheet from "../components/EarnedBadgeSheet";
 import MoodIcon from "../components/emotions/MoodIcon";
 import FeelingSlider from "../components/FeelingSlider";
 import Background from "../components/PlanetBackground";
@@ -345,20 +346,25 @@ const getUserQuery = gql`
       id
       name
       mood
+      badgeNumbers {
+        joymaker
+        charming
+        jufanaut
+      }
     }
   }
 `;
 
 export const HomeScreen = () => {
   const {id} = useActualUser();
-  const {loading, error, data, refetch} = useQuery(getUserQuery, {
+  const {data, refetch} = useQuery(getUserQuery, {
     variables: {id},
   });
 
   useFocusEffect(
     React.useCallback(() => {
       refetch();
-    }, [data]),
+    }, [data?.getUser]),
   );
 
   return (
@@ -368,6 +374,9 @@ export const HomeScreen = () => {
       <Feeling user={data?.getUser || {}} />
       <Space height={32} />
       <ChatLog />
+      <EarnedBadgeSheet badge={"Joymaker"} count={data?.getUser.badgeNumbers.joymaker} />
+      <EarnedBadgeSheet badge={"Jufa-naut"} count={data?.getUser.badgeNumbers.jufanaut} />
+      <EarnedBadgeSheet badge={"Charming"} count={data?.getUser.badgeNumbers.charming} />
     </Container>
   );
 };

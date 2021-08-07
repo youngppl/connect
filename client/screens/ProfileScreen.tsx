@@ -9,7 +9,7 @@ import styled from "styled-components/native";
 import BadgeBackground from "../components/BadgeBackground";
 import BottomSheet, {BottomSheetButton, BottomSheetHeading} from "../components/BottomSheet";
 import Charming from "../components/Charming";
-import JoyMaker from "../components/JoyMaker";
+import Joymaker from "../components/Joymaker";
 import Jufanaut from "../components/Jufanaut";
 import Space from "../components/Space";
 import {useActualUser} from "../providers/UserProvider";
@@ -378,12 +378,14 @@ const ProfilePortion = ({user}: {user: UserProp}) => {
   );
 };
 
+const BadgeContainer = styled.View`
+  height: 90px;
+  align-items: center;
+  justify-content: center;
+`;
+
 const Badge = styled(BadgeBackground)`
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100vh;
+  position: absolute;
 `;
 
 const PinkContainer = styled.View`
@@ -392,8 +394,8 @@ const PinkContainer = styled.View`
   border-radius: 8px;
   width: 30px;
   height: 16px;
-  top: 12px;
-  right: 0px;
+  top: 8px;
+  right: -4px;
   justify-content: center;
   align-items: center;
 `;
@@ -421,7 +423,10 @@ const BadgeItem = ({
         <PinkContainer>
           <BadgeText>{count}</BadgeText>
         </PinkContainer>
-        {badgeComponent}
+        <BadgeContainer>
+          <Badge />
+          {badgeComponent}
+        </BadgeContainer>
       </ColumnContainer>
       <BaseText style={{fontSize: 16}}>{text}</BaseText>
     </ColumnContainer>
@@ -431,7 +436,7 @@ const BadgeItem = ({
 const BadgesPortion = ({badgeNumbers}: {badgeNumbers: Record<string, number>}) => {
   return (
     <RowContainer style={{justifyContent: "space-around", alignItems: "center"}}>
-      <BadgeItem badgeComponent={<JoyMaker />} text={"Joymaker"} count={badgeNumbers.joymaker} />
+      <BadgeItem badgeComponent={<Joymaker />} text={"Joymaker"} count={badgeNumbers.joymaker} />
       <BadgeItem badgeComponent={<Jufanaut />} text={"Jufa-naut"} count={badgeNumbers.jufanaut} />
       <BadgeItem badgeComponent={<Charming />} text={"Charming"} count={badgeNumbers.charming} />
     </RowContainer>

@@ -1,8 +1,8 @@
 import {BlurView} from "expo-blur";
 import * as React from "react";
-import {Modal, ModalProps, View} from "react-native";
+import {Modal, ModalProps, TouchableOpacityProps, View} from "react-native";
 import {TouchableWithoutFeedback} from "react-native-gesture-handler";
-import styled from "styled-components/native";
+import styled, {css} from "styled-components/native";
 
 export interface BottomSheetModalProps extends ModalProps {
   setVisible: (visible: boolean) => void;
@@ -18,27 +18,40 @@ export const BottomSheetHeading = styled.Text`
   text-align: center;
 `;
 
-const BottomSheetButtonContainer = styled.TouchableOpacity`
+const BottomSheetButtonContainer = styled.TouchableOpacity<BottomSheetButtonProps>`
   align-items: center;
   justify-content: center;
   height: 68px;
-  background: ${(props) => (props.disabled ? "rgba(55, 20, 99, 0.25)" : "#371463")};
+  background: ${(props) =>
+    props.disabled ? "rgba(55, 20, 99, 0.25)" : props.light ? "#ffffff" : "#371463"};
   box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
   border-radius: 32px;
+  ${(props) =>
+    props.light &&
+    css`
+      border: 3px solid #371463;
+    `}
 `;
 
-const BottomSheetButtonText = styled.Text`
+const BottomSheetButtonText = styled.Text<BottomSheetButtonProps>`
   font-family: Quicksand;
   font-style: normal;
   font-weight: bold;
   font-size: 24px;
-  color: #ffffff;
+  color: ${(props) => (props.light ? "#371463" : "#ffffff")};
 `;
 
-export const BottomSheetButton = (props: any) => {
+interface BottomSheetButtonProps {
+  disabled?: boolean;
+  light?: boolean;
+  children?: React.ReactElement | string;
+  onPress?: () => void;
+}
+
+export const BottomSheetButton = (props: BottomSheetButtonProps) => {
   return (
     <BottomSheetButtonContainer {...props}>
-      <BottomSheetButtonText>{props.children}</BottomSheetButtonText>
+      <BottomSheetButtonText {...props}>{props.children}</BottomSheetButtonText>
     </BottomSheetButtonContainer>
   );
 };
