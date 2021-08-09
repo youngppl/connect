@@ -50,18 +50,18 @@ const EarnedBadgeSheet = ({badge, count}: {badge: string; count: number}) => {
     Charming: Charming,
   };
   const navigation = useNavigation<StackNavigationProp<BottomTabParamList>>();
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(count === 1 || (count > 0 && count % 5 === 0));
   const Badge = BADGES[badge];
-
-  React.useEffect(() => {
-    if (count) setVisible(count === 1 || (count > 0 && count % 5 === 0));
-  }, [count]);
 
   const subtitle: Record<string, string> = {
     Joymaker: `You've made ${count} people smile and laugh. Keep sparking the joy!`,
     "Jufa-naut": `You've been actively chatting for ${count} days. You're always welcome, we like you here!`,
     Charming: `${count} people want to connect with you. Stay you!`,
   };
+
+  if (!visible) {
+    return null;
+  }
 
   return (
     <BottomSheet setVisible={setVisible} visible={visible}>

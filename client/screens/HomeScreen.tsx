@@ -5,6 +5,7 @@ import {StackNavigationProp} from "@react-navigation/stack";
 import {formatDistance} from "date-fns";
 import _ from "lodash";
 import * as React from "react";
+import {ActivityIndicator} from "react-native";
 import {FlatList} from "react-native-gesture-handler";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
 import styled from "styled-components/native";
@@ -362,7 +363,7 @@ const getUserQuery = gql`
 
 export const HomeScreen = () => {
   const {id} = useActualUser();
-  const {data, refetch} = useQuery(getUserQuery, {
+  const {data, refetch, loading} = useQuery(getUserQuery, {
     variables: {id},
   });
 
@@ -371,6 +372,14 @@ export const HomeScreen = () => {
       refetch();
     }, [data?.getUser]),
   );
+
+  if (loading) {
+    return (
+      <Container>
+        <ActivityIndicator />
+      </Container>
+    );
+  }
 
   return (
     <Container edges={["top"]}>

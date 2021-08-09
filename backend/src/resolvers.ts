@@ -141,7 +141,7 @@ export const resolvers: Resolvers = {
       });
     },
     streak: async (conversation, _, {prisma}) => {
-      const streak = api.getStreak({conversation, prisma});
+      const streak = await api.getStreak({conversation, prisma});
       return streak;
     },
   },
