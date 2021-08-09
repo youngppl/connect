@@ -6,7 +6,7 @@ import styled, {css} from "styled-components/native";
 
 export interface BottomSheetModalProps extends ModalProps {
   setVisible: (visible: boolean) => void;
-  children?: any;
+  children?: React.ReactNode;
 }
 
 export const BottomSheetHeading = styled.Text`

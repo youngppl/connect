@@ -255,7 +255,7 @@ const CreateProfileScreen = ({navigation}: CreateProfileScreenProps) => {
 
   const [state, dispatch] = React.useReducer(processNextStep, INITIAL_CREATE_FLOW_STATE);
 
-  const onSubmit = (data: Record<string, any>) => {
+  const onSubmit = (data: Record<string, string>) => {
     const PRONOUNS: Record<string, string> = {
       "They / Them": "THEY_THEM",
       "She / Her": "SHE_HER",

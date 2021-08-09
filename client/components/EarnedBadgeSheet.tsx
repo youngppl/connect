@@ -1,4 +1,5 @@
 import {useNavigation} from "@react-navigation/native";
+import {StackNavigationProp} from "@react-navigation/stack";
 import * as React from "react";
 import {SvgProps} from "react-native-svg";
 import styled from "styled-components/native";
@@ -6,6 +7,7 @@ import styled from "styled-components/native";
 import BottomSheet, {BottomSheetButton} from "../components/BottomSheet";
 import Charming from "../components/Charming";
 import Jufanaut from "../components/Jufanaut";
+import {BottomTabParamList} from "../types";
 
 import Column from "./Column";
 import Joymaker from "./Joymaker";
@@ -47,7 +49,7 @@ const EarnedBadgeSheet = ({badge, count}: {badge: string; count: number}) => {
     "Jufa-naut": Jufanaut,
     Charming: Charming,
   };
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<BottomTabParamList>>();
   const [visible, setVisible] = React.useState(false);
   const Badge = BADGES[badge];
 

@@ -1,4 +1,5 @@
 import {useNavigation} from "@react-navigation/native";
+import {StackNavigationProp} from "@react-navigation/stack";
 import * as React from "react";
 import styled from "styled-components/native";
 
@@ -8,6 +9,7 @@ import BottomSheet, {
   BottomSheetHeading,
   BottomSheetModalProps,
 } from "../components/BottomSheet";
+import {RootStackParamList} from "../types";
 
 import Checkbox from "./Checkbox";
 import Column from "./Column";
@@ -197,8 +199,8 @@ const AgreementsSheet = (props: BottomSheetModalProps & {onContinue: () => void}
 const ChatButton = ({initiateChat = false}: {initiateChat?: boolean}) => {
   const [showChatTypeSheet, setShowChatTypeSheet] = React.useState(initiateChat);
   const [showAgreementSheet, setShowAgreementSheet] = React.useState(false);
-  const [chatTypes, setChatTypes] = React.useState<string[]>();
-  const navigation = useNavigation();
+  const [chatTypes, setChatTypes] = React.useState<string[]>([]);
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   return (
     <>
