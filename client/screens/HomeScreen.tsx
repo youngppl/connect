@@ -4,8 +4,9 @@ import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {formatDistance} from "date-fns";
 import _ from "lodash";
+import pluralize from "pluralize";
 import * as React from "react";
-import {ActivityIndicator, ScrollView} from "react-native";
+import {ActivityIndicator} from "react-native";
 import {FlatList} from "react-native-gesture-handler";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
 import styled from "styled-components/native";
@@ -42,7 +43,7 @@ const PlanetBackground = styled(Background)`
 
 const SpeechBubble = styled.View`
   position: relative;
-  width: 274px;
+  width: 180px;
   top: 5px;
   left: 80px;
   background: #ffffff;
@@ -64,7 +65,7 @@ const CurrentUsers = ({numPeople}: {numPeople: number}) => {
   return (
     <SpaceBackgroundContainer top={insets.top}>
       <SpeechBubble>
-        <SpeechText>{numPeople} conversation(s) happening right now</SpeechText>
+        <SpeechText>{pluralize("person", numPeople, true)} online</SpeechText>
       </SpeechBubble>
       <PlanetBackground />
     </SpaceBackgroundContainer>
