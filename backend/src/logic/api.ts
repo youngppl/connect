@@ -60,3 +60,17 @@ export async function getStreak({conversation, prisma}: getStreakProps): Promise
   }
   return 0;
 }
+
+interface getIsUnreadProps {
+  conversation: Conversation;
+  userId: string;
+  prisma: PrismaClient;
+}
+
+export async function getIsUnread({
+  conversation,
+  userId,
+  prisma,
+}: getIsUnreadProps): Promise<boolean> {
+  return false;
+}

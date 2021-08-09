@@ -210,10 +210,8 @@ const CONVERSATION_QUERY = gql`
   }
 `;
 
-// TODO: set up the yarn graphql codegen for operations to fix these type errors
 interface ChatScreenDataContainerProps {
   channel: string;
-  icebreaker: string | undefined;
   otherUser: User; // Fix
   subscribeToNewMessages: () => () => void;
   alreadyMessaged: boolean;
@@ -222,7 +220,6 @@ interface ChatScreenDataContainerProps {
 
 const ChatScreenDataContainer = ({
   channel,
-  icebreaker,
   otherUser,
   conversation,
   subscribeToNewMessages,
@@ -308,7 +305,7 @@ const ChatScreenDataContainer = ({
           ref={messagesViewRef}
           onContentSizeChange={scrollToLastMessage}
         >
-          <IcebreakerCard icebreaker={icebreaker || conversation.icebreaker} />
+          <IcebreakerCard icebreaker={conversation.icebreaker} />
           {conversation?.messages?.map((message: MessageFragmentFragment, index: number) => {
             if (message.userId === userId)
               return (
@@ -370,7 +367,7 @@ const GoBack = () => {
 
 const ChatScreen = ({route}: ChatScreenProps) => {
   const {
-    params: {channel, otherUser, icebreaker, alreadyMessaged},
+    params: {channel, otherUser, alreadyMessaged},
   } = route;
   const {subscribeToMore, data, loading} = useQuery<
     ChatScreenConversationQuery,
@@ -391,7 +388,6 @@ const ChatScreen = ({route}: ChatScreenProps) => {
       conversation={data.getConversation}
       channel={channel}
       otherUser={otherUser}
-      icebreaker={icebreaker}
       alreadyMessaged={alreadyMessaged || false}
       subscribeToNewMessages={() =>
         subscribeToMore<ChatScreenSubscription, ChatScreenSubscriptionVariables>({

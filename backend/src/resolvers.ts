@@ -1,11 +1,8 @@
-import {PubSubEngine} from "graphql-subscriptions";
-import {Redis} from "ioredis";
-import {nanoid} from "nanoid";
-import getIcebreaker from "./helpers/icebreakers";
 import {Resolvers} from "./resolvers-types";
 import _ from "lodash";
-import {ConversationType, Message, Prisma, PrismaClient, Pronouns, User} from "@prisma/client";
+import {Message, Prisma, PrismaClient, Pronouns, User} from "@prisma/client";
 import * as api from "./logic/api";
+import * as matching from "./logic/matching";
 
 const formatYear = (year: Date) => {
   return year.toLocaleString("default", {month: "long"}) + " " + year.getFullYear();
@@ -144,6 +141,10 @@ export const resolvers: Resolvers = {
       const streak = await api.getStreak({conversation, prisma});
       return streak;
     },
+    isUnread: async (conversation, {userId}, {prisma}) => {
+      const unread = await api.getIsUnread({conversation, userId, prisma});
+      return unread;
+    },
   },
   Mutation: {
     createMessage: async (_parent, {channel, author, message}, {pubsub, prisma}) => {
@@ -163,7 +164,7 @@ export const resolvers: Resolvers = {
     },
     leaveWaitingRoom: async (_parent, {userId}, {redis}) => {
       // TODO: maybe we should update user status, dunno?
-      await redis.multi(yeetUserFromAllQueuesCommand(userId)).exec();
+      await redis.multi(matching.yeetUserFromAllQueuesCommand(userId)).exec();
       return "done";
     },
     createProfile: async (_parent, {name, birthday, pronouns}, {prisma}) => {
@@ -238,7 +239,7 @@ export const resolvers: Resolvers = {
     },
     waitingRoom: {
       subscribe: (_parent, {chatTypes, userId}, {redis, pubsub, prisma}) => {
-        runMatchingAlgo(redis, pubsub, prisma, chatTypes, userId);
+        matching.runMatchingAlgo(redis, pubsub, prisma, chatTypes, userId);
         return pubsub.asyncIterator("WaitingRoom");
       },
     },
@@ -274,102 +275,6 @@ function longestConsecutive(arrayOfNumbers: number[]) {
   }
   return longest_streak;
 }
-
-const runMatchingAlgo = async (
-  redis: Redis,
-  pubsub: PubSubEngine,
-  prisma: PrismaClient,
-  chatTypes: ConversationType[],
-  userId: string,
-) => {
-  let matchSucceeded = false;
-  let possibleMatchUserIds = [];
-  // Match by chat type
-  const getUserIds = chatTypes.map((chatType) => ["lindex", chatType, "0"]);
-  try {
-    const results = await redis.multi(getUserIds).exec();
-    possibleMatchUserIds = _.zip(
-      chatTypes,
-      results.map((result) => result[1]),
-    );
-  } catch (chatErr) {
-    console.log(chatErr);
-    return;
-  }
-
-  for (const chatTypeMatchedUserId of possibleMatchUserIds) {
-    const [chatType, matchedUserId] = chatTypeMatchedUserId;
-    const conversationType = ConversationType[chatType];
-
-    if (matchSucceeded) {
-      return;
-    }
-    if (matchedUserId && matchedUserId !== userId) {
-      try {
-        // Algorithm idea:
-        // When a user first enters a queue, check if there is anything available. Otherwise, leave an id on multiple queues.
-        // We try booting the person in the queue. If the person got booted via no errors and a count >= 1, then we have a clean match.
-        // In the case of a race condition, where someone else takes the user first, we'll have 0 pops. So, we skip.
-
-        const bootOtherPersonResults = await redis
-          .multi([
-            ...yeetUserFromAllQueuesCommand(userId),
-            ...yeetUserFromAllQueuesCommand(matchedUserId),
-          ])
-          .exec();
-        const matchedUserIds = bootOtherPersonResults.slice(3);
-        const hasNoErrors = _.every(
-          matchedUserIds.map((result) => result[0]),
-          (v) => _.isNull(v),
-        );
-        const redisPops = bootOtherPersonResults.map((result) => result[1]); // [Error, numPopped]
-        const bootedMatchedUser = hasNoErrors && _.sum(redisPops) >= 1;
-        if (bootedMatchedUser) {
-          // race can be introduced here...
-          // Only boot yourself if the matched user got booted
-          const channelName = nanoid();
-          const icebreaker = getIcebreaker(chatType);
-          await prisma.conversation.create({
-            data: {
-              channel: channelName,
-              type: conversationType,
-              icebreaker,
-              people: {
-                connect: [{id: parseInt(userId)}, {id: parseInt(matchedUserId)}],
-              },
-            },
-          });
-          const matchData = {
-            message: "matched",
-            users: [matchedUserId, userId],
-            channel: channelName,
-            chatType,
-            icebreaker,
-          };
-          console.log(matchData);
-
-          pubsub.publish("WaitingRoom", {waitingRoom: matchData});
-          matchSucceeded = true;
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  }
-  if (!matchSucceeded) {
-    const pushUserIds = chatTypes.map((chat) => ["rpush", chat, userId]);
-    await redis.multi(pushUserIds).exec();
-  }
-};
-
-const yeetUserFromAllQueuesCommand = (userId: string) => {
-  return [
-    ["lrem", ConversationType.DEEP, "0", userId],
-    ["lrem", ConversationType.LIGHT, "0", userId],
-    ["lrem", ConversationType.SMALL, "0", userId],
-  ];
-};
-
 const updateMood = (prisma: PrismaClient, userId: string, mood: string) => {
   return prisma.user.update({
     where: {

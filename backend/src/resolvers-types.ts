@@ -37,6 +37,12 @@ export type Conversation = {
   lastMessage?: Maybe<Message>;
   messages?: Maybe<Array<Message>>;
   streak?: Maybe<Scalars['Int']>;
+  isUnread?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type ConversationIsUnreadArgs = {
+  userId: Scalars['ID'];
 };
 
 export type ConversationType =
@@ -180,7 +186,7 @@ export type User = {
   birthday: Scalars['String'];
   pronouns: Pronouns;
   interests: Array<Scalars['String']>;
-  mood: Scalars['String'];
+  mood?: Maybe<Scalars['String']>;
   formattedPronouns?: Maybe<Scalars['String']>;
   overallRating?: Maybe<Scalars['Float']>;
   numSmallTalk?: Maybe<Scalars['Int']>;
@@ -277,11 +283,11 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Conversation: ResolverTypeWrapper<Conversation>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ConversationType: ConversationType;
   Match: ResolverTypeWrapper<Match>;
   Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Profile: ResolverTypeWrapper<Profile>;
   Pronouns: Pronouns;
   Query: ResolverTypeWrapper<{}>;
@@ -299,10 +305,10 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   ID: Scalars['ID'];
   Conversation: Conversation;
+  Boolean: Scalars['Boolean'];
   Match: Match;
   Message: Message;
   Mutation: {};
-  Boolean: Scalars['Boolean'];
   Profile: Profile;
   Query: {};
   Subscription: {};
@@ -333,6 +339,7 @@ export type ConversationResolvers<ContextType = JufaContextType, ParentType exte
   lastMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
   messages?: Resolver<Maybe<Array<ResolversTypes['Message']>>, ParentType, ContextType>;
   streak?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  isUnread?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<ConversationIsUnreadArgs, 'userId'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -394,7 +401,7 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
   birthday?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pronouns?: Resolver<ResolversTypes['Pronouns'], ParentType, ContextType>;
   interests?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  mood?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  mood?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   formattedPronouns?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   overallRating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   numSmallTalk?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;

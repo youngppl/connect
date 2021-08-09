@@ -123,28 +123,10 @@ const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
   const {chatTypes} = route.params;
   const {data: matchData} = useSubscription(waitingRoomSubscription, {
     variables: {userId, chatTypes},
-  });
-  const [getMatchedUser, {data: matchedUserData}] = useLazyQuery(getUserQuery);
-  const [leaveWaitingRoom] = useMutation(leaveWaitingRoomMutation);
-
-  const [state, setState] = React.useState("waiting");
-  const [channel, setChannel] = React.useState("");
-  const [icebreaker, setIcebreaker] = React.useState("");
-  const [matchedChatType, setMatchedChatType] = React.useState("");
-  const [matchTimeoutTimerId, setMatchTimeoutTimerId] = React.useState<number>();
-  const [toChatScreenSeconds, setToChatScreenSeconds] = React.useState(5);
-
-  React.useEffect(() => {
-    // Match timeout - quit waiting after 30 seconds
-    const timerId = setTimeout(() => setState("no match"), 30000);
-    setMatchTimeoutTimerId(timerId);
-  }, []);
-
-  React.useEffect(() => {
-    console.log(matchData);
-    if (matchData) {
+    onSubscriptionData: ({subscriptionData}) => {
+      const matchData = subscriptionData.data;
       const {
-        waitingRoom: {users, channel, icebreaker, chatType},
+        waitingRoom: {users, channel, chatType},
       } = matchData;
       if (users.includes(userId)) {
         clearTimeout(matchTimeoutTimerId);
@@ -157,11 +139,24 @@ const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
         getMatchedUser({variables: {id}});
         setMatchedChatType(chatType + " talk");
         setChannel(channel);
-        setIcebreaker(icebreaker);
         return () => clearInterval(toChatTimer);
       }
-    }
-  }, [matchData]);
+    },
+  });
+  const [getMatchedUser, {data: matchedUserData}] = useLazyQuery(getUserQuery);
+  const [leaveWaitingRoom] = useMutation(leaveWaitingRoomMutation);
+
+  const [state, setState] = React.useState("waiting");
+  const [channel, setChannel] = React.useState("");
+  const [matchedChatType, setMatchedChatType] = React.useState("");
+  const [matchTimeoutTimerId, setMatchTimeoutTimerId] = React.useState<number>();
+  const [toChatScreenSeconds, setToChatScreenSeconds] = React.useState(5);
+
+  React.useEffect(() => {
+    // Match timeout - quit waiting after 30 seconds
+    const timerId = setTimeout(() => setState("no match"), 10000);
+    setMatchTimeoutTimerId(timerId);
+  }, []);
 
   React.useEffect(() => {
     // after a match, go to chat screen after 5 seconds
@@ -169,7 +164,7 @@ const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
       navigation.replace("ChatScreen", {
         channel,
         otherUser: matchedUserData.getUser,
-        icebreaker,
+        alreadyMessaged: false,
       });
     }
   }, [toChatScreenSeconds]);
@@ -191,7 +186,7 @@ const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
               <TalkTypeText>{matchedChatType}</TalkTypeText>
             </BannerText>
             <Space height={24} />
-            <UserInfoCard user={matchedUserData.getUser} />
+            <UserInfoCard user={matchedUserData?.getUser} />
             <Space height={70} />
             <InfoText>
               You’ll be taken to the chat room in <PinkInfoText>{toChatScreenSeconds}</PinkInfoText>{" "}

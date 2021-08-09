@@ -31,7 +31,7 @@ export const typeDefs = gql`
     birthday: String! # Make this a custom scalar
     pronouns: Pronouns!
     interests: [String!]!
-    mood: String!
+    mood: String
 
     # Custom
     formattedPronouns: String
@@ -51,6 +51,7 @@ export const typeDefs = gql`
     lastMessage: Message
     messages: [Message!]
     streak: Int
+    isUnread(userId: ID!): Boolean
   }
   type Message {
     id: ID

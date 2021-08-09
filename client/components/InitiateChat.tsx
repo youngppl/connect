@@ -199,7 +199,7 @@ const AgreementsSheet = (props: BottomSheetModalProps & {onContinue: () => void}
 const ChatButton = ({initiateChat = false}: {initiateChat?: boolean}) => {
   const [showChatTypeSheet, setShowChatTypeSheet] = React.useState(initiateChat);
   const [showAgreementSheet, setShowAgreementSheet] = React.useState(false);
-  const [chatTypes, setChatTypes] = React.useState<string[]>([]);
+  const [chatTypes, setChatTypes] = React.useState<string[]>();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   return (

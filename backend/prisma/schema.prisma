@@ -38,29 +38,44 @@ model User {
   conversations Conversation[]
   messages      Message[]
   feedback      Feedback[]
+  particpants   Participant[]
+}
+
+model Participant {
+  id                Int          @id @default(autoincrement())
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  userId            Int
+  user              User         @relation(fields: [userId], references: [id])
+  conversationId    Int
+  Conversation      Conversation @relation(fields: [conversationId], references: [id])
+  lastReadMessageId Int?
+  lastReadMessage   Message?     @relation(fields: [lastReadMessageId], references: [id])
 }
 
 model Conversation {
-  id         Int               @id @default(autoincrement())
-  createdAt  DateTime          @default(now())
-  updatedAt  DateTime?         @updatedAt
-  channel    String            @unique
-  type       ConversationType?
-  icebreaker String?
-  people     User[]
-  messages   Message[]
-  feedback   Feedback[]
+  id           Int               @id @default(autoincrement())
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime?         @updatedAt
+  channel      String            @unique
+  type         ConversationType?
+  icebreaker   String?
+  people       User[]
+  participants Participant[]
+  messages     Message[]
+  feedback     Feedback[]
 }
 
 model Message {
-  id             Int          @id @default(autoincrement())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime?    @updatedAt
-  author         User         @relation(fields: [userId], references: [id])
-  userId         Int
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-  conversationId Int
-  text           String
+  id                   Int           @id @default(autoincrement())
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime?     @updatedAt
+  author               User          @relation(fields: [userId], references: [id])
+  userId               Int
+  conversation         Conversation  @relation(fields: [conversationId], references: [id])
+  conversationId       Int
+  text                 String
+  lastReadParticipants Participant[]
 }
 
 model Feedback {
