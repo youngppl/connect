@@ -371,14 +371,14 @@ export const HomeScreen = () => {
 
   return (
     <Container edges={["top"]}>
+      <EarnedBadgeSheet badge={"Joymaker"} count={data?.getUser.badgeNumbers.joymaker} />
+      <EarnedBadgeSheet badge={"Jufa-naut"} count={data?.getUser.badgeNumbers.jufanaut} />
+      <EarnedBadgeSheet badge={"Charming"} count={data?.getUser.badgeNumbers.charming} />
       <CurrentUsers numPeople={data.onlineUsers} />
       <Space height={130} />
       <Feeling user={data?.getUser || {}} />
       <Space height={32} />
       <ChatLog />
-      <EarnedBadgeSheet badge={"Joymaker"} count={data?.getUser.badgeNumbers.joymaker} />
-      <EarnedBadgeSheet badge={"Jufa-naut"} count={data?.getUser.badgeNumbers.jufanaut} />
-      <EarnedBadgeSheet badge={"Charming"} count={data?.getUser.badgeNumbers.charming} />
     </Container>
   );
 };
