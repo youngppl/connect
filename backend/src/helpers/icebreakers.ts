@@ -23,7 +23,7 @@ const ICEBREAKERS: Record<ConversationType, string[]> = {
 
 const getIcebreaker = (chatType: ConversationType): string => {
   const icebreakers = ICEBREAKERS[chatType];
-  return icebreakers[Math.floor(Math.random() * icebreakers.length)];
+  return icebreakers[Math.floor(Math.random() * icebreakers.length)] || "";
 };
 
 export default getIcebreaker;

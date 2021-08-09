@@ -1,10 +1,11 @@
-import {Prisma, PrismaClient, Pronouns, ConversationType, User, Message} from "@prisma/client";
 import {PubSubEngine} from "graphql-subscriptions";
 import {Redis} from "ioredis";
 import {nanoid} from "nanoid";
 import getIcebreaker from "./helpers/icebreakers";
 import {Resolvers} from "./resolvers-types";
 import _ from "lodash";
+import {ConversationType, Message, Prisma, PrismaClient, Pronouns, User} from "@prisma/client";
+import * as api from "./logic/api";
 
 const formatYear = (year: Date) => {
   return year.toLocaleString("default", {month: "long"}) + " " + year.getFullYear();
@@ -138,6 +139,10 @@ export const resolvers: Resolvers = {
       return messages.map((message) => {
         return convertPrismaMessagetoGraphQLMessage(message);
       });
+    },
+    streak: async (conversation, _, {prisma}) => {
+      const streak = api.getStreak({conversation, prisma});
+      return streak;
     },
   },
   Mutation: {

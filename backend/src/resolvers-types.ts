@@ -36,6 +36,7 @@ export type Conversation = {
   icebreaker?: Maybe<Scalars['String']>;
   lastMessage?: Maybe<Message>;
   messages?: Maybe<Array<Message>>;
+  streak?: Maybe<Scalars['Int']>;
 };
 
 export type ConversationType =
@@ -331,6 +332,7 @@ export type ConversationResolvers<ContextType = JufaContextType, ParentType exte
   icebreaker?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
   messages?: Resolver<Maybe<Array<ResolversTypes['Message']>>, ParentType, ContextType>;
+  streak?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -550,7 +552,7 @@ export type ChatLogQueryQuery = (
   { __typename?: 'Query' }
   & { getConversations?: Maybe<Array<Maybe<(
     { __typename?: 'Conversation' }
-    & Pick<Conversation, 'id' | 'createdAt' | 'channel'>
+    & Pick<Conversation, 'id' | 'createdAt' | 'channel' | 'streak'>
     & { lastMessage?: Maybe<(
       { __typename?: 'Message' }
       & Pick<Message, 'id' | 'text'>

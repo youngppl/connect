@@ -50,6 +50,7 @@ export const typeDefs = gql`
     # Custom
     lastMessage: Message
     messages: [Message!]
+    streak: Int
   }
   type Message {
     id: ID

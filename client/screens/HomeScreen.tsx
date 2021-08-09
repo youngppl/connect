@@ -1,6 +1,7 @@
 import {gql, useMutation, useQuery} from "@apollo/client";
 import {Ionicons} from "@expo/vector-icons";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
+import {StackNavigationProp} from "@react-navigation/stack";
 import {formatDistance} from "date-fns";
 import _ from "lodash";
 import * as React from "react";
@@ -20,7 +21,7 @@ import Row from "../components/Row";
 import Space from "../components/Space";
 import {MOODS} from "../constants/Moods";
 import {useActualUser} from "../providers/UserProvider";
-import {User} from "../types";
+import {RootStackParamList, User} from "../types";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -156,7 +157,7 @@ const Unreads = () => {
 };
 
 const OldChat = ({conversation, userId}: {conversation: Conversation; userId: string | null}) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const otherPerson = _.reject(conversation.people, ["id", userId])[0]; // Assuming 2 ppl -> 1 person on this filter.
   return (
     <OldChatContainer
@@ -175,7 +176,10 @@ const OldChat = ({conversation, userId}: {conversation: Conversation; userId: st
           </Column>
           <Space width={10} />
           <Column>
-            <NameText>{`${otherPerson?.name}`} • 2 🔥</NameText>
+            <NameText>
+              {otherPerson?.name}
+              {conversation?.streak ? `• ${conversation.streak} 🔥` : ""}
+            </NameText>
             <LastMessageText>{conversation?.lastMessage?.text || `hi`}</LastMessageText>
           </Column>
         </Row>
@@ -195,6 +199,7 @@ const CHAT_LOG_QUERY = gql`
       id
       createdAt
       channel
+      streak
       lastMessage {
         id
         text

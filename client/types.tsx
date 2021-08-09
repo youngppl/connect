@@ -7,7 +7,7 @@ export type RootStackParamList = {
   HomeScreen: undefined;
   Landing: undefined;
   MainTabs: {initiateChat?: boolean};
-  ChatScreen: {channel: string; otherUser: User; icebreaker: string; alreadyMessaged: boolean};
+  ChatScreen: {channel: string; otherUser: User; alreadyMessaged: boolean};
   FeedbackScreen: {channel: string; otherUser: User};
   WaitingScreen: {
     chatTypes: string[];
