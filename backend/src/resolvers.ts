@@ -44,6 +44,10 @@ export const resolvers: Resolvers = {
         createdAt: conversation.createdAt.toString(),
       };
     },
+    onlineUsers: async (_parent, _data, {redis}) => {
+      const numUsers = await redis.get("OnlineUsers"); // parseInt(null) is NaN
+      return parseInt(numUsers) || 0;
+    },
   },
   User: {
     formattedPronouns: (user) => {

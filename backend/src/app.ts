@@ -43,7 +43,19 @@ const socketsServer = app.listen(port, () => {
     server: socketsServer,
     path: "/graphql",
   });
-  useServer({schema: schemaWithResolvers, context}, wsServer);
+  useServer(
+    {
+      schema: schemaWithResolvers,
+      context,
+      onConnect: async () => {
+        await redis.incr("OnlineUsers");
+      },
+      onDisconnect: async () => {
+        await redis.decr("OnlineUsers");
+      },
+    },
+    wsServer,
+  );
 
   console.log(`Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`);
 });

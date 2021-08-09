@@ -9,13 +9,13 @@ import {BACKEND_URL, HTTP_PROTOCOL, WS_PROTOCOL} from "../constants/Environment"
 import {WebSocketLink} from "./WebSocketLink";
 
 // Need this for react-native-debugger to work
-import unfetch from "unfetch";
+// import unfetch from "unfetch";
 
 const cache = new InMemoryCache({});
 const httpLink = createHttpLink({
   uri: HTTP_PROTOCOL + BACKEND_URL + "/graphql",
   credentials: "include",
-  fetch: unfetch,
+  // fetch: unfetch, Debugging purposes
 });
 
 const authLink = setContext(async (_, {headers}) => {

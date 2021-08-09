@@ -1,4 +1,4 @@
-import {Participant, PrismaClient} from "@prisma/client";
+import {PrismaClient} from "@prisma/client";
 import {Conversation} from "../resolvers-types";
 
 interface getStreakProps {

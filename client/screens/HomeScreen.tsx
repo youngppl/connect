@@ -5,7 +5,7 @@ import {StackNavigationProp} from "@react-navigation/stack";
 import {formatDistance} from "date-fns";
 import _ from "lodash";
 import * as React from "react";
-import {ActivityIndicator} from "react-native";
+import {ActivityIndicator, ScrollView} from "react-native";
 import {FlatList} from "react-native-gesture-handler";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
 import styled from "styled-components/native";
@@ -58,13 +58,13 @@ const SpeechText = styled.Text`
   font-family: Quicksand;
 `;
 
-const CurrentUsers = () => {
+const CurrentUsers = ({numPeople}: {numPeople: number}) => {
   const insets = useSafeAreaInsets();
 
   return (
     <SpaceBackgroundContainer top={insets.top}>
       <SpeechBubble>
-        <SpeechText>147 people are having deep convos right now</SpeechText>
+        <SpeechText>{numPeople} conversation(s) happening right now</SpeechText>
       </SpeechBubble>
       <PlanetBackground />
     </SpaceBackgroundContainer>
@@ -136,14 +136,6 @@ const UnreadsContainer = styled.View`
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-`;
-
-const UnreadsText = styled.Text`
-  font-family: Quicksand;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 12px;
-  color: #371463;
 `;
 
 function makeNiceDate(dbDate: string | null | undefined) {
@@ -340,8 +332,9 @@ const Feeling = ({user}: {user: User}) => {
   );
 };
 
-const getUserQuery = gql`
-  query HomeScreenGetUser($id: ID!) {
+const HOME_SCREEN_QUERY = gql`
+  query HomeScreen($id: ID!) {
+    onlineUsers
     getUser(id: $id) {
       id
       name
@@ -357,7 +350,7 @@ const getUserQuery = gql`
 
 export const HomeScreen = () => {
   const {id} = useActualUser();
-  const {data, refetch, loading} = useQuery(getUserQuery, {
+  const {data, refetch, loading} = useQuery(HOME_SCREEN_QUERY, {
     variables: {id},
   });
 
@@ -377,7 +370,7 @@ export const HomeScreen = () => {
 
   return (
     <Container edges={["top"]}>
-      <CurrentUsers />
+      <CurrentUsers numPeople={data.onlineUsers} />
       <Space height={130} />
       <Feeling user={data?.getUser || {}} />
       <Space height={32} />

@@ -78,6 +78,7 @@ export const typeDefs = gql`
     getUser(id: ID!): User
     getConversations(userId: ID!): [Conversation]
     getConversation(channel: String!): Conversation
+    onlineUsers: Int!
   }
   type Mutation {
     createMessage(channel: String!, message: String!, author: ID!): Message

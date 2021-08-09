@@ -143,6 +143,7 @@ export type Query = {
   getUser?: Maybe<User>;
   getConversations?: Maybe<Array<Maybe<Conversation>>>;
   getConversation?: Maybe<Conversation>;
+  onlineUsers: Scalars['Int'];
 };
 
 
@@ -387,6 +388,7 @@ export type QueryResolvers<ContextType = JufaContextType, ParentType extends Res
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
   getConversations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Conversation']>>>, ParentType, ContextType, RequireFields<QueryGetConversationsArgs, 'userId'>>;
   getConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<QueryGetConversationArgs, 'channel'>>;
+  onlineUsers?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
 
 export type SubscriptionResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
@@ -603,13 +605,14 @@ export type UpdateMoodMutation = (
   ) }
 );
 
-export type HomeScreenGetUserQueryVariables = Exact<{
+export type HomeScreenQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type HomeScreenGetUserQuery = (
+export type HomeScreenQuery = (
   { __typename?: 'Query' }
+  & Pick<Query, 'onlineUsers'>
   & { getUser?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'name' | 'mood'>
