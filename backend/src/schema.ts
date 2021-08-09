@@ -94,6 +94,7 @@ export const typeDefs = gql`
     ): User!
     updateInterests(userId: ID!, interests: [String!]): User!
     updateMood(userId: ID!, mood: String!): User!
+    setLastMessageTime(userId: ID!, conversationId: ID!): Int!
   }
   type Subscription {
     chat(channel: String!): Message

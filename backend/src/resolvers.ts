@@ -215,6 +215,9 @@ export const resolvers: Resolvers = {
       });
       return convertPrismaUsertoGraphQLUser(user);
     },
+    setLastMessageTime: async (_parent, {conversationId, userId}, {prisma}) => {
+      return await api.setLastMessageTime({conversationId, prisma, userId});
+    },
     updateInterests: async (_parent, {userId, interests}, {prisma}) => {
       const user = await prisma.user.update({
         where: {

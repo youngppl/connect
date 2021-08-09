@@ -149,13 +149,6 @@ const UnreadsText = styled.Text`
 function makeNiceDate(dbDate: string | null | undefined) {
   return formatDistance(dbDate ? new Date(dbDate) : new Date(), Date.now(), {addSuffix: true});
 }
-const Unreads = () => {
-  return (
-    <UnreadsContainer>
-      <UnreadsText>10</UnreadsText>
-    </UnreadsContainer>
-  );
-};
 
 const OldChat = ({conversation, userId}: {conversation: Conversation; userId: string | null}) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -188,7 +181,7 @@ const OldChat = ({conversation, userId}: {conversation: Conversation; userId: st
       <Column>
         <LastMessageText>{makeNiceDate(conversation?.createdAt)}</LastMessageText>
         <Space height={8} />
-        <Unreads />
+        {conversation?.isUnread && <UnreadsContainer />}
       </Column>
     </OldChatContainer>
   );
@@ -209,6 +202,7 @@ const CHAT_LOG_QUERY = gql`
         id
         name
       }
+      isUnread(userId: $userId)
     }
   }
 `;

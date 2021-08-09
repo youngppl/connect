@@ -210,6 +210,12 @@ const CONVERSATION_QUERY = gql`
   }
 `;
 
+const SET_LAST_MESSAGE_TIME_MUTATION = gql`
+  mutation SetLastMessageTime($userId: ID!, $conversationId: ID!) {
+    setLastMessageTime(userId: $userId, conversationId: $conversationId)
+  }
+`;
+
 interface ChatScreenDataContainerProps {
   channel: string;
   otherUser: User; // Fix
@@ -230,6 +236,7 @@ const ChatScreenDataContainer = ({
   const [createMessage] = useMutation<CreateMessageMutation, CreateMessageMutationVariables>(
     CREATE_MESSAGE_MUTATION,
   );
+  const [setLastMessageTime] = useMutation(SET_LAST_MESSAGE_TIME_MUTATION);
   const [messageText, setMessageText] = React.useState<string | undefined>();
   const messagesViewRef = React.useRef(null);
   const [showUserInfo, setShowUserInfo] = React.useState(false);
@@ -255,6 +262,13 @@ const ChatScreenDataContainer = ({
     }
   }, []);
 
+  React.useEffect(() => {
+    return () => {
+      // Mark the last read message time
+      setLastMessageTime({variables: {conversationId: conversation.id, userId}});
+    };
+  }, []);
+
   const formatTimeLeft = React.useMemo(() => {
     if (secondsLeft === 0) navigation.replace("TimesUpScreen", {channel, otherUser});
     if (secondsLeft > 60) {
@@ -265,8 +279,6 @@ const ChatScreenDataContainer = ({
     }
   }, [secondsLeft]);
 
-  console.log(userId);
-  console.log(conversation.messages);
   const onSendMessage = (message: string) => {
     if (message) {
       createMessage({variables: {message, author: userId, channel}});

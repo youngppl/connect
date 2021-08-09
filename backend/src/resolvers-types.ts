@@ -75,6 +75,7 @@ export type Mutation = {
   createChatFeedback: User;
   updateInterests: User;
   updateMood: User;
+  setLastMessageTime: Scalars['Int'];
 };
 
 
@@ -117,6 +118,12 @@ export type MutationUpdateInterestsArgs = {
 export type MutationUpdateMoodArgs = {
   userId: Scalars['ID'];
   mood: Scalars['String'];
+};
+
+
+export type MutationSetLastMessageTimeArgs = {
+  userId: Scalars['ID'];
+  conversationId: Scalars['ID'];
 };
 
 export type Profile = {
@@ -367,6 +374,7 @@ export type MutationResolvers<ContextType = JufaContextType, ParentType extends 
   createChatFeedback?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateChatFeedbackArgs, 'author' | 'channel' | 'engagementRating' | 'howFeelingAfter' | 'mood' | 'smile' | 'talkAgain'>>;
   updateInterests?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateInterestsArgs, 'userId'>>;
   updateMood?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateMoodArgs, 'userId' | 'mood'>>;
+  setLastMessageTime?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<MutationSetLastMessageTimeArgs, 'userId' | 'conversationId'>>;
 };
 
 export type ProfileResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = {
@@ -503,6 +511,17 @@ export type ChatScreenConversationQuery = (
   )> }
 );
 
+export type SetLastMessageTimeMutationVariables = Exact<{
+  userId: Scalars['ID'];
+  conversationId: Scalars['ID'];
+}>;
+
+
+export type SetLastMessageTimeMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'setLastMessageTime'>
+);
+
 export type CreateProfileMutationVariables = Exact<{
   name: Scalars['String'];
   birthday: Scalars['String'];
@@ -559,7 +578,7 @@ export type ChatLogQueryQuery = (
   { __typename?: 'Query' }
   & { getConversations?: Maybe<Array<Maybe<(
     { __typename?: 'Conversation' }
-    & Pick<Conversation, 'id' | 'createdAt' | 'channel' | 'streak'>
+    & Pick<Conversation, 'id' | 'createdAt' | 'channel' | 'streak' | 'isUnread'>
     & { lastMessage?: Maybe<(
       { __typename?: 'Message' }
       & Pick<Message, 'id' | 'text'>

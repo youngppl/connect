@@ -67,7 +67,7 @@ export const runMatchingAlgo = async (
           // Only boot yourself if the matched user got booted
           const channelName = nanoid();
           const icebreaker = getIcebreaker(chatType);
-          await prisma.conversation.create({
+          const conversation = await prisma.conversation.create({
             data: {
               channel: channelName,
               type: conversationType,
@@ -86,10 +86,15 @@ export const runMatchingAlgo = async (
                 ],
               },
             },
+            include: {
+              participants: true,
+            },
           });
+          const participants = conversation.participants;
           const matchData = {
             message: "matched",
             users: [matchedUserId, userId],
+            participants: participants,
             channel: channelName,
             chatType,
             icebreaker,

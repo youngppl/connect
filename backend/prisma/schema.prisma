@@ -49,6 +49,7 @@ model Participant {
   user              User         @relation(fields: [userId], references: [id])
   conversationId    Int
   Conversation      Conversation @relation(fields: [conversationId], references: [id])
+  lastReadTime      DateTime?
   lastReadMessageId Int?
   lastReadMessage   Message?     @relation(fields: [lastReadMessageId], references: [id])
 }

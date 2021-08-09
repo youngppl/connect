@@ -1,4 +1,4 @@
-import {PrismaClient} from "@prisma/client";
+import {Participant, PrismaClient} from "@prisma/client";
 import {Conversation} from "../resolvers-types";
 
 interface getStreakProps {
@@ -72,5 +72,39 @@ export async function getIsUnread({
   userId,
   prisma,
 }: getIsUnreadProps): Promise<boolean> {
-  return false;
+  const lastReadTimeObject = await prisma.participant.findFirst({
+    where: {userId: parseInt(userId), conversationId: parseInt(conversation.id)},
+    select: {lastReadTime: true},
+  });
+  if (!lastReadTimeObject?.lastReadTime) {
+    return false;
+  }
+  const count = await prisma.message.count({
+    where: {
+      userId: {
+        not: parseInt(userId),
+      },
+      createdAt: {
+        gt: lastReadTimeObject.lastReadTime,
+      },
+    },
+  });
+  return count > 0;
+}
+
+interface setLastMessageReadProps {
+  conversationId: string;
+  userId: string;
+  prisma: PrismaClient;
+}
+
+export async function setLastMessageTime({
+  prisma,
+  conversationId,
+  userId,
+}: setLastMessageReadProps): Promise<number> {
+  const result: number = await prisma.$executeRaw(
+    `UPDATE "Participant" SET "lastReadTime" = CURRENT_TIMESTAMP WHERE "userId" = '${userId}' AND "conversationId" = '${conversationId}'`,
+  );
+  return result;
 }

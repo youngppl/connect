@@ -31,9 +31,10 @@ const TimesUpScreen = ({navigation, route}: TimesUpScreenProps) => {
   const {channel, otherUser} = route.params;
 
   React.useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       navigation.replace("FeedbackScreen", {channel, otherUser});
     }, 2000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
