@@ -268,34 +268,36 @@ const InterestSheet = ({
 
   return (
     <BottomSheet visible={visibleModal} setVisible={setVisibleModal}>
-      <BottomSheetHeading>Select up to 3 interests</BottomSheetHeading>
-      <Space height={44} />
-      <FlatList
-        data={INTEREST_OPTIONS}
-        contentContainerStyle={{flexDirection: "column"}}
-        numColumns={3}
-        keyExtractor={(item) => item.value}
-        renderItem={({item}: {item: InterestOptionItemProp}) => (
-          <InterestOption
-            item={item}
-            setInterests={setInterests}
-            selected={interests[item.value] === true}
-            disabled={disabledInterests && !interests[item.value]}
-          />
-        )}
-      />
-      <Space height={40} />
-      <Line />
-      <Space height={16} />
-      <SuggestionText>
-        Missing Something? Suggest interests here so we can share your interest.
-      </SuggestionText>
-      <Space height={8} />
-      <SuggestionTextButton>
-        <SuggestionTextButtonText>Suggest Interests</SuggestionTextButtonText>
-      </SuggestionTextButton>
-      <Space height={70} />
-      <BottomSheetButton onPress={handleDone}>Done</BottomSheetButton>
+      <ScrollView>
+        <BottomSheetHeading>Select up to 3 interests</BottomSheetHeading>
+        <Space height={44} />
+        <FlatList
+          data={INTEREST_OPTIONS}
+          contentContainerStyle={{flexDirection: "column"}}
+          numColumns={3}
+          keyExtractor={(item) => item.value}
+          renderItem={({item}: {item: InterestOptionItemProp}) => (
+            <InterestOption
+              item={item}
+              setInterests={setInterests}
+              selected={interests[item.value] === true}
+              disabled={disabledInterests && !interests[item.value]}
+            />
+          )}
+        />
+        <Space height={40} />
+        <Line />
+        <Space height={16} />
+        <SuggestionText>
+          Missing Something? Suggest interests here so we can share your interest.
+        </SuggestionText>
+        <Space height={8} />
+        <SuggestionTextButton>
+          <SuggestionTextButtonText>Suggest Interests</SuggestionTextButtonText>
+        </SuggestionTextButton>
+        <Space height={70} />
+        <BottomSheetButton onPress={handleDone}>Done</BottomSheetButton>
+      </ScrollView>
     </BottomSheet>
   );
 };
