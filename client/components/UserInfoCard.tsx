@@ -84,8 +84,7 @@ const UserInfoCard = ({user}: {user: User}) => {
         <UserInfoText>Joined in {fetchedUser.createdAt}</UserInfoText>
         <Space height={8} />
         <UserInfoText>
-          Interested in{" "}
-          {fetchedUser.interests.length > 0 ? fetchedUser.interests.join(", ").slice(0, -2) : "🤷🏽‍♀️"}
+          Interested in {fetchedUser.interests.length > 0 ? fetchedUser.interests.join(", ") : "🤷🏽‍♀️"}
         </UserInfoText>
       </Column>
     </UserInfoCardContainer>
