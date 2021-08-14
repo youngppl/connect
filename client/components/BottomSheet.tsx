@@ -51,7 +51,7 @@ interface BottomSheetButtonProps {
 export const BottomSheetButton = (props: BottomSheetButtonProps) => {
   return (
     <BottomSheetButtonContainer {...props}>
-      <BottomSheetButtonText {...props}>{props.children}</BottomSheetButtonText>
+      <BottomSheetButtonText light={props.light}>{props.children}</BottomSheetButtonText>
     </BottomSheetButtonContainer>
   );
 };
