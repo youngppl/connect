@@ -140,7 +140,9 @@ const UnreadsContainer = styled.View`
 `;
 
 function makeNiceDate(dbDate: string | null | undefined) {
-  return formatDistance(dbDate ? new Date(dbDate) : new Date(), Date.now(), {addSuffix: true});
+  return formatDistance(dbDate ? new Date(parseInt(dbDate)) : new Date(), Date.now(), {
+    addSuffix: true,
+  });
 }
 
 const OldChat = ({conversation, userId}: {conversation: Conversation; userId: string | null}) => {
@@ -172,7 +174,7 @@ const OldChat = ({conversation, userId}: {conversation: Conversation; userId: st
         </Row>
       </Column>
       <Column>
-        <LastMessageText>{makeNiceDate(conversation?.createdAt)}</LastMessageText>
+        <LastMessageText>{makeNiceDate(conversation?.lastMessage?.createdAt)}</LastMessageText>
         <Space height={8} />
         {conversation?.isUnread && <UnreadsContainer />}
       </Column>
@@ -190,6 +192,7 @@ const CHAT_LOG_QUERY = gql`
       lastMessage {
         id
         text
+        createdAt
       }
       people {
         id

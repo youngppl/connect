@@ -263,7 +263,7 @@ function convertPrismaMessagetoGraphQLMessage(newMessage: Message) {
   return {
     ...newMessage,
     id: newMessage.id.toString(),
-    createdAt: newMessage.createdAt.toLocaleDateString(),
+    createdAt: newMessage.createdAt,
     userId: newMessage.userId.toString(),
   };
 }
