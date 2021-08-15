@@ -1,5 +1,4 @@
 import * as React from "react";
-import {View} from "react-native";
 import {Slider as DefaultSlider, SliderProps as DefaultSliderProps} from "react-native-elements";
 import styled from "styled-components/native";
 
@@ -35,31 +34,20 @@ const SliderThumbLabel = styled.Text`
 `;
 
 const Slider = (props: SliderProps) => {
-  const SliderContainer = styled.View`
-    width: ${props.width ? props.width : 350}px;
-    margin: 20px 0;
-    flex-direction: row;
-  `;
-
   return (
-    <SliderContainer>
-      <View style={{flex: 4}}>
-        <DefaultSlider
-          thumbStyle={{height: 25, width: 20, backgroundColor: "transparent"}}
-          thumbProps={{
-            children: (
-              <SliderThumbContainer>
-                <SliderThumbLabel textColor={props.textColor}>{props.label}</SliderThumbLabel>
-                <SliderThumb />
-              </SliderThumbContainer>
-            ),
-          }}
-          step={1}
-          allowTouchTrack
-          {...props}
-        />
-      </View>
-    </SliderContainer>
+    <DefaultSlider
+      thumbStyle={{height: 25, width: 20, backgroundColor: "transparent"}}
+      thumbProps={{
+        children: (
+          <SliderThumbContainer>
+            <SliderThumbLabel textColor={props.textColor}>{props.label}</SliderThumbLabel>
+            <SliderThumb />
+          </SliderThumbContainer>
+        ),
+      }}
+      step={1}
+      {...props}
+    />
   );
 };
 
