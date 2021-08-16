@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { JufaContextType } from './app';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -12,6 +12,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
 };
 
 export type BadgeNumbers = {
@@ -50,6 +51,7 @@ export type ConversationType =
   | 'LIGHT'
   | 'SMALL';
 
+
 export type Match = {
   __typename?: 'Match';
   message: Scalars['String'];
@@ -62,7 +64,7 @@ export type Match = {
 export type Message = {
   __typename?: 'Message';
   id?: Maybe<Scalars['ID']>;
-  createdAt?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Date']>;
   text: Scalars['String'];
   userId?: Maybe<Scalars['ID']>;
 };
@@ -293,6 +295,7 @@ export type ResolversTypes = {
   Conversation: ResolverTypeWrapper<Conversation>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ConversationType: ConversationType;
+  Date: ResolverTypeWrapper<Scalars['Date']>;
   Match: ResolverTypeWrapper<Match>;
   Message: ResolverTypeWrapper<Message>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -314,6 +317,7 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   Conversation: Conversation;
   Boolean: Scalars['Boolean'];
+  Date: Scalars['Date'];
   Match: Match;
   Message: Message;
   Mutation: {};
@@ -351,6 +355,10 @@ export type ConversationResolvers<ContextType = JufaContextType, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
+
 export type MatchResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Match'] = ResolversParentTypes['Match']> = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -362,7 +370,7 @@ export type MatchResolvers<ContextType = JufaContextType, ParentType extends Res
 
 export type MessageResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -424,6 +432,7 @@ export type Resolvers<ContextType = JufaContextType> = {
   BadgeNumbers?: BadgeNumbersResolvers<ContextType>;
   Chat?: ChatResolvers<ContextType>;
   Conversation?: ConversationResolvers<ContextType>;
+  Date?: GraphQLScalarType;
   Match?: MatchResolvers<ContextType>;
   Message?: MessageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
@@ -583,7 +592,7 @@ export type ChatLogQueryQuery = (
     & Pick<Conversation, 'id' | 'createdAt' | 'channel' | 'streak' | 'isUnread'>
     & { lastMessage?: Maybe<(
       { __typename?: 'Message' }
-      & Pick<Message, 'id' | 'text'>
+      & Pick<Message, 'id' | 'text' | 'createdAt'>
     )>, people?: Maybe<Array<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'name'>

@@ -2,6 +2,7 @@ import {gql} from "apollo-server-core";
 import {buildSchema, print} from "graphql";
 
 export const typeDefs = gql`
+  scalar Date
   enum Pronouns {
     THEY_THEM
     HE_HIS
@@ -55,7 +56,7 @@ export const typeDefs = gql`
   }
   type Message {
     id: ID
-    createdAt: String
+    createdAt: Date
     text: String!
     userId: ID
   }

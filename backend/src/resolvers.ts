@@ -3,12 +3,33 @@ import _ from "lodash";
 import {Message, Prisma, PrismaClient, Pronouns, User} from "@prisma/client";
 import * as api from "./logic/api";
 import * as matching from "./logic/matching";
+import {GraphQLScalarType, Kind} from "graphql";
 
 const formatYear = (year: Date) => {
   return year.toLocaleString("default", {month: "long"}) + " " + year.getFullYear();
 };
 
+// Taken from the following link:
+// https://www.apollographql.com/docs/apollo-server/schema/custom-scalars/
+const dateScalar = new GraphQLScalarType({
+  name: "Date",
+  description: "Date custom scalar type",
+  serialize(value) {
+    return value.getTime(); // Convert outgoing Date to integer for JSON
+  },
+  parseValue(value) {
+    return new Date(value); // Convert incoming integer to Date
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.INT) {
+      return new Date(parseInt(ast.value, 10)); // Convert hard-coded AST string to integer and then to Date
+    }
+    return null; // Invalid hard-coded value (not an integer)
+  },
+});
+
 export const resolvers: Resolvers = {
+  Date: dateScalar,
   Query: {
     getUser: async (_parent, {id}, {prisma}) => {
       const user = await prisma.user.findFirst({where: {id: parseInt(id)}});
