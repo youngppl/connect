@@ -237,11 +237,13 @@ const InterestSheet = ({
   initialInterests,
   setVisibleModal,
   userId,
+  setShowNoSuggestionsModal,
 }: {
   initialInterests: string[];
   visibleModal: boolean;
   setVisibleModal: any;
   userId: string | number | null;
+  setShowNoSuggestionsModal: any;
 }) => {
   const [updateInterests] = useMutation(UPDATE_INTERESTS_MUTATION);
   const [interests, setInterests] = React.useState<StringBooleanHash>(() => {
@@ -292,12 +294,31 @@ const InterestSheet = ({
           Missing Something? Suggest interests here so we can share your interest.
         </SuggestionText>
         <Space height={8} />
-        <SuggestionTextButton>
+        <SuggestionTextButton
+          onPress={() => {
+            setVisibleModal(false);
+            setShowNoSuggestionsModal(true);
+          }}
+        >
           <SuggestionTextButtonText>Suggest Interests</SuggestionTextButtonText>
         </SuggestionTextButton>
         <Space height={70} />
         <BottomSheetButton onPress={handleDone}>Done</BottomSheetButton>
       </ScrollView>
+    </BottomSheet>
+  );
+};
+
+const NoSuggestionsSheet = ({
+  visibleModal,
+  setVisibleModal,
+}: {
+  visibleModal: boolean;
+  setVisibleModal: any;
+}) => {
+  return (
+    <BottomSheet visible={visibleModal} setVisible={setVisibleModal}>
+      <BottomSheetHeading>{"Thank you, but we're not taking suggestions right now!"}</BottomSheetHeading>
     </BottomSheet>
   );
 };
@@ -454,6 +475,8 @@ const ErrorText = styled.Text`
 `;
 
 const ProfileContent = ({userId}: {userId: string | number | null}) => {
+  const [showInterestsModal, setShowInterestsModal] = React.useState(false);
+  const [showNoSuggestionsModal, setShowNoSuggestionsModal] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
   const {loading, error, data} = useQuery(ProfileScreen.query, {
     variables: {id: userId},
@@ -469,14 +492,19 @@ const ProfileContent = ({userId}: {userId: string | number | null}) => {
       <Space height={40} />
       <YourInterestsSection
         interests={data.getUser.interests}
-        addInterestPress={setShowModal}
+        addInterestPress={setShowInterestsModal}
       ></YourInterestsSection>
       <InterestSheet
         userId={userId}
         initialInterests={data.getUser.interests}
-        visibleModal={showModal}
-        setVisibleModal={setShowModal}
+        visibleModal={showInterestsModal}
+        setVisibleModal={setShowInterestsModal}
+        setShowNoSuggestionsModal={setShowNoSuggestionsModal}
       ></InterestSheet>
+      <NoSuggestionsSheet
+        visibleModal={showNoSuggestionsModal}
+        setVisibleModal={setShowNoSuggestionsModal}
+      ></NoSuggestionsSheet>
     </>
   );
 };
