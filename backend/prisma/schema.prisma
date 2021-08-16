@@ -35,7 +35,8 @@ model User {
   name          String
   interests     String[]
   mood          String?
-  pushToken     String?  // Assume one user one device for now, maybe revisit
+  pushToken     String? // Assume one user one device for now, maybe revisit
+  extra         Json           @default("{}")  // Store badge state here
   conversations Conversation[]
   messages      Message[]
   feedback      Feedback[]

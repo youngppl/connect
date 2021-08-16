@@ -7,10 +7,6 @@ import {GraphQLScalarType, Kind} from "graphql";
 import {sendMessage} from "./logic/pushNotifications";
 import {withFilter} from "graphql-subscriptions";
 
-const formatYear = (year: Date) => {
-  return year.toLocaleString("default", {month: "long"}) + " " + year.getFullYear();
-};
-
 // Taken from the following link:
 // https://www.apollographql.com/docs/apollo-server/schema/custom-scalars/
 const dateScalar = new GraphQLScalarType({
@@ -42,7 +38,7 @@ export const resolvers: Resolvers = {
         console.log(`invalid user with id: ${id}`);
         return null;
       }
-      return convertPrismaUsertoGraphQLUser(user);
+      return api.convertPrismaUsertoGraphQLUser(user);
     },
     getConversations: async (_parent, {userId}, {prisma}) => {
       const conversations = await prisma.conversation.findMany({
@@ -56,12 +52,7 @@ export const resolvers: Resolvers = {
           channel: conversation.channel,
           createdAt: conversation.createdAt.toString(),
           people: conversation.people.map((person) => {
-            return {
-              ...person,
-              id: person.id.toString(),
-              createdAt: formatYear(person.createdAt),
-              birthday: person.birthday.toLocaleDateString(),
-            };
+            return api.convertPrismaUsertoGraphQLUser(person);
           }),
         };
       });
@@ -115,35 +106,7 @@ export const resolvers: Resolvers = {
       };
     },
     badgeNumbers: async (user, _data, {prisma}) => {
-      const feedback = await prisma.feedback.findMany({
-        select: {survey: true},
-        where: {
-          NOT: {userId: {equals: parseInt(user.id)}},
-          conversation: {people: {some: {id: {equals: parseInt(user.id)}}}},
-        },
-      });
-      const messageDates = await prisma.message.findMany({
-        distinct: ["createdAt"],
-        select: {createdAt: true},
-        where: {userId: {equals: parseInt(user.id)}},
-      });
-      const daysFrom1970 = messageDates.map((messageDate) =>
-        Math.floor(messageDate.createdAt.getTime() / (1000 * 60 * 60 * 24)),
-      );
-      const longestMessageChain = longestConsecutive(daysFrom1970);
-      // TODO: convert number of smiles to an enum
-      const numberOfSmiles = feedback
-        .map((singleFeedback) => (singleFeedback.survey as Prisma.JsonObject)["smile"] as string)
-        .filter(Boolean).length;
-
-      // TODO: convert talk again to boolean value, since there are two only values
-      const numberOfTalkAgain = feedback
-        .map(
-          (singleFeedback) => (singleFeedback.survey as Prisma.JsonObject)["talkAgain"] as string,
-        )
-        .filter(Boolean).length;
-
-      return {joymaker: numberOfSmiles, charming: numberOfTalkAgain, jufanaut: longestMessageChain};
+      return await api.getBadgeNumbers({userId: user.id, prisma});
     },
   },
   Conversation: {
@@ -219,11 +182,6 @@ export const resolvers: Resolvers = {
       });
       return convertPrismaMessagetoGraphQLMessage(newMessage);
     },
-    leaveWaitingRoom: async (_parent, {userId}, {redis}) => {
-      // TODO: maybe we should update user status, dunno?
-      await redis.multi(matching.yeetUserFromAllQueuesCommand(userId)).exec();
-      return "done";
-    },
     createProfile: async (_parent, {name, birthday, pronouns}, {prisma}) => {
       const user = await prisma.user.create({
         data: {
@@ -236,41 +194,26 @@ export const resolvers: Resolvers = {
       return {message: "Profile made", id: user.id.toString()};
     },
     createChatFeedback: async (_parent, data, {prisma}) => {
-      // TODO: Store the current user in the context
-      // Get the current user for the before mood.
-      const {mood: oldMood} = await prisma.user.findUnique({
-        select: {mood: true},
-        where: {id: parseInt(data.author)},
-      });
+      return await api.createChatFeedback({data, prisma});
+    },
+    dismissBadge: async (_parent, {userId, badge}, {prisma}) => {
+      // Make this an enum...
+      const userBadgeField: Record<string, string> = {
+        Joymaker: "showJoymaker",
+        "Jufa-naut": "showJufanaut",
+        Charming: "showCharming",
+      };
+      if (!(badge in userBadgeField)) return null;
       const user = await prisma.user.update({
-        where: {id: parseInt(data.author)},
-        data: {
-          mood: data.mood,
-          conversations: {
-            update: {
-              data: {
-                feedback: {
-                  create: [
-                    {
-                      userId: parseInt(data.author),
-                      survey: {
-                        beforeMood: oldMood,
-                        afterMood: data.mood,
-                        howFeelingAfter: data.howFeelingAfter,
-                        smile: data.smile,
-                        talkAgain: data.talkAgain,
-                        rating: data.engagementRating,
-                      },
-                    },
-                  ],
-                },
-              },
-              where: {channel: data.channel},
-            },
-          },
-        },
+        where: {id: parseInt(userId)},
+        data: {extra: {[userBadgeField[badge]]: false}},
       });
-      return convertPrismaUsertoGraphQLUser(user);
+      return api.convertPrismaUsertoGraphQLUser(user);
+    },
+    leaveWaitingRoom: async (_parent, {userId}, {redis}) => {
+      // TODO: maybe we should update user status, dunno?
+      await redis.multi(matching.yeetUserFromAllQueuesCommand(userId)).exec();
+      return "done";
     },
     setLastMessageTime: async (_parent, {conversationId, userId}, {prisma}) => {
       return await api.setLastMessageTime({conversationId, prisma, userId});
@@ -278,7 +221,7 @@ export const resolvers: Resolvers = {
     setPushToken: async (_parent, {userId, pushToken}, {prisma}) => {
       console.log(`setPushToken ${userId} ${pushToken}`);
       const user = await api.setPushToken({prisma, userId, pushToken});
-      return convertPrismaUsertoGraphQLUser(user);
+      return api.convertPrismaUsertoGraphQLUser(user);
     },
     updateInterests: async (_parent, {userId, interests}, {prisma}) => {
       const user = await prisma.user.update({
@@ -289,11 +232,11 @@ export const resolvers: Resolvers = {
           interests: interests,
         },
       });
-      return convertPrismaUsertoGraphQLUser(user);
+      return api.convertPrismaUsertoGraphQLUser(user);
     },
     updateMood: async (_parent, {userId, mood}, {prisma}) => {
       const user = await updateMood(prisma, userId, mood);
-      return convertPrismaUsertoGraphQLUser(user);
+      return api.convertPrismaUsertoGraphQLUser(user);
     },
   },
   Subscription: {
@@ -319,12 +262,6 @@ export const resolvers: Resolvers = {
   },
 };
 
-function convertPrismaUsertoGraphQLUser(user: User) {
-  const createdAt = formatYear(user.createdAt);
-  const birthday = user.birthday.toLocaleDateString();
-  return {...user, id: user.id.toString(), createdAt, birthday};
-}
-
 function convertPrismaMessagetoGraphQLMessage(newMessage: Message) {
   return {
     ...newMessage,
@@ -334,20 +271,6 @@ function convertPrismaMessagetoGraphQLMessage(newMessage: Message) {
   };
 }
 
-function longestConsecutive(arrayOfNumbers: number[]) {
-  const sortedArrayOfNumbers = arrayOfNumbers.sort();
-  let longest_streak = 1;
-  let current_streak = 1;
-  for (let i = 1; i < sortedArrayOfNumbers.length; i++) {
-    if (sortedArrayOfNumbers[i] - sortedArrayOfNumbers[i - 1] == 1) {
-      current_streak += 1;
-    } else {
-      longest_streak = Math.max(longest_streak, current_streak);
-      current_streak = 1;
-    }
-  }
-  return longest_streak;
-}
 const updateMood = (prisma: PrismaClient, userId: string, mood: string) => {
   return prisma.user.update({
     where: {

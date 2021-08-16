@@ -24,6 +24,11 @@ export const typeDefs = gql`
     deep: Int!
     light: Int!
   }
+  type UserExtra {
+    showJoymaker: Boolean
+    showJufanaut: Boolean
+    showCharming: Boolean
+  }
   type User {
     id: ID!
     email: String!
@@ -33,6 +38,7 @@ export const typeDefs = gql`
     pronouns: Pronouns!
     interests: [String!]!
     mood: String
+    extra: UserExtra
 
     # Custom
     formattedPronouns: String
@@ -98,6 +104,7 @@ export const typeDefs = gql`
       smile: Boolean!
       talkAgain: Boolean!
     ): User!
+    dismissBadge(userId: ID!, badge: String!): User
     leaveWaitingRoom(userId: ID!): String
     updateInterests(userId: ID!, interests: [String!]): User!
     updateMood(userId: ID!, mood: String!): User!

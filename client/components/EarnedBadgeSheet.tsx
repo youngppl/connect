@@ -1,3 +1,4 @@
+import {gql, useMutation} from "@apollo/client";
 import {useNavigation} from "@react-navigation/native";
 import {StackNavigationProp} from "@react-navigation/stack";
 import * as React from "react";
@@ -43,14 +44,33 @@ const BigText = styled(SmallText)`
   font-size: 32px;
 `;
 
-const EarnedBadgeSheet = ({badge, count}: {badge: string; count: number}) => {
+const DISMISS_BADGE_MUTATION = gql`
+  mutation dismissBadgeMutation($userId: ID!, $badge: String!) {
+    dismissBadge(userId: $userId, badge: $badge) {
+      id
+      extra {
+        showJoymaker
+        showJufanaut
+        showCharming
+      }
+    }
+  }
+`;
+
+const EarnedBadgeSheet = ({badge, count, user}: {badge: string; count: number; user: User}) => {
+  const [dismissBadge] = useMutation(DISMISS_BADGE_MUTATION, {variables: {badge, userId: user.id}});
   const BADGES: Record<string, (props: SvgProps) => JSX.Element> = {
     Joymaker: Joymaker,
     "Jufa-naut": Jufanaut,
     Charming: Charming,
   };
+  const userBadgeField: Record<string, string> = {
+    Joymaker: "showJoymaker",
+    "Jufa-naut": "showJufanaut",
+    Charming: "showCharming",
+  };
   const navigation = useNavigation<StackNavigationProp<BottomTabParamList>>();
-  const [visible, setVisible] = React.useState(count === 1 || (count > 0 && count % 5 === 0));
+  const [visible, setVisible] = React.useState(user.extra[userBadgeField[badge]]);
   const Badge = BADGES[badge];
 
   const subtitle: Record<string, string> = {
@@ -84,7 +104,13 @@ const EarnedBadgeSheet = ({badge, count}: {badge: string; count: number}) => {
         View badges
       </BottomSheetButton>
       <Space height={6} />
-      <BottomSheetButton onPress={() => setVisible(false)} light>
+      <BottomSheetButton
+        onPress={() => {
+          dismissBadge();
+          setVisible(false);
+        }}
+        light
+      >
         Dismiss
       </BottomSheetButton>
     </BottomSheet>

@@ -383,6 +383,11 @@ const HOME_SCREEN_QUERY = gql`
         charming
         jufanaut
       }
+      extra {
+        showJoymaker
+        showCharming
+        showJufanaut
+      }
     }
   }
 `;
@@ -399,7 +404,7 @@ export const HomeScreen = () => {
     }, [data?.getUser]),
   );
 
-  if (loading) {
+  if (loading || !data) {
     return (
       <Container>
         <ActivityIndicator />
@@ -409,9 +414,9 @@ export const HomeScreen = () => {
 
   return (
     <Container edges={["top"]}>
-      <EarnedBadgeSheet badge={"Joymaker"} count={data?.getUser.badgeNumbers.joymaker} />
-      <EarnedBadgeSheet badge={"Jufa-naut"} count={data?.getUser.badgeNumbers.jufanaut} />
-      <EarnedBadgeSheet badge={"Charming"} count={data?.getUser.badgeNumbers.charming} />
+      <EarnedBadgeSheet user={data?.getUser} badge={"Joymaker"} count={data?.getUser.badgeNumbers.joymaker} />
+      <EarnedBadgeSheet user={data?.getUser} badge={"Jufa-naut"} count={data?.getUser.badgeNumbers.jufanaut} />
+      <EarnedBadgeSheet user={data?.getUser} badge={"Charming"} count={data?.getUser.badgeNumbers.charming} />
       <CurrentUsers numPeople={data?.onlineUsers} />
       <Space height={130} />
       <Feeling user={data?.getUser || {}} />

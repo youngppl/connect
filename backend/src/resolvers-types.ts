@@ -80,6 +80,7 @@ export type Mutation = {
   createMessage?: Maybe<Message>;
   createProfile?: Maybe<Profile>;
   createChatFeedback: User;
+  dismissBadge?: Maybe<User>;
   leaveWaitingRoom?: Maybe<Scalars['String']>;
   updateInterests: User;
   updateMood: User;
@@ -110,6 +111,12 @@ export type MutationCreateChatFeedbackArgs = {
   mood: Scalars['String'];
   smile: Scalars['Boolean'];
   talkAgain: Scalars['Boolean'];
+};
+
+
+export type MutationDismissBadgeArgs = {
+  userId: Scalars['ID'];
+  badge: Scalars['String'];
 };
 
 
@@ -223,11 +230,19 @@ export type User = {
   pronouns: Pronouns;
   interests: Array<Scalars['String']>;
   mood?: Maybe<Scalars['String']>;
+  extra?: Maybe<UserExtra>;
   formattedPronouns?: Maybe<Scalars['String']>;
   overallRating?: Maybe<Scalars['Float']>;
   numSmallTalk?: Maybe<Scalars['Int']>;
   talkNumbers?: Maybe<TalkNumbers>;
   badgeNumbers?: Maybe<BadgeNumbers>;
+};
+
+export type UserExtra = {
+  __typename?: 'UserExtra';
+  showJoymaker?: Maybe<Scalars['Boolean']>;
+  showJufanaut?: Maybe<Scalars['Boolean']>;
+  showCharming?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -333,6 +348,7 @@ export type ResolversTypes = {
   TalkNumbers: ResolverTypeWrapper<TalkNumbers>;
   User: ResolverTypeWrapper<User>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  UserExtra: ResolverTypeWrapper<UserExtra>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -355,6 +371,7 @@ export type ResolversParentTypes = {
   TalkNumbers: TalkNumbers;
   User: User;
   Float: Scalars['Float'];
+  UserExtra: UserExtra;
 };
 
 export type BadgeNumbersResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['BadgeNumbers'] = ResolversParentTypes['BadgeNumbers']> = {
@@ -414,6 +431,7 @@ export type MutationResolvers<ContextType = JufaContextType, ParentType extends 
   createMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'channel' | 'message' | 'author'>>;
   createProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<MutationCreateProfileArgs, 'name' | 'birthday'>>;
   createChatFeedback?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateChatFeedbackArgs, 'author' | 'channel' | 'engagementRating' | 'howFeelingAfter' | 'mood' | 'smile' | 'talkAgain'>>;
+  dismissBadge?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDismissBadgeArgs, 'userId' | 'badge'>>;
   leaveWaitingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLeaveWaitingRoomArgs, 'userId'>>;
   updateInterests?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateInterestsArgs, 'userId'>>;
   updateMood?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateMoodArgs, 'userId' | 'mood'>>;
@@ -457,11 +475,19 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
   pronouns?: Resolver<ResolversTypes['Pronouns'], ParentType, ContextType>;
   interests?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   mood?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  extra?: Resolver<Maybe<ResolversTypes['UserExtra']>, ParentType, ContextType>;
   formattedPronouns?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   overallRating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   numSmallTalk?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   talkNumbers?: Resolver<Maybe<ResolversTypes['TalkNumbers']>, ParentType, ContextType>;
   badgeNumbers?: Resolver<Maybe<ResolversTypes['BadgeNumbers']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserExtraResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['UserExtra'] = ResolversParentTypes['UserExtra']> = {
+  showJoymaker?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  showJufanaut?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  showCharming?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -479,6 +505,7 @@ export type Resolvers<ContextType = JufaContextType> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   TalkNumbers?: TalkNumbersResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserExtra?: UserExtraResolvers<ContextType>;
 };
 
 
@@ -487,6 +514,24 @@ export type Resolvers<ContextType = JufaContextType> = {
  * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
  */
 export type IResolvers<ContextType = JufaContextType> = Resolvers<ContextType>;
+
+export type DismissBadgeMutationMutationVariables = Exact<{
+  userId: Scalars['ID'];
+  badge: Scalars['String'];
+}>;
+
+
+export type DismissBadgeMutationMutation = (
+  { __typename?: 'Mutation' }
+  & { dismissBadge?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id'>
+    & { extra?: Maybe<(
+      { __typename?: 'UserExtra' }
+      & Pick<UserExtra, 'showJoymaker' | 'showJufanaut' | 'showCharming'>
+    )> }
+  )> }
+);
 
 export type UserInfoCardGetUserQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -714,6 +759,9 @@ export type HomeScreenQuery = (
     & { badgeNumbers?: Maybe<(
       { __typename?: 'BadgeNumbers' }
       & Pick<BadgeNumbers, 'joymaker' | 'charming' | 'jufanaut'>
+    )>, extra?: Maybe<(
+      { __typename?: 'UserExtra' }
+      & Pick<UserExtra, 'showJoymaker' | 'showCharming' | 'showJufanaut'>
     )> }
   )> }
 );
