@@ -78,7 +78,7 @@ export const NotificationProvider = ({children}: {children?: React.ReactNode}) =
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
-  }, []);
+  }, [user]);
 
   return children;
 };

@@ -37,6 +37,10 @@ export const resolvers: Resolvers = {
   Query: {
     getUser: async (_parent, {id}, {prisma}) => {
       const user = await prisma.user.findFirst({where: {id: parseInt(id)}});
+      if (!user) {
+        console.log(`invalid user with id: ${id}`);
+        return null;
+      }
       return convertPrismaUsertoGraphQLUser(user);
     },
     getConversations: async (_parent, {userId}, {prisma}) => {
@@ -283,6 +287,7 @@ export const resolvers: Resolvers = {
       return convertPrismaUsertoGraphQLUser(user);
     },
     setPushToken: async (_parent, {userId, pushToken}, {prisma}) => {
+      console.log(`setPushToken ${userId} ${pushToken}`);
       const user = await api.setPushToken({prisma, userId, pushToken});
       return convertPrismaUsertoGraphQLUser(user);
     },

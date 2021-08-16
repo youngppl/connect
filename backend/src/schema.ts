@@ -28,7 +28,7 @@ export const typeDefs = gql`
     id: ID!
     email: String!
     name: String!
-    createdAt: String! # Make this a custom scalar
+    createdAt: String!
     birthday: String! # Make this a custom scalar
     pronouns: Pronouns!
     interests: [String!]!
