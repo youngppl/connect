@@ -214,8 +214,10 @@ export async function createChatFeedback({data, prisma}: createChatFeedbackProps
     where: {channel: data.channel},
     include: {people: true},
   });
-  const [otherUser] = conversation.people.filter((id) => id.toString() !== data.author);
-  const [currentUser] = conversation.people.filter((id) => id.toString() === data.author);
+  const [otherUser] = conversation.people.filter((person) => person.id.toString() !== data.author);
+  const [currentUser] = conversation.people.filter(
+    (person) => person.id.toString() === data.author,
+  );
   const oldMood = currentUser.mood;
   // Jank but works, might be too many db roundtrips.
   const oldUserBadgeNumbers = await getBadgeNumbers({userId: otherUser.id.toString(), prisma});
@@ -262,10 +264,10 @@ export async function createChatFeedback({data, prisma}: createChatFeedbackProps
           (otherUser.extra as Prisma.JsonObject).showJoymaker ||
           meetsBadgeCriteria(oldUserBadgeNumbers.joymaker, newUserBadgeNumbers.joymaker),
         showJufanaut:
-          (otherUser.extra as Prisma.JsonObject).showJoymaker ||
+          (otherUser.extra as Prisma.JsonObject).showJufanaut ||
           meetsBadgeCriteria(oldUserBadgeNumbers.jufanaut, newUserBadgeNumbers.jufanaut),
         showCharming:
-          (otherUser.extra as Prisma.JsonObject).showJoymaker ||
+          (otherUser.extra as Prisma.JsonObject).showCharming ||
           meetsBadgeCriteria(oldUserBadgeNumbers.charming, newUserBadgeNumbers.charming),
       },
     },

@@ -22,6 +22,7 @@ import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/Chat
 import DismissKeyboard from "../components/DismissKeyboard";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
+import {client} from "../graphql/Client";
 import {useActualUser} from "../providers/UserProvider";
 import {RootStackParamList} from "../types";
 
@@ -382,15 +383,42 @@ const GoBack = () => {
   );
 };
 
+const ALL_CONVERSATIONS_CACHE_QUERY = gql`
+  query MyQuery($userId: ID!) {
+    getConversations(userId: $userId) {
+      id
+    }
+  }
+`;
+
 const ChatScreen = ({route}: ChatScreenProps) => {
   const {
     params: {channel, otherUser, alreadyMessaged},
   } = route;
-  const {subscribeToMore, data, loading} = useQuery<
+  const user = useActualUser();
+  const {subscribeToMore, data, loading, client} = useQuery<
     ChatScreenConversationQuery,
     ChatScreenConversationQueryVariables
   >(CONVERSATION_QUERY, {
     variables: {channel},
+    onCompleted: (data) => {
+      if (!alreadyMessaged) {
+        const readQueryResult = client.readQuery({
+          query: ALL_CONVERSATIONS_CACHE_QUERY,
+          variables: {userId: user.id},
+        });
+        client.writeQuery({
+          query: ALL_CONVERSATIONS_CACHE_QUERY,
+          variables: {userId: user.id},
+          data: {
+            getConversations: [
+              {id: data?.getConversation?.id, __typename: "Conversation"},
+              ...readQueryResult.getConversations,
+            ],
+          },
+        });
+      }
+    },
   });
   if (loading || !data || !data.getConversation) {
     return (
@@ -416,7 +444,7 @@ const ChatScreen = ({route}: ChatScreenProps) => {
             return Object.assign({}, prev, {
               getConversation: {
                 messages: [newMessageItem, ...(prev?.getConversation?.messages || [])],
-                lastMessage:  newMessageItem,
+                lastMessage: newMessageItem,
               },
             });
           },

@@ -634,6 +634,19 @@ export type SetLastMessageTimeMutation = (
   & Pick<Mutation, 'setLastMessageTime'>
 );
 
+export type MyQueryQueryVariables = Exact<{
+  userId: Scalars['ID'];
+}>;
+
+
+export type MyQueryQuery = (
+  { __typename?: 'Query' }
+  & { getConversations?: Maybe<Array<Maybe<(
+    { __typename?: 'Conversation' }
+    & Pick<Conversation, 'id'>
+  )>>> }
+);
+
 export type CreateProfileMutationVariables = Exact<{
   name: Scalars['String'];
   birthday: Scalars['String'];

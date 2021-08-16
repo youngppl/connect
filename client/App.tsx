@@ -12,7 +12,6 @@ import Navigation from "./navigation";
 import {NotificationProvider} from "./providers/NotificationProvider";
 import {UserProvider} from "./providers/UserProvider";
 
-
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
@@ -25,16 +24,16 @@ export default function App() {
     return <AppLoading />;
   } else {
     return (
-        <ApolloProvider client={client}>
-          <UserProvider>
-            <NotificationProvider>
-              <SafeAreaProvider>
-                <Navigation colorScheme={colorScheme} />
-                <StatusBar />
-              </SafeAreaProvider>
-            </NotificationProvider>
-          </UserProvider>
-        </ApolloProvider>
+      <ApolloProvider client={client}>
+        <UserProvider>
+          <NotificationProvider>
+            <SafeAreaProvider>
+              <Navigation colorScheme={colorScheme} />
+              <StatusBar />
+            </SafeAreaProvider>
+          </NotificationProvider>
+        </UserProvider>
+      </ApolloProvider>
     );
   }
 }

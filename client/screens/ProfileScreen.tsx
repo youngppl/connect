@@ -318,7 +318,9 @@ const NoSuggestionsSheet = ({
 }) => {
   return (
     <BottomSheet visible={visibleModal} setVisible={setVisibleModal}>
-      <BottomSheetHeading>{"Thank you, but we're not taking suggestions right now!"}</BottomSheetHeading>
+      <BottomSheetHeading>
+        {"Thank you, but we're not taking suggestions right now!"}
+      </BottomSheetHeading>
     </BottomSheet>
   );
 };
