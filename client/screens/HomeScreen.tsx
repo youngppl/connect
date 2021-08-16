@@ -245,6 +245,8 @@ const ChatLog = () => {
     },
   });
 
+  const sortedConversations = _.orderBy(data?.getConversations, 'lastMessage.createdAt', ['desc']);
+
   if (loading) {
     return null;
   }
@@ -258,7 +260,7 @@ const ChatLog = () => {
       <ChatLogHeader>Chat</ChatLogHeader>
       <Space height={18} />
       <FlatList
-        data={data?.getConversations}
+        data={sortedConversations}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{paddingBottom: 300}}
