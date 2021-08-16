@@ -9,7 +9,9 @@ import {client} from "./graphql/Client";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
+import {NotificationProvider} from "./providers/NotificationProvider";
 import {UserProvider} from "./providers/UserProvider";
+
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -23,14 +25,16 @@ export default function App() {
     return <AppLoading />;
   } else {
     return (
-      <ApolloProvider client={client}>
-        <UserProvider>
-          <SafeAreaProvider>
-            <Navigation colorScheme={colorScheme} />
-            <StatusBar />
-          </SafeAreaProvider>
-        </UserProvider>
-      </ApolloProvider>
+        <ApolloProvider client={client}>
+          <UserProvider>
+            <NotificationProvider>
+              <SafeAreaProvider>
+                <Navigation colorScheme={colorScheme} />
+                <StatusBar />
+              </SafeAreaProvider>
+            </NotificationProvider>
+          </UserProvider>
+        </ApolloProvider>
     );
   }
 }

@@ -4,6 +4,7 @@ import {Message, Prisma, PrismaClient, Pronouns, User} from "@prisma/client";
 import * as api from "./logic/api";
 import * as matching from "./logic/matching";
 import {GraphQLScalarType, Kind} from "graphql";
+import {sendMessage} from "./logic/pushNotifications";
 
 const formatYear = (year: Date) => {
   return year.toLocaleString("default", {month: "long"}) + " " + year.getFullYear();
@@ -15,6 +16,9 @@ const dateScalar = new GraphQLScalarType({
   name: "Date",
   description: "Date custom scalar type",
   serialize(value) {
+    if (typeof value === "string") {
+      return new Date(value).getTime();
+    }
     return value.getTime(); // Convert outgoing Date to integer for JSON
   },
   parseValue(value) {
@@ -172,18 +176,38 @@ export const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    createMessage: async (_parent, {channel, author, message}, {pubsub, prisma}) => {
+    createMessage: async (_parent, {channel, author, message}, {pubsub, prisma, expo}) => {
       const newMessage = await prisma.message.create({
         data: {
           text: message,
           author: {connect: {id: parseInt(author)}},
           conversation: {connect: {channel}},
         },
+        include: {
+          author: true,
+        },
       });
       await pubsub.publish(channel, {
         chat: {
           ...convertPrismaMessagetoGraphQLMessage(newMessage),
         },
+      });
+      // Maybe move this into its own thing
+      const conversation = await prisma.conversation.findUnique({
+        where: {channel},
+        include: {
+          people: {
+            where: {
+              NOT: {id: parseInt(author)},
+            },
+          },
+        },
+      });
+      const otherPerson = conversation.people[0];
+      await sendMessage({
+        expo,
+        message: newMessage,
+        user: otherPerson,
       });
       return convertPrismaMessagetoGraphQLMessage(newMessage);
     },
@@ -256,6 +280,10 @@ export const resolvers: Resolvers = {
     },
     updateMood: async (_parent, {userId, mood}, {prisma}) => {
       const user = await updateMood(prisma, userId, mood);
+      return convertPrismaUsertoGraphQLUser(user);
+    },
+    setPushToken: async (_parent, {userId, pushToken}, {prisma}) => {
+      const user = await api.setPushToken({prisma, userId, pushToken});
       return convertPrismaUsertoGraphQLUser(user);
     },
   },

@@ -1,3 +1,4 @@
+import {Expo} from "expo-server-sdk";
 import {addResolversToSchema} from "@graphql-tools/schema";
 import express from "express";
 import {ApolloServer, PubSubEngine} from "apollo-server-express";
@@ -10,6 +11,7 @@ import Redis, {Redis as IORedis} from "ioredis";
 import {schema} from "./schema";
 import {resolvers} from "./resolvers";
 
+const expo = new Expo({accessToken: process.env.EXPO_ACCESS_TOKEN});
 const prisma = new PrismaClient();
 const pubsub = new RedisPubSub({
   publisher: new Redis(process.env.REDIS_URL),
@@ -21,8 +23,9 @@ export type JufaContextType = {
   prisma: PrismaClient;
   pubsub: PubSubEngine;
   redis: IORedis;
+  expo: Expo;
 };
-const context: JufaContextType = {prisma, redis, pubsub};
+const context: JufaContextType = {prisma, redis, pubsub, expo};
 const corsOptions = {origin: true, credentials: true};
 const schemaWithResolvers = addResolversToSchema({
   schema,

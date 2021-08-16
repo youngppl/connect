@@ -1,4 +1,4 @@
-import {PrismaClient} from "@prisma/client";
+import {User, PrismaClient} from "@prisma/client";
 import {Conversation} from "../resolvers-types";
 
 interface getStreakProps {
@@ -107,4 +107,18 @@ export async function setLastMessageTime({
     `UPDATE "Participant" SET "lastReadTime" = CURRENT_TIMESTAMP WHERE "userId" = '${userId}' AND "conversationId" = '${conversationId}'`,
   );
   return result;
+}
+
+interface setPushTokenProps {
+  userId: string;
+  pushToken: string;
+  prisma: PrismaClient;
+}
+
+export async function setPushToken({userId, pushToken, prisma}: setPushTokenProps): Promise<User> {
+  const user = await prisma.user.update({
+    where: {id: parseInt(userId)},
+    data: {pushToken},
+  });
+  return user;
 }

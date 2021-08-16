@@ -78,6 +78,7 @@ export type Mutation = {
   updateInterests: User;
   updateMood: User;
   setLastMessageTime: Scalars['Int'];
+  setPushToken?: Maybe<User>;
 };
 
 
@@ -126,6 +127,12 @@ export type MutationUpdateMoodArgs = {
 export type MutationSetLastMessageTimeArgs = {
   userId: Scalars['ID'];
   conversationId: Scalars['ID'];
+};
+
+
+export type MutationSetPushTokenArgs = {
+  userId: Scalars['ID'];
+  pushToken?: Maybe<Scalars['String']>;
 };
 
 export type Profile = {
@@ -384,6 +391,7 @@ export type MutationResolvers<ContextType = JufaContextType, ParentType extends 
   updateInterests?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateInterestsArgs, 'userId'>>;
   updateMood?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateMoodArgs, 'userId' | 'mood'>>;
   setLastMessageTime?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<MutationSetLastMessageTimeArgs, 'userId' | 'conversationId'>>;
+  setPushToken?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSetPushTokenArgs, 'userId'>>;
 };
 
 export type ProfileResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = {
@@ -460,6 +468,20 @@ export type UserInfoCardGetUserQuery = (
   & { getUser?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'name' | 'mood' | 'formattedPronouns' | 'interests' | 'createdAt'>
+  )> }
+);
+
+export type SetPushTokenMutationVariables = Exact<{
+  userId: Scalars['ID'];
+  pushToken: Scalars['String'];
+}>;
+
+
+export type SetPushTokenMutation = (
+  { __typename?: 'Mutation' }
+  & { setPushToken?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id'>
   )> }
 );
 

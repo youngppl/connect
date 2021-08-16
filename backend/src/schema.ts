@@ -97,6 +97,7 @@ export const typeDefs = gql`
     updateInterests(userId: ID!, interests: [String!]): User!
     updateMood(userId: ID!, mood: String!): User!
     setLastMessageTime(userId: ID!, conversationId: ID!): Int!
+    setPushToken(userId: ID!, pushToken: String): User
   }
   type Subscription {
     chat(channel: String!): Message
