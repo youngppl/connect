@@ -60,6 +60,10 @@ export const typeDefs = gql`
     text: String!
     userId: ID
   }
+  type ChatUpdate {
+    userId: ID
+    channel: String
+  }
   type Chat {
     message: String!
     author: ID!
@@ -80,10 +84,10 @@ export const typeDefs = gql`
     getConversations(userId: ID!): [Conversation]
     getConversation(channel: String!): Conversation
     onlineUsers: Int!
+    singleLogQuery(userId: ID!, channel: String): Conversation
   }
   type Mutation {
     createMessage(channel: String!, message: String!, author: ID!): Message
-    leaveWaitingRoom(userId: ID!): String
     createProfile(name: String!, pronouns: Pronouns, birthday: String!): Profile
     createChatFeedback(
       author: ID!
@@ -94,6 +98,7 @@ export const typeDefs = gql`
       smile: Boolean!
       talkAgain: Boolean!
     ): User!
+    leaveWaitingRoom(userId: ID!): String
     updateInterests(userId: ID!, interests: [String!]): User!
     updateMood(userId: ID!, mood: String!): User!
     setLastMessageTime(userId: ID!, conversationId: ID!): Int!
@@ -101,6 +106,7 @@ export const typeDefs = gql`
   }
   type Subscription {
     chat(channel: String!): Message
+    homeScreenChatUpdates(userId: ID!): ChatUpdate
     waitingRoom(userId: ID!, chatTypes: [ConversationType!]!): Match
   }
 `;

@@ -5,6 +5,7 @@ import * as api from "./logic/api";
 import * as matching from "./logic/matching";
 import {GraphQLScalarType, Kind} from "graphql";
 import {sendMessage} from "./logic/pushNotifications";
+import {withFilter} from "graphql-subscriptions";
 
 const formatYear = (year: Date) => {
   return year.toLocaleString("default", {month: "long"}) + " " + year.getFullYear();
@@ -208,6 +209,9 @@ export const resolvers: Resolvers = {
         },
       });
       const otherPerson = conversation.people[0];
+      await pubsub.publish("HomeScreenChatUpdates", {
+        homeScreenChatUpdates: {channel, userId: otherPerson.id.toString()},
+      });
       await sendMessage({
         expo,
         message: newMessage,
@@ -271,6 +275,11 @@ export const resolvers: Resolvers = {
     setLastMessageTime: async (_parent, {conversationId, userId}, {prisma}) => {
       return await api.setLastMessageTime({conversationId, prisma, userId});
     },
+    setPushToken: async (_parent, {userId, pushToken}, {prisma}) => {
+      console.log(`setPushToken ${userId} ${pushToken}`);
+      const user = await api.setPushToken({prisma, userId, pushToken});
+      return convertPrismaUsertoGraphQLUser(user);
+    },
     updateInterests: async (_parent, {userId, interests}, {prisma}) => {
       const user = await prisma.user.update({
         where: {
@@ -286,17 +295,20 @@ export const resolvers: Resolvers = {
       const user = await updateMood(prisma, userId, mood);
       return convertPrismaUsertoGraphQLUser(user);
     },
-    setPushToken: async (_parent, {userId, pushToken}, {prisma}) => {
-      console.log(`setPushToken ${userId} ${pushToken}`);
-      const user = await api.setPushToken({prisma, userId, pushToken});
-      return convertPrismaUsertoGraphQLUser(user);
-    },
   },
   Subscription: {
     chat: {
       subscribe: (_parent, data, {pubsub}) => {
         return pubsub.asyncIterator(data.channel);
       },
+    },
+    homeScreenChatUpdates: {
+      subscribe: withFilter(
+        (_parent, _data, {pubsub}) => pubsub.asyncIterator("HomeScreenChatUpdates"),
+        (payload, variables) => {
+          return payload.homeScreenChatUpdates.userId === variables.userId;
+        },
+      ),
     },
     waitingRoom: {
       subscribe: (_parent, {chatTypes, userId}, {redis, pubsub, prisma}) => {

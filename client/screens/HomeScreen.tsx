@@ -1,4 +1,4 @@
-import {gql, useMutation, useQuery} from "@apollo/client";
+import {gql, useLazyQuery, useMutation, useQuery, useSubscription} from "@apollo/client";
 import {Ionicons} from "@expo/vector-icons";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {StackNavigationProp} from "@react-navigation/stack";
@@ -203,11 +203,46 @@ const CHAT_LOG_QUERY = gql`
   }
 `;
 
+const SINGLE_CHAT_QUERY = gql`
+  query SingleChatQuery($channel: String!) {
+    getConversation(channel: $channel) {
+      id
+      lastMessage {
+        id
+        text
+        createdAt
+      }
+    }
+  }
+`;
+
+const HOME_SCREEN_CHAT_UPDATE_SUBSCRIPTION = gql`
+  subscription HomeScreenChatUpdateSubscription($userId: ID!) {
+    homeScreenChatUpdates(userId: $userId) {
+      channel
+    }
+  }
+`;
+
 const ChatLog = () => {
   const {id} = useActualUser();
+  const [singleChatQuery] = useLazyQuery(SINGLE_CHAT_QUERY, {
+    fetchPolicy: "network-only",
+  });
   const {data, loading} = useQuery(CHAT_LOG_QUERY, {
     variables: {userId: id},
     skip: !id,
+  });
+  useSubscription(HOME_SCREEN_CHAT_UPDATE_SUBSCRIPTION, {
+    variables: {userId: id},
+    onSubscriptionData: ({subscriptionData}) => {
+      console.log(subscriptionData);
+      const returnData = subscriptionData.data;
+      const {
+        homeScreenChatUpdates: {channel},
+      } = returnData;
+      singleChatQuery({variables: {channel}});
+    },
   });
 
   if (loading) {

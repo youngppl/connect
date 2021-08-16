@@ -28,6 +28,12 @@ export type Chat = {
   author: Scalars['ID'];
 };
 
+export type ChatUpdate = {
+  __typename?: 'ChatUpdate';
+  userId?: Maybe<Scalars['ID']>;
+  channel?: Maybe<Scalars['String']>;
+};
+
 export type Conversation = {
   __typename?: 'Conversation';
   id: Scalars['ID'];
@@ -72,9 +78,9 @@ export type Message = {
 export type Mutation = {
   __typename?: 'Mutation';
   createMessage?: Maybe<Message>;
-  leaveWaitingRoom?: Maybe<Scalars['String']>;
   createProfile?: Maybe<Profile>;
   createChatFeedback: User;
+  leaveWaitingRoom?: Maybe<Scalars['String']>;
   updateInterests: User;
   updateMood: User;
   setLastMessageTime: Scalars['Int'];
@@ -86,11 +92,6 @@ export type MutationCreateMessageArgs = {
   channel: Scalars['String'];
   message: Scalars['String'];
   author: Scalars['ID'];
-};
-
-
-export type MutationLeaveWaitingRoomArgs = {
-  userId: Scalars['ID'];
 };
 
 
@@ -109,6 +110,11 @@ export type MutationCreateChatFeedbackArgs = {
   mood: Scalars['String'];
   smile: Scalars['Boolean'];
   talkAgain: Scalars['Boolean'];
+};
+
+
+export type MutationLeaveWaitingRoomArgs = {
+  userId: Scalars['ID'];
 };
 
 
@@ -153,6 +159,7 @@ export type Query = {
   getConversations?: Maybe<Array<Maybe<Conversation>>>;
   getConversation?: Maybe<Conversation>;
   onlineUsers: Scalars['Int'];
+  singleLogQuery?: Maybe<Conversation>;
 };
 
 
@@ -170,15 +177,27 @@ export type QueryGetConversationArgs = {
   channel: Scalars['String'];
 };
 
+
+export type QuerySingleLogQueryArgs = {
+  userId: Scalars['ID'];
+  channel?: Maybe<Scalars['String']>;
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   chat?: Maybe<Message>;
+  homeScreenChatUpdates?: Maybe<ChatUpdate>;
   waitingRoom?: Maybe<Match>;
 };
 
 
 export type SubscriptionChatArgs = {
   channel: Scalars['String'];
+};
+
+
+export type SubscriptionHomeScreenChatUpdatesArgs = {
+  userId: Scalars['ID'];
 };
 
 
@@ -299,6 +318,7 @@ export type ResolversTypes = {
   Chat: ResolverTypeWrapper<Chat>;
   String: ResolverTypeWrapper<Scalars['String']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
+  ChatUpdate: ResolverTypeWrapper<ChatUpdate>;
   Conversation: ResolverTypeWrapper<Conversation>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ConversationType: ConversationType;
@@ -322,6 +342,7 @@ export type ResolversParentTypes = {
   Chat: Chat;
   String: Scalars['String'];
   ID: Scalars['ID'];
+  ChatUpdate: ChatUpdate;
   Conversation: Conversation;
   Boolean: Scalars['Boolean'];
   Date: Scalars['Date'];
@@ -346,6 +367,12 @@ export type BadgeNumbersResolvers<ContextType = JufaContextType, ParentType exte
 export type ChatResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   author?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ChatUpdateResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['ChatUpdate'] = ResolversParentTypes['ChatUpdate']> = {
+  userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  channel?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -385,9 +412,9 @@ export type MessageResolvers<ContextType = JufaContextType, ParentType extends R
 
 export type MutationResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'channel' | 'message' | 'author'>>;
-  leaveWaitingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLeaveWaitingRoomArgs, 'userId'>>;
   createProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<MutationCreateProfileArgs, 'name' | 'birthday'>>;
   createChatFeedback?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateChatFeedbackArgs, 'author' | 'channel' | 'engagementRating' | 'howFeelingAfter' | 'mood' | 'smile' | 'talkAgain'>>;
+  leaveWaitingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLeaveWaitingRoomArgs, 'userId'>>;
   updateInterests?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateInterestsArgs, 'userId'>>;
   updateMood?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateMoodArgs, 'userId' | 'mood'>>;
   setLastMessageTime?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<MutationSetLastMessageTimeArgs, 'userId' | 'conversationId'>>;
@@ -405,10 +432,12 @@ export type QueryResolvers<ContextType = JufaContextType, ParentType extends Res
   getConversations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Conversation']>>>, ParentType, ContextType, RequireFields<QueryGetConversationsArgs, 'userId'>>;
   getConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<QueryGetConversationArgs, 'channel'>>;
   onlineUsers?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  singleLogQuery?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<QuerySingleLogQueryArgs, 'userId'>>;
 };
 
 export type SubscriptionResolvers<ContextType = JufaContextType, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   chat?: SubscriptionResolver<Maybe<ResolversTypes['Message']>, "chat", ParentType, ContextType, RequireFields<SubscriptionChatArgs, 'channel'>>;
+  homeScreenChatUpdates?: SubscriptionResolver<Maybe<ResolversTypes['ChatUpdate']>, "homeScreenChatUpdates", ParentType, ContextType, RequireFields<SubscriptionHomeScreenChatUpdatesArgs, 'userId'>>;
   waitingRoom?: SubscriptionResolver<Maybe<ResolversTypes['Match']>, "waitingRoom", ParentType, ContextType, RequireFields<SubscriptionWaitingRoomArgs, 'userId' | 'chatTypes'>>;
 };
 
@@ -439,6 +468,7 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
 export type Resolvers<ContextType = JufaContextType> = {
   BadgeNumbers?: BadgeNumbersResolvers<ContextType>;
   Chat?: ChatResolvers<ContextType>;
+  ChatUpdate?: ChatUpdateResolvers<ContextType>;
   Conversation?: ConversationResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Match?: MatchResolvers<ContextType>;
@@ -540,6 +570,10 @@ export type ChatScreenConversationQuery = (
   & { getConversation?: Maybe<(
     { __typename?: 'Conversation' }
     & Pick<Conversation, 'id'>
+    & { lastMessage?: Maybe<(
+      { __typename?: 'Message' }
+      & Pick<Message, 'id' | 'text' | 'createdAt'>
+    )> }
     & ChatScreenConversationFragment
   )> }
 );
@@ -620,6 +654,36 @@ export type ChatLogQueryQuery = (
       & Pick<User, 'id' | 'name'>
     )>> }
   )>>> }
+);
+
+export type SingleChatQueryQueryVariables = Exact<{
+  channel: Scalars['String'];
+}>;
+
+
+export type SingleChatQueryQuery = (
+  { __typename?: 'Query' }
+  & { getConversation?: Maybe<(
+    { __typename?: 'Conversation' }
+    & Pick<Conversation, 'id'>
+    & { lastMessage?: Maybe<(
+      { __typename?: 'Message' }
+      & Pick<Message, 'id' | 'text' | 'createdAt'>
+    )> }
+  )> }
+);
+
+export type HomeScreenChatUpdateSubscriptionSubscriptionVariables = Exact<{
+  userId: Scalars['ID'];
+}>;
+
+
+export type HomeScreenChatUpdateSubscriptionSubscription = (
+  { __typename?: 'Subscription' }
+  & { homeScreenChatUpdates?: Maybe<(
+    { __typename?: 'ChatUpdate' }
+    & Pick<ChatUpdate, 'channel'>
+  )> }
 );
 
 export type UpdateMoodMutationVariables = Exact<{

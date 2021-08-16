@@ -205,6 +205,11 @@ const CONVERSATION_QUERY = gql`
   query ChatScreenConversation($channel: String!) {
     getConversation(channel: $channel) {
       id
+      lastMessage {
+        id
+        text
+        createdAt
+      }
       ...ChatScreenConversation
     }
   }
@@ -411,6 +416,7 @@ const ChatScreen = ({route}: ChatScreenProps) => {
             return Object.assign({}, prev, {
               getConversation: {
                 messages: [newMessageItem, ...(prev?.getConversation?.messages || [])],
+                lastMessage:  newMessageItem,
               },
             });
           },
