@@ -102,11 +102,19 @@ export async function setLastMessageTime({
   prisma,
   conversationId,
   userId,
-}: setLastMessageReadProps): Promise<number> {
-  const result: number = await prisma.$executeRaw(
+}: setLastMessageReadProps): Promise<Conversation> {
+  await prisma.$executeRaw(
     `UPDATE "Participant" SET "lastReadTime" = CURRENT_TIMESTAMP WHERE "userId" = '${userId}' AND "conversationId" = '${conversationId}'`,
   );
-  return result;
+  const conversation = await prisma.conversation.findUnique({
+    where: {id: parseInt(conversationId)},
+  });
+  return {
+    ...conversation,
+    id: conversation.id.toString(),
+    createdAt: conversation.createdAt.toLocaleDateString(),
+    isUnread: false,
+  };
 }
 
 interface setPushTokenProps {

@@ -139,6 +139,9 @@ export const resolvers: Resolvers = {
       return streak;
     },
     isUnread: async (conversation, {userId}, {prisma}) => {
+      if (![null, undefined].includes(conversation.isUnread)) {
+        return conversation.isUnread;
+      }
       const unread = await api.getIsUnread({conversation, userId, prisma});
       return unread;
     },

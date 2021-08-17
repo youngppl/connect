@@ -218,7 +218,10 @@ const CONVERSATION_QUERY = gql`
 
 const SET_LAST_MESSAGE_TIME_MUTATION = gql`
   mutation SetLastMessageTime($userId: ID!, $conversationId: ID!) {
-    setLastMessageTime(userId: $userId, conversationId: $conversationId)
+    setLastMessageTime(userId: $userId, conversationId: $conversationId) {
+      id
+      isUnread(userId: $userId)
+    }
   }
 `;
 

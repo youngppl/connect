@@ -204,7 +204,7 @@ const CHAT_LOG_QUERY = gql`
 `;
 
 const SINGLE_CHAT_QUERY = gql`
-  query SingleChatQuery($channel: String!) {
+  query SingleChatQuery($channel: String!, $userId: ID!) {
     getConversation(channel: $channel) {
       id
       lastMessage {
@@ -212,6 +212,7 @@ const SINGLE_CHAT_QUERY = gql`
         text
         createdAt
       }
+      isUnread(userId: $userId)
     }
   }
 `;
@@ -241,7 +242,7 @@ const ChatLog = () => {
       const {
         homeScreenChatUpdates: {channel},
       } = returnData;
-      singleChatQuery({variables: {channel}});
+      singleChatQuery({variables: {channel, userId: id}});
     },
   });
 

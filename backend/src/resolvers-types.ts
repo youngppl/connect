@@ -84,7 +84,7 @@ export type Mutation = {
   leaveWaitingRoom?: Maybe<Scalars['String']>;
   updateInterests: User;
   updateMood: User;
-  setLastMessageTime: Scalars['Int'];
+  setLastMessageTime?: Maybe<Conversation>;
   setPushToken?: Maybe<User>;
 };
 
@@ -435,7 +435,7 @@ export type MutationResolvers<ContextType = JufaContextType, ParentType extends 
   leaveWaitingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLeaveWaitingRoomArgs, 'userId'>>;
   updateInterests?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateInterestsArgs, 'userId'>>;
   updateMood?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateMoodArgs, 'userId' | 'mood'>>;
-  setLastMessageTime?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<MutationSetLastMessageTimeArgs, 'userId' | 'conversationId'>>;
+  setLastMessageTime?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<MutationSetLastMessageTimeArgs, 'userId' | 'conversationId'>>;
   setPushToken?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSetPushTokenArgs, 'userId'>>;
 };
 
@@ -631,7 +631,10 @@ export type SetLastMessageTimeMutationVariables = Exact<{
 
 export type SetLastMessageTimeMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'setLastMessageTime'>
+  & { setLastMessageTime?: Maybe<(
+    { __typename?: 'Conversation' }
+    & Pick<Conversation, 'id' | 'isUnread'>
+  )> }
 );
 
 export type MyQueryQueryVariables = Exact<{
@@ -716,6 +719,7 @@ export type ChatLogQueryQuery = (
 
 export type SingleChatQueryQueryVariables = Exact<{
   channel: Scalars['String'];
+  userId: Scalars['ID'];
 }>;
 
 
@@ -723,7 +727,7 @@ export type SingleChatQueryQuery = (
   { __typename?: 'Query' }
   & { getConversation?: Maybe<(
     { __typename?: 'Conversation' }
-    & Pick<Conversation, 'id'>
+    & Pick<Conversation, 'id' | 'isUnread'>
     & { lastMessage?: Maybe<(
       { __typename?: 'Message' }
       & Pick<Message, 'id' | 'text' | 'createdAt'>
