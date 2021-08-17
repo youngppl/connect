@@ -22,7 +22,6 @@ import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/Chat
 import DismissKeyboard from "../components/DismissKeyboard";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
-import {client} from "../graphql/Client";
 import {useActualUser} from "../providers/UserProvider";
 import {RootStackParamList} from "../types";
 
@@ -42,8 +41,6 @@ const HeaderContainer = styled.View`
 `;
 
 const MessagesContainer = styled.ScrollView`
-  padding: 10px;
-  flex: 1;
   width: 100%;
 `;
 
@@ -136,7 +133,7 @@ const IcebreakerCard = ({
 
 const MessageInputContainer = styled.View`
   background-color: #371463;
-  padding: 22px 16px;
+  padding: 22px 16px 22px 16px;
   z-index: 5;
   bottom: 0;
   width: 100%;
@@ -251,13 +248,7 @@ const ChatScreenDataContainer = ({
   const [showUserInfo, setShowUserInfo] = React.useState(false);
   const [secondsLeft, setSecondsLeft] = React.useState(60);
 
-  const scrollToLastMessage = () =>
-    ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
-      animated: true,
-    });
-
   React.useEffect(() => {
-    scrollToLastMessage();
     const unsubscribe = subscribeToNewMessages();
     return () => unsubscribe(); // TODO: Apollo docs fix
   }, []);
@@ -324,7 +315,11 @@ const ChatScreenDataContainer = ({
         <MessagesContainer
           showsVerticalScrollIndicator={false}
           ref={messagesViewRef}
-          onContentSizeChange={scrollToLastMessage}
+          onContentSizeChange={() =>
+            ((messagesViewRef.current as unknown) as ScrollView)?.scrollToEnd({
+              animated: true,
+            })
+          }
         >
           <IcebreakerCard icebreaker={conversation.icebreaker} />
           {conversation?.messages?.map((message: MessageFragmentFragment, index: number) => {
@@ -345,7 +340,7 @@ const ChatScreenDataContainer = ({
               />
             );
           })}
-          <Space height={30} />
+          <Space height={100}/>
         </MessagesContainer>
         <MessageInputContainer>
           <MessageInput
