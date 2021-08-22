@@ -1,5 +1,6 @@
 import {gql, useLazyQuery, useMutation, useSubscription} from "@apollo/client";
 import {StackScreenProps} from "@react-navigation/stack";
+import LottieView from "lottie-react-native";
 import * as React from "react";
 import {TouchableOpacityProps, TouchableOpacity} from "react-native";
 import styled from "styled-components/native";
@@ -131,6 +132,7 @@ const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
   const [channel, setChannel] = React.useState("");
   const [matchedChatType, setMatchedChatType] = React.useState("");
   const [toChatScreenSeconds, setToChatScreenSeconds] = React.useState(5);
+  const animation = React.useRef<LottieView>();
 
   useSubscription(waitingRoomSubscription, {
     variables: {userId, chatTypes},
@@ -192,7 +194,17 @@ const WaitingScreen = ({navigation, route}: WaitingScreenProps) => {
     <Container>
       <Background />
       <ContentContainer>
-        {state === "waiting" && <BannerText>One sec. We’re finding someone for you...</BannerText>}
+        {state === "waiting" && (
+          <>
+            <BannerText>One sec. We’re finding someone for you...</BannerText>
+            <LottieView
+              autoPlay
+              loop
+              source={require("../assets/waitingAnimation.json")}
+              style={{width: 200, height: 100}}
+            />
+          </>
+        )}
         {state === "matched" && matchedUserData && (
           <>
             <BannerText>
