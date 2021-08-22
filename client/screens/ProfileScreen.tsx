@@ -15,7 +15,6 @@ import Jufanaut from "../components/Jufanaut";
 import ProfileImage from "../components/ProfileImage";
 import Space from "../components/Space";
 import {useActualUser} from "../providers/UserProvider";
-import {User} from "../types";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;

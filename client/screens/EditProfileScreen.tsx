@@ -10,7 +10,6 @@ import GoBack from "../components/GoBackButton";
 import ProfileImage from "../components/ProfileImage";
 import Space from "../components/Space";
 import {PRONOUNS} from "../constants/Pronouns";
-import {client} from "../graphql/Client";
 import {useActualUser} from "../providers/UserProvider";
 
 const Container = styled.View`
