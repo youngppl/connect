@@ -84,6 +84,7 @@ export type Mutation = {
   leaveWaitingRoom?: Maybe<Scalars['String']>;
   updateInterests: User;
   updateMood: User;
+  updateProfile: User;
   setLastMessageTime?: Maybe<Conversation>;
   setPushToken?: Maybe<User>;
 };
@@ -134,6 +135,14 @@ export type MutationUpdateInterestsArgs = {
 export type MutationUpdateMoodArgs = {
   userId: Scalars['ID'];
   mood: Scalars['String'];
+};
+
+
+export type MutationUpdateProfileArgs = {
+  userId: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  pronouns?: Maybe<Pronouns>;
+  profileImage?: Maybe<Scalars['Int']>;
 };
 
 
@@ -229,6 +238,7 @@ export type User = {
   birthday: Scalars['String'];
   pronouns: Pronouns;
   interests: Array<Scalars['String']>;
+  profileImage?: Maybe<Scalars['Int']>;
   mood?: Maybe<Scalars['String']>;
   extra?: Maybe<UserExtra>;
   formattedPronouns?: Maybe<Scalars['String']>;
@@ -435,6 +445,7 @@ export type MutationResolvers<ContextType = JufaContextType, ParentType extends 
   leaveWaitingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationLeaveWaitingRoomArgs, 'userId'>>;
   updateInterests?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateInterestsArgs, 'userId'>>;
   updateMood?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateMoodArgs, 'userId' | 'mood'>>;
+  updateProfile?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateProfileArgs, 'userId'>>;
   setLastMessageTime?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<MutationSetLastMessageTimeArgs, 'userId' | 'conversationId'>>;
   setPushToken?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSetPushTokenArgs, 'userId'>>;
 };
@@ -474,6 +485,7 @@ export type UserResolvers<ContextType = JufaContextType, ParentType extends Reso
   birthday?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pronouns?: Resolver<ResolversTypes['Pronouns'], ParentType, ContextType>;
   interests?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  profileImage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   mood?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   extra?: Resolver<Maybe<ResolversTypes['UserExtra']>, ParentType, ContextType>;
   formattedPronouns?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -542,7 +554,7 @@ export type UserInfoCardGetUserQuery = (
   { __typename?: 'Query' }
   & { getUser?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'name' | 'mood' | 'formattedPronouns' | 'interests' | 'createdAt'>
+    & Pick<User, 'id' | 'name' | 'mood' | 'formattedPronouns' | 'profileImage' | 'interests' | 'createdAt'>
   )> }
 );
 
@@ -665,6 +677,35 @@ export type CreateProfileMutation = (
   )> }
 );
 
+export type EditProfileScreenQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type EditProfileScreenQuery = (
+  { __typename?: 'Query' }
+  & { getUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'pronouns' | 'profileImage'>
+  )> }
+);
+
+export type UpdateProfileMutationVariables = Exact<{
+  userId: Scalars['ID'];
+  profileImage?: Maybe<Scalars['Int']>;
+  name?: Maybe<Scalars['String']>;
+  pronouns?: Maybe<Pronouns>;
+}>;
+
+
+export type UpdateProfileMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProfile: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'profileImage' | 'formattedPronouns'>
+  ) }
+);
+
 export type FeedbackScreenGetUserQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -712,7 +753,7 @@ export type ChatLogQueryQuery = (
       & Pick<Message, 'id' | 'text' | 'createdAt'>
     )>, people?: Maybe<Array<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'name'>
+      & Pick<User, 'id' | 'name' | 'profileImage'>
     )>> }
   )>>> }
 );
@@ -806,7 +847,7 @@ export type ProfileScreenQuery = (
   { __typename?: 'Query' }
   & { getUser?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'name' | 'createdAt' | 'birthday' | 'formattedPronouns' | 'interests' | 'overallRating'>
+    & Pick<User, 'id' | 'name' | 'createdAt' | 'birthday' | 'formattedPronouns' | 'interests' | 'overallRating' | 'profileImage'>
     & { talkNumbers?: Maybe<(
       { __typename?: 'TalkNumbers' }
       & Pick<TalkNumbers, 'deep' | 'small' | 'light'>
@@ -840,7 +881,7 @@ export type GetUserQueryQuery = (
   { __typename?: 'Query' }
   & { getUser?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'name' | 'pronouns' | 'createdAt' | 'birthday'>
+    & Pick<User, 'id' | 'name' | 'pronouns' | 'createdAt' | 'birthday' | 'profileImage'>
   )> }
 );
 

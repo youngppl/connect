@@ -37,6 +37,7 @@ export const typeDefs = gql`
     birthday: String! # Make this a custom scalar
     pronouns: Pronouns!
     interests: [String!]!
+    profileImage: Int
     mood: String
     extra: UserExtra
 
@@ -108,6 +109,7 @@ export const typeDefs = gql`
     leaveWaitingRoom(userId: ID!): String
     updateInterests(userId: ID!, interests: [String!]): User!
     updateMood(userId: ID!, mood: String!): User!
+    updateProfile(userId: ID!, name: String, pronouns: Pronouns, profileImage: Int): User!
     setLastMessageTime(userId: ID!, conversationId: ID!): Conversation
     setPushToken(userId: ID!, pushToken: String): User
   }

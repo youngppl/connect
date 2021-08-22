@@ -15,6 +15,7 @@ import Jufanaut from "../components/Jufanaut";
 import ProfileImage from "../components/ProfileImage";
 import Space from "../components/Space";
 import {useActualUser} from "../providers/UserProvider";
+import {User} from "../types";
 
 const Container = styled(SafeAreaView)`
   background-color: #371463;
@@ -353,6 +354,7 @@ type UserProp = {
   talkNumbers: Record<string, number>;
   formattedPronouns: string;
   overallRating: number;
+  profileImage: number;
 };
 
 const ProfilePortion = ({user}: {user: UserProp}) => {
@@ -373,7 +375,7 @@ const ProfilePortion = ({user}: {user: UserProp}) => {
         }}
       >
         <RowContainer style={{alignItems: "center", paddingVertical: 16}}>
-          <ProfileImage />
+          <ProfileImage variant={user.profileImage} />
           <Space width={8} />
           <ColumnContainer>
             <RowContainer>
@@ -530,6 +532,7 @@ ProfileScreen.query = gql`
       formattedPronouns
       interests
       overallRating
+      profileImage
       talkNumbers {
         deep
         small

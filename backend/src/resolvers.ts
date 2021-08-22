@@ -241,6 +241,10 @@ export const resolvers: Resolvers = {
       const user = await updateMood(prisma, userId, mood);
       return api.convertPrismaUsertoGraphQLUser(user);
     },
+    updateProfile: async (_parent, {userId, profileImage, name, pronouns}, {prisma}) => {
+      const user = await updateProfile(prisma, userId, profileImage, name, pronouns);
+      return api.convertPrismaUsertoGraphQLUser(user);
+    },
   },
   Subscription: {
     chat: {
@@ -281,6 +285,25 @@ const updateMood = (prisma: PrismaClient, userId: string, mood: string) => {
     },
     data: {
       mood,
+    },
+  });
+};
+
+const updateProfile = (
+  prisma: PrismaClient,
+  userId: string,
+  profileImage?: number,
+  name?: string,
+  pronouns?: Pronouns,
+) => {
+  return prisma.user.update({
+    where: {
+      id: parseInt(userId),
+    },
+    data: {
+      name,
+      pronouns: Pronouns[pronouns],
+      profileImage,
     },
   });
 };

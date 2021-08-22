@@ -1,5 +1,5 @@
-import {gql, useQuery} from "@apollo/client";
-import {StackScreenProps} from "@react-navigation/stack";
+import {gql, useMutation, useQuery} from "@apollo/client";
+import {useNavigation} from "@react-navigation/native";
 import * as React from "react";
 import {Dimensions, View} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -10,8 +10,8 @@ import GoBack from "../components/GoBackButton";
 import ProfileImage from "../components/ProfileImage";
 import Space from "../components/Space";
 import {PRONOUNS} from "../constants/Pronouns";
+import {client} from "../graphql/Client";
 import {useActualUser} from "../providers/UserProvider";
-import {ProfileTabParamList} from "../types";
 
 const Container = styled.View`
   background-color: #371463;
@@ -145,36 +145,62 @@ const SelectionOption = ({text, value, selectedValue, setValue}: Option) => {
 
 const EDIT_PROFILE_SCREEN_QUERY = gql`
   query EditProfileScreen($id: ID!) {
-    onlineUsers
     getUser(id: $id) {
       id
       name
       pronouns
+      profileImage
     }
   }
 `;
 
-type EditProfileScreenProps = StackScreenProps<ProfileTabParamList, "EditProfileScreen">;
+const UPDATE_PROFILE_MUTATION = gql`
+  mutation UpdateProfile($userId: ID!, $profileImage: Int, $name: String, $pronouns: Pronouns) {
+    updateProfile(userId: $userId, profileImage: $profileImage, name: $name, pronouns: $pronouns) {
+      id
+      name
+      profileImage
+      formattedPronouns
+    }
+  }
+`;
 
-const EditProfileScreen = ({navigation}: EditProfileScreenProps) => {
+const EditProfileScreen = () => {
+  const navigation = useNavigation();
   const {id} = useActualUser();
   const {data} = useQuery(EDIT_PROFILE_SCREEN_QUERY, {
     variables: {id},
   });
+  const [updateProfile] = useMutation(UPDATE_PROFILE_MUTATION);
   const [pronouns, setPronouns] = React.useState<string | number | undefined>("");
   const [name, setName] = React.useState("");
   const [profileImage, setProfileImage] = React.useState(0);
+  const carouselRef = React.useRef<Carousel<number>>(null);
   const {width: sliderWidth} = Dimensions.get("window");
 
   React.useEffect(() => {
-    if (data) {
+    if (data && carouselRef) {
       const {
         getUser: {name, pronouns, profileImage},
       } = data;
       setName(name);
       setPronouns(pronouns);
+      setProfileImage(profileImage);
+      setTimeout(() => carouselRef?.current?.snapToItem(profileImage), 250);
     }
-  }, [data]);
+  }, [data, carouselRef]);
+
+  const handleSave = async () => {
+    await updateProfile({
+      variables: {
+        userId: id,
+        name,
+        pronouns,
+        profileImage,
+      },
+    });
+    navigation.goBack();
+  };
 
   return (
     <Container>
@@ -186,7 +212,7 @@ const EditProfileScreen = ({navigation}: EditProfileScreenProps) => {
         <View>
           <ProfileImageContainer>
             <Carousel
-              firstItem={2}
+              ref={carouselRef}
               onSnapToItem={(index: number) => setProfileImage(index)}
               data={[0, 1, 2, 3, 4]}
               removeClippedSubviews={false}
@@ -219,7 +245,7 @@ const EditProfileScreen = ({navigation}: EditProfileScreenProps) => {
             })}
           </SelectionOptionsContainer>
         </View>
-        <ButtonContainer onPress={() => {}}>
+        <ButtonContainer onPress={handleSave}>
           <ButtonText>Save</ButtonText>
         </ButtonContainer>
       </Content>

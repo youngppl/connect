@@ -108,6 +108,7 @@ const getUserQuery = gql`
       pronouns
       createdAt
       birthday
+      profileImage
     }
   }
 `;

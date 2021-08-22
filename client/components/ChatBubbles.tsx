@@ -2,6 +2,7 @@ import * as React from "react";
 import {TouchableOpacity} from "react-native";
 import styled from "styled-components/native";
 
+import {User} from "../../backend/src/resolvers-types";
 import ProfileImage from "../components/ProfileImage";
 import Star from "../components/Star";
 
@@ -150,6 +151,7 @@ const Rating = ({onOptionSelect}: RatingProps) => {
 interface ChatBubbleProps {
   author?: string;
   message?: string | null;
+  profileImage?: User["profileImage"];
   isFirstInChain?: boolean;
   options?: Option[];
   optionValue?: string | number | undefined;
@@ -160,6 +162,7 @@ interface ChatBubbleProps {
 export const LeftChatBubble = ({
   author,
   message,
+  profileImage,
   isFirstInChain,
   options,
   optionValue,
@@ -180,7 +183,7 @@ export const LeftChatBubble = ({
       {isFirstInChain && (
         <ChatBubbleContainer>
           <Space style={{alignItems: "center", top: 18}}>
-            <ProfileImage />
+            <ProfileImage variant={profileImage} size={36} />
           </Space>
           <NameContainer>
             <NameText>{author}</NameText>

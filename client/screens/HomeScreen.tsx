@@ -161,7 +161,7 @@ const OldChat = ({conversation, userId}: {conversation: Conversation; userId: st
       <Column>
         <Row>
           <Column style={{justifyContent: "center"}}>
-            <ProfileImage />
+            <ProfileImage variant={otherPerson.profileImage} size={36} />
           </Column>
           <Space width={10} />
           <Column>
@@ -197,6 +197,7 @@ const CHAT_LOG_QUERY = gql`
       people {
         id
         name
+        profileImage
       }
       isUnread(userId: $userId)
     }
@@ -246,7 +247,7 @@ const ChatLog = () => {
     },
   });
 
-  const sortedConversations = _.orderBy(data?.getConversations, 'lastMessage.createdAt', ['desc']);
+  const sortedConversations = _.orderBy(data?.getConversations, "lastMessage.createdAt", ["desc"]);
 
   if (loading) {
     return null;

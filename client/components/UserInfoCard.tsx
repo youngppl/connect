@@ -48,6 +48,7 @@ const getUserQuery = gql`
       name
       mood
       formattedPronouns
+      profileImage
       interests
       createdAt
     }
@@ -67,7 +68,7 @@ const UserInfoCard = ({user}: {user: User}) => {
     <UserInfoCardContainer>
       <UserInfoHeading>
         <Column>
-          <ProfileImage />
+          <ProfileImage variant={fetchedUser.profileImage} />
         </Column>
         <Space width={10} />
         <Column>

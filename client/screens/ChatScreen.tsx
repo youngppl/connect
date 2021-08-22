@@ -334,9 +334,10 @@ const ChatScreenDataContainer = ({
               <LeftChatBubble
                 author={otherUser.name}
                 message={message.text}
+                profileImage={otherUser.profileImage}
                 key={index}
                 isFirstInChain={
-                  index === 0 || conversation?.messages?.[index - 1]?.id !== message.id
+                  index === 0 || conversation?.messages?.[index - 1]?.userId !== message.userId
                 }
               />
             );
