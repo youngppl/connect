@@ -10,6 +10,7 @@ import styled from "styled-components/native";
 
 import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
 import Space from "../components/Space";
+import {PRONOUNS} from "../constants/Pronouns";
 import {useUser} from "../providers/UserProvider";
 import {RootStackParamList} from "../types";
 
@@ -256,12 +257,6 @@ const CreateProfileScreen = ({navigation}: CreateProfileScreenProps) => {
   const [state, dispatch] = React.useReducer(processNextStep, INITIAL_CREATE_FLOW_STATE);
 
   const onSubmit = (data: Record<string, string>) => {
-    const PRONOUNS: Record<string, string> = {
-      "They / Them": "THEY_THEM",
-      "She / Her": "SHE_HER",
-      "He / His": "HE_HIS",
-      "I'd prefer not to say": "NONE",
-    };
     data.pronouns = PRONOUNS[data.pronouns];
     createProfile({variables: data});
     navigation.reset({

@@ -1,5 +1,5 @@
 import {gql, useMutation, useQuery} from "@apollo/client";
-import {Feather, Ionicons} from "@expo/vector-icons";
+import {Feather} from "@expo/vector-icons";
 import {useNavigation} from "@react-navigation/native";
 import {StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
 import * as React from "react";
@@ -20,6 +20,7 @@ import {
 } from "../../backend/src/resolvers-types";
 import {BlackChatText, LeftChatBubble, RightChatBubble} from "../components/ChatBubbles";
 import DismissKeyboard from "../components/DismissKeyboard";
+import GoBack from "../components/GoBackButton";
 import Space from "../components/Space";
 import UserInfoCard from "../components/UserInfoCard";
 import {useActualUser} from "../providers/UserProvider";
@@ -340,7 +341,7 @@ const ChatScreenDataContainer = ({
               />
             );
           })}
-          <Space height={100}/>
+          <Space height={100} />
         </MessagesContainer>
         <MessageInputContainer>
           <MessageInput
@@ -354,30 +355,6 @@ const ChatScreenDataContainer = ({
         </MessageInputContainer>
       </DismissKeyboard>
     </Container>
-  );
-};
-
-const GoBackButton = styled.TouchableOpacity`
-  width: 32px;
-  height: 32px;
-  border-radius: 16px;
-  background-color: #f8f8f8;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  left: 16px;
-`;
-
-const GoBack = () => {
-  const navigation = useNavigation();
-  return (
-    <GoBackButton
-      onPress={() => {
-        navigation.goBack();
-      }}
-    >
-      <Ionicons name="chevron-back" size={24} color="black" />
-    </GoBackButton>
   );
 };
 

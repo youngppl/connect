@@ -26,6 +26,7 @@ export type HomeTabParamList = {
 
 export type ProfileTabParamList = {
   ProfileScreen: undefined;
+  EditProfileScreen: undefined;
 };
 
 export {User};

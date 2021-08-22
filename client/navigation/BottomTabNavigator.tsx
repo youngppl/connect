@@ -10,6 +10,7 @@ import HomeTabIcon from "../components/tabIcon/Home";
 import ProfileTabIcon from "../components/tabIcon/Profile";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
+import EditProfileScreen from "../screens/EditProfileScreen";
 import {HomeScreen} from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import {
@@ -121,6 +122,11 @@ function ProfileTabNavigator() {
       <ProfileTabStack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
+        options={{headerShown: false}}
+      />
+      <ProfileTabStack.Screen
+        name="EditProfileScreen"
+        component={EditProfileScreen}
         options={{headerShown: false}}
       />
     </ProfileTabStack.Navigator>

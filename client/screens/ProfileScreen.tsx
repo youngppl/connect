@@ -1,8 +1,9 @@
 import {gql, useMutation, useQuery} from "@apollo/client";
 import {AntDesign, Entypo} from "@expo/vector-icons";
+import {useNavigation} from "@react-navigation/native";
 import _ from "lodash";
 import * as React from "react";
-import {ActivityIndicator, FlatList, ScrollView} from "react-native";
+import {TouchableOpacity, ActivityIndicator, FlatList, ScrollView} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
@@ -11,6 +12,7 @@ import BottomSheet, {BottomSheetButton, BottomSheetHeading} from "../components/
 import Charming from "../components/Charming";
 import Joymaker from "../components/Joymaker";
 import Jufanaut from "../components/Jufanaut";
+import ProfileImage from "../components/ProfileImage";
 import Space from "../components/Space";
 import {useActualUser} from "../providers/UserProvider";
 
@@ -332,15 +334,9 @@ const ProfileSection = styled.View`
 `;
 
 const ColumnContainer = styled.View``;
+
 const RowContainer = styled.View`
   flex-direction: row;
-`;
-
-const ProfilePhoto = styled.View`
-  height: 48px;
-  width: 48px;
-  border-radius: 24px;
-  background-color: #ffffff;
 `;
 
 const TalkCounter = ({count, text}: {count: number; text: string}) => {
@@ -360,11 +356,13 @@ type UserProp = {
 };
 
 const ProfilePortion = ({user}: {user: UserProp}) => {
+  const navigation = useNavigation();
   return (
     <ProfileSection>
       <BaseText>Profile</BaseText>
       <Space height={20} />
-      <ColumnContainer
+      <TouchableOpacity
+        onPress={() => navigation.navigate("EditProfileScreen")}
         style={{
           paddingHorizontal: 18,
           paddingVertical: 8,
@@ -375,7 +373,7 @@ const ProfilePortion = ({user}: {user: UserProp}) => {
         }}
       >
         <RowContainer style={{alignItems: "center", paddingVertical: 16}}>
-          <ProfilePhoto />
+          <ProfileImage />
           <Space width={8} />
           <ColumnContainer>
             <RowContainer>
@@ -398,7 +396,7 @@ const ProfilePortion = ({user}: {user: UserProp}) => {
           <TalkCounter count={user.talkNumbers.light} text={"Light talks"} />
           <TalkCounter count={user.talkNumbers.small} text={"Small talks"} />
         </RowContainer>
-      </ColumnContainer>
+      </TouchableOpacity>
     </ProfileSection>
   );
 };
