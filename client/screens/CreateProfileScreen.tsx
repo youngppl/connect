@@ -249,6 +249,10 @@ const CreateProfileScreen = ({navigation}: CreateProfileScreenProps) => {
   const [createProfile] = useMutation(CreateProfileScreenMutation, {
     onCompleted: (data) => {
       setId(data.createProfile.id);
+      navigation.reset({
+        index: 0,
+        routes: [{name: "MainTabs"}],
+      });
     },
   });
 
@@ -259,10 +263,6 @@ const CreateProfileScreen = ({navigation}: CreateProfileScreenProps) => {
   const onSubmit = (data: Record<string, string>) => {
     data.pronouns = PRONOUNS[data.pronouns];
     createProfile({variables: data});
-    navigation.reset({
-      index: 0,
-      routes: [{name: "MainTabs"}],
-    });
   };
 
   const scrollToLastMessage = () =>
