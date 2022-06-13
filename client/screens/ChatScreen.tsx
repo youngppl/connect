@@ -247,7 +247,7 @@ const ChatScreenDataContainer = ({
   const [messageText, setMessageText] = React.useState<string | undefined>();
   const messagesViewRef = React.useRef(null);
   const [showUserInfo, setShowUserInfo] = React.useState(false);
-  const [secondsLeft, setSecondsLeft] = React.useState(60);
+  const [secondsLeft, setSecondsLeft] = React.useState(300);
 
   React.useEffect(() => {
     const unsubscribe = subscribeToNewMessages();
